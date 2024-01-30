@@ -285,7 +285,7 @@ const StudentSignup = () => {
   async function handleSignup() {
     if (userData.password) {
       await axios.post(
-        "https://exambackend1.onrender.com/user/CreateUser",
+        "https://exam-back-end.vercel.app/user/CreateUser",
         userData
       );
 

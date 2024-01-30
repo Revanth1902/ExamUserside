@@ -182,7 +182,7 @@ const MCQ = () => {
 
     const addingResultsToLeaderBoard = async (marks) => {
       try {
-        const url = `https://exam-back-end.vercel.app/admin/createLeaderBoard`;
+        const url = `https://exam-back-end.vercel.appadmin/createLeaderBoard`;
 
         const reqConfigure = {
           method: "POST",

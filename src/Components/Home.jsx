@@ -66,7 +66,7 @@ const Home = () => {
                 : "unselectedComponent"
             }
           >
-            Previous Year Quiz
+            Previous Year Paper
           </h5>
           <h5
             onClick={() => {
@@ -78,7 +78,7 @@ const Home = () => {
                 : "unselectedComponent"
             }
           >
-            Custom Quiz
+            Custom Questions
           </h5>
           <h5
             onClick={() => {

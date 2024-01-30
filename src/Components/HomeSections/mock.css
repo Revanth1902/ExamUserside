@@ -162,3 +162,10 @@
   border-radius: 0.3rem;
   margin: 3%;
 }
+
+/**customquiz**/
+
+.customquiz {
+  height: 100%;
+  width: 100%;
+}

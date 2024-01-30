@@ -12,7 +12,7 @@ import Contact from "./Components/Contact";
 
 import StudentLogin from "./Components/StudentComponent/StudentLogin/StudentLogin";
 import AdminLogin from "./Components/AdminComponent/AdminLogin/AdminLogin";
-import AdminDashboard from "./Components/AdminComponent/AdminDashboard/AdminDashboard";
+
 import StudentDashboard from "./Components/StudentComponent/StudentDashboard/StudentDashboard";
 
 import { Route, BrowserRouter, Switch } from "react-router-dom";
@@ -21,6 +21,8 @@ import Footer from "./Components/Footer";
 
 import LeaderBoard from "./Components/Leaderboard/leaderboard";
 import MCQ from "./Components/StudentComponent/StudentDashboard/MCQ/mcq";
+
+import Dashboard from "./Components/AdminComponent/AdminDashboard/Dashboard";
 
 function App() {
   return (
@@ -51,11 +53,7 @@ function App() {
           <Route exact path="/StudentLogin" component={StudentLogin}></Route>
           <Route exact path="/StudentSignup" component={StudentSignup}></Route>
           <Route exact path="/AdminLogin" component={AdminLogin}></Route>
-          <Route
-            exact
-            path="/AdminDashboard"
-            component={AdminDashboard}
-          ></Route>
+          <Route exact path="/AdminDashboard" component={Dashboard}></Route>
           <Route
             exact
             path="/StudentDashboard"
