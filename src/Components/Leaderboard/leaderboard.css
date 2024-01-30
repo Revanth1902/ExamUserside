@@ -1,0 +1,94 @@
+/* Updated styles */
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Salsa&display=swap");
+
+.leaderboard-container {
+  max-width: 85%;
+  margin: 5% auto;
+  font-family: "Roboto", sans-serif;
+}
+
+.leaderboard-container h1 {
+  font-family: "Salsa", cursive;
+  text-align: center;
+  font-weight: 800;
+  font-size: 5rem;
+}
+
+.medal {
+  height: 30px;
+  width: 30px;
+  position: absolute;
+  right: 3%;
+  filter: drop-shadow(2px 5px 4px #222222);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+tr {
+  border: 5px solid white;
+}
+
+.table-head {
+  color: white;
+  font-weight: bold;
+  background-color: #000000;
+}
+
+.table-head > th {
+  color: white;
+  font-weight: bold;
+  background-color: #000000;
+  border: 2px solid #000000;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+tr.highlighted3 {
+  background-image: linear-gradient(
+    to right,
+    #ebd197,
+    #ebd197,
+    #bb9b49,
+    #bb9b49
+  );
+  font-weight: bold;
+}
+
+tr.highlighted2 {
+  background-image: linear-gradient(
+    to right,
+    #d7d7d8,
+    #c7c9cb,
+    #aeb2b8,
+    #aeb2b8,
+    #848b98
+  );
+  font-weight: bold;
+}
+tr.highlighted {
+  background-image: linear-gradient(
+    to right,
+    #ffdf00,
+    #f6d108,
+    #edc211,
+    #edc211,
+    #e3b419
+  );
+
+  font-weight: bold;
+}
