@@ -23,6 +23,8 @@ import LeaderBoard from "./Components/Leaderboard/leaderboard";
 import MCQ from "./Components/StudentComponent/StudentDashboard/MCQ/mcq";
 
 import Dashboard from "./Components/AdminComponent/AdminDashboard/Dashboard";
+import MyProfile from "./Components/HomeComponent/userMainPage";
+import MCQCustom from "./Components/StudentComponent/StudentDashboard/MCQCustomQuiz/mcqCustom.js";
 
 function App() {
   return (
@@ -59,9 +61,10 @@ function App() {
             path="/StudentDashboard"
             component={StudentDashboard}
           ></Route>
-
+          <Route exact path="/myprofile" component={MyProfile} />
           <Route exact path="/leaderboard" component={LeaderBoard} />
           <Route exact path="/mockmcq/:time/:id" component={MCQ} />
+          <Route exact path="/mcqcustom" component={MCQCustom} />
         </Switch>
       </BrowserRouter>
     </>

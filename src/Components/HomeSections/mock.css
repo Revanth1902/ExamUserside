@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+
 :root {
   /* Fonts */
   --font-default: "EB Garamond", system-ui, -apple-system, "Segoe UI", Roboto,
@@ -166,6 +169,46 @@
 /**customquiz**/
 
 .customquiz {
+  font-family: "EB Garamond", serif;
   height: 100%;
   width: 100%;
+  padding: 2%;
+}
+
+.customquiz label {
+  font-size: 1.5rem;
+}
+.customize {
+  font-family: "Inter", sans-serif;
+  font-size: 1.2rem;
+  height: 90%;
+  width: 100%;
+  margin-left: 52.5%;
+}
+
+.customquiz > img {
+  position: absolute;
+  top: 10%;
+  height: 70%;
+  width: 35%;
+}
+
+.customize form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.customize > form > div {
+  margin-top: 2%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 32%;
+}
+
+.customize > form > div > select {
+  font-family: "EB Garamond", sans-serif;
+  width: 30%;
 }

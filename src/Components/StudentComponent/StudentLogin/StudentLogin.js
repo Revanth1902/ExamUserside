@@ -233,29 +233,38 @@ const StudentLogin = () => {
   };
 
   const handleLogin = async () => {
-    setLoad(true);
     try {
-      const response = await axios.post(
-        "https://exam-back-end-2.vercel.app/user/Login",
-        user
-      );
-
-      if (response.data) {
-        setCheck(true);
-        toast("Successfull LoggedIn");
-        // toast("You cannot access without logging in. \n please login first.");
-        // toast("Success");
-        // sessionStorage.setItem("user", user.email);
-        Cookies.set("jwt_userID", response.data.data._id, { expires: 7 });
-        Cookies.set("userToken", response.data.token, { expires: 7 });
-        history.push("/");
+      if (user.email === "") {
+        toast("Enter Email / Mobile Number");
+      } else if (user.password === "") {
+        toast("Enter Password");
       } else {
-        toast("Wrong User Email or Password");
-        // toast("Wrong User Email or Password");
+        setLoad(true);
+        const response = await axios.post(
+          "https://exam-back-end-2.vercel.app/user/Login",
+          user
+        );
+
+        if (response.data) {
+          setCheck(true);
+          toast("Successfull LoggedIn");
+          // toast("You cannot access without logging in. \n please login first.");
+          // toast("Success");
+          // sessionStorage.setItem("user", user.email);
+          Cookies.set("jwt_userID", response.data.data._id, { expires: 7 });
+          Cookies.set("userToken", response.data.token, { expires: 7 });
+          Cookies.set("jwt_firstName", response.data.data.firstName, {
+            expires: 7,
+          });
+          Cookies.set("jwt_lastName", response.data.data.lastName, {
+            expires: 7,
+          });
+          history.push("/");
+        }
       }
     } catch (error) {
-      console.error("Login failed:", error);
-      toast("Login failed:", error);
+      setLoad(false);
+      toast(error.response.data.message);
       // toast("Login failed:", error);
       // Handle error appropriately, e.g., show an error message to the user
     }
@@ -281,7 +290,7 @@ const StudentLogin = () => {
                     onChange={onTextFieldChange}
                     type="email"
                     className="form-control border-info"
-                    placeholder="Enter Email Address"
+                    placeholder="Enter Email Address / Mobile Number"
                   />
                 </div>
 
