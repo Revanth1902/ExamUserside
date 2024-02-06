@@ -1,0 +1,301 @@
+:root {
+  /* Fonts */
+  --font-default: "EB Garamond", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-primary: "EB Garamond", serif; /*'Playfair Display', serif;*/
+  --font-secondary: "Inter", sans-serif;
+
+  /* Colors */
+  /* The *-rgb color names are simply the RGB converted value of the corresponding color for use in the rgba() function */
+
+  /* Default text color */
+  --color-default: #212529;
+  --color-default-rgb: 33, 37, 41;
+
+  /* Defult links color */
+  --color-links: #212529;
+  --color-links-hover: #15171a;
+
+  /* Primay colors */
+  --color-primary: #212529;
+  --color-primary-light: #26282c;
+  --color-primary-dark: #0b0c0e;
+
+  --color-primary-rgb: 33, 37, 41;
+  --color-primary-light-rgb: 38, 40, 44;
+  --color-primary-dark-rgb: 11, 12, 14;
+
+  /* Secondary colors */
+  --color-secondary: #596d80;
+  --color-secondary-light: #8498aa;
+  --color-secondary-dark: #404f5c;
+
+  --color-secondary-rgb: 89, 109, 128;
+  --color-secondary-light-rgb: 132, 152, 170;
+  --color-secondary-dark-rgb: 64, 79, 92;
+
+  /* General colors */
+  --color-blue: #0d6efd;
+  --color-blue-rgb: 13, 110, 253;
+
+  --color-indigo: #6610f2;
+  --color-indigo-rgb: 102, 16, 242;
+
+  --color-purple: #6f42c1;
+  --color-purple-rgb: 111, 66, 193;
+
+  --color-pink: #f3268c;
+  --color-pink-rgb: 243, 38, 140;
+
+  --color-red: #df1529;
+  --color-red-rgb: 223, 21, 4;
+
+  --color-orange: #fd7e14;
+  --color-orange-rgb: 253, 126, 20;
+
+  --color-yellow: #ffc107;
+  --color-yellow-rgb: 255, 193, 7;
+
+  --color-green: #059652;
+  --color-green-rgb: 5, 150, 82;
+
+  --color-teal: #20c997;
+  --color-teal-rgb: 32, 201, 151;
+
+  --color-cyan: #0dcaf0;
+  --color-cyan-rgb: 13, 202, 240;
+
+  --color-white: #ffffff;
+  --color-white-rgb: 255, 255, 255;
+
+  --color-gray: #6c757d;
+  --color-gray-rgb: 108, 117, 125;
+
+  --color-black: #000000;
+  --color-black-rgb: 0, 0, 0;
+}
+
+.myprofile {
+  font-family: "Inter", sans-serif;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+}
+
+.side-bar-userProfile {
+  width: 15%;
+  padding: 2%;
+}
+
+.profilepic {
+  color: white;
+  height: auto;
+  width: 50%;
+  padding: 15%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.side-bar-userProfile > h5 {
+  color: var(--color-default);
+  font-weight: bolder;
+  margin-top: 10%;
+}
+
+.side-bar-userProfile > h6 {
+  color: var(--color-default);
+  font-size: 0.8rem;
+}
+
+.profile-tabs {
+  height: auto;
+  width: 100%;
+  margin-top: 20%;
+}
+
+.profile-tabs > h6 {
+  margin-top: 15%;
+  padding: 5%;
+  cursor: pointer;
+}
+
+.profile-tabs > button {
+  background-color: var(--color-red);
+  padding: 3% 8%;
+  border: 0;
+  color: white;
+  border-radius: 0.3rem;
+  margin-top: 15%;
+}
+
+.modal-logout {
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  top: 40%;
+  left: 45%;
+  padding: 2%;
+}
+
+.modal-logout > div > button:first-child {
+  margin-top: 5%;
+  font-size: 0.8rem;
+  padding: 1% 5%;
+  border: 0;
+  background-color: var(--color-default);
+  color: white;
+  cursor: pointer;
+  border-radius: 0.2rem;
+}
+
+.modal-logout > div > button:last-child {
+  margin-top: 5%;
+  font-size: 0.8rem;
+  padding: 1% 5%;
+  border: 0;
+  background-color: var(--color-red);
+  color: white;
+  border-radius: 0.2rem;
+  cursor: pointer;
+  margin-left: 50%;
+}
+
+.select-profile-section {
+  background-color: var(--color-default);
+  color: #ffffff;
+  border-radius: 0.3rem;
+}
+
+.main-page-myprofile {
+  height: 100%;
+  width: 90%;
+  padding: 1.5%;
+}
+
+.profile-section {
+  height: 100%;
+  width: 100%;
+}
+
+#form-profile-section {
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+#form-profile-section > div {
+  width: 100%;
+  margin: 2% 0%;
+}
+
+#form-profile-section > div > label {
+  margin: 0% 2%;
+  font-weight: 800;
+}
+
+#form-profile-section > div > span {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 1%;
+}
+
+#form-profile-section > div > span > label {
+  margin-left: 10%;
+}
+
+#form-profile-section1 {
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+#form-profile-section1 > div {
+  width: 100%;
+  margin: 2% 0%;
+}
+
+#form-profile-section1 > div > label {
+  margin: 0% 1%;
+  font-weight: 800;
+}
+
+.profile-section > button {
+  background-color: var(--color-default);
+  border: 1px solid transparent;
+  color: #ffffff;
+  padding: 0.5% 2%;
+  border-radius: 0.5rem;
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+}
+
+.profile-section > button:active {
+  border: 1px solid var(--color-default);
+  color: var(--color-default);
+  background-color: #ffffff;
+}
+
+#submit-button {
+  position: relative;
+  background-color: var(--color-default);
+  border: 1px solid transparent;
+  color: #ffffff;
+  padding: 0.5% 2%;
+  border-radius: 0.5rem;
+  left: 0;
+  bottom: -5%;
+}
+
+#cancle-button {
+  position: relative;
+  background-color: var(--color-default);
+  border: 1px solid transparent;
+  color: #ffffff;
+  padding: 0.5% 2%;
+  border-radius: 0.5rem;
+  left: 5%;
+  bottom: -5%;
+}
+
+#form-profile-section2 {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+}
+
+#form-profile-section2 > label {
+  font-weight: 800;
+  margin: 2% 0%;
+}
+
+.customize > button {
+  color: white;
+  background-color: var(--color-default) !important;
+  border: 0;
+  padding: 0.2% 3%;
+  border-radius: 0.3rem;
+  margin-top: 1.5%;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid var(--color-default);
+}
+
+.customize > button {
+  color: white;
+  background-color: var(--color-default) !important;
+  border: 0;
+  padding: 0.2% 3%;
+  border-radius: 0.3rem;
+  margin-top: 1.5%;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-left: 23%;
+}

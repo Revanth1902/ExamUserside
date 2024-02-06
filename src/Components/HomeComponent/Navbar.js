@@ -1,18 +1,24 @@
 import { Link } from "react-router-dom";
+import "./Navbar.module.css";
 
 import { TailSpin } from "react-loader-spinner";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
+const colors = [
+  "black",
+  "darkblue",
+  "darkgreen",
+  "darkred",
+  "darkpurple",
+  "darkorange",
+  "darkpink",
+  "darkbrown",
+  "darkcyan",
+  "darkgray",
+];
+
 function Navbar() {
-  const history = useHistory();
-
-  function logout() {
-    Cookies.remove("userToken");
-    Cookies.remove();
-    history.push("/");
-  }
-
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -63,11 +69,27 @@ function Navbar() {
                     </button>
                   </Link>
                 ) : (
-                  <Link onClick={logout} exact to="/StudentLogin">
-                    <button type="button" className="btn3 ms-2 rounded-pill">
-                      Log Out
-                    </button>
-                  </Link>
+                  <div
+                    onClick={() => {
+                      window.location.href = "/myprofile";
+                    }}
+                    style={{
+                      height: "auto",
+                      width: "auto",
+                      backgroundColor: `${
+                        colors[Math.ceil(Math.random(colors.length))]
+                      }`,
+                      color: "white",
+                      borderRadius: "50%",
+                      padding: ".8rem .9rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <p style={{ margin: 0 }}>
+                      {Cookies.get("jwt_firstName")[0]}
+                      {Cookies.get("jwt_lastName")[0]}
+                    </p>
+                  </div>
                 )}
 
                 {/* <Link to="/AdminLogin">

@@ -1,10 +1,101 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const Quizbycustsubject = () => {
-  const handleQuizBySub = () => {
-    toast("You cannot access without logging in. \n please login first.");
+  const [allCategory, setAllCategory] = useState(() => {
+    return [];
+  });
+  const [selectedCategroy, setSelectCategory] = useState("");
+  const [allTopics, setAllTopics] = useState(() => {
+    return [];
+  });
+  const [selectedTopic, setSelectedTopic] = useState("");
+  const [allSubtopics, setAllSubtopics] = useState(() => {
+    return [];
+  });
+  const [selectedSubTopic, setSelectedSubTopic] = useState("");
+
+  const [allQuizName, setQuizName] = useState(() => {
+    return [];
+  });
+
+  const [remainingData, setData] = useState({
+    difficultyLevel: "",
+    type: "",
+    quizId: "",
+  });
+
+  useEffect(() => {
+    getAllCategory();
+    getAllQuizName();
+  }, []);
+
+  useEffect(() => {
+    if (selectedCategroy !== "") {
+      getTopicsById();
+    }
+  }, [selectedCategroy]);
+
+  useEffect(() => {
+    if (selectedCategroy !== "") {
+      getSubTopicsById();
+    }
+  }, [selectedTopic]);
+
+  /**Fuctions to call api's */
+  const getAllCategory = async () => {
+    try {
+      const res = await axios.get(
+        "https://exam-back-end.vercel.app/admin/getAllCategory"
+      );
+
+      if (res.status === 200) {
+        setAllCategory(res.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getAllQuizName = async () => {
+    try {
+      const res = await axios.get(
+        "https://exam-back-end.vercel.app/admin/getAllQuizName"
+      );
+
+      if (res.status === 200) {
+        setQuizName(res.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getTopicsById = async () => {
+    try {
+      const res = await axios.get(
+        `https://exam-back-end.vercel.app/admin/getTopicsByCategoryId/${selectedCategroy}`
+      );
+      if (res.status === 200) {
+        setAllTopics(res.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const getSubTopicsById = async () => {
+    try {
+      const res = await axios.get(
+        `https://exam-back-end.vercel.app/admin/getSubTopicsByTopicId/${selectedTopic}`
+      );
+      if (res.status === 200) {
+        setAllSubtopics(res.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -21,96 +112,206 @@ const Quizbycustsubject = () => {
         pauseOnHover
         theme="dark"
       />
-      <div class="container py-4">
-        <h2 className="text-center text-lg-start">
-          Quiz by Custom Subject / Topic{" "}
-          <span class="badge bg-secondary">New</span>
+
+      <div className="customquiz">
+        <h2 className="mock-head pb-4 text-center text-lg-start ">
+          Custom <span className="badge bg-secondary">Quiz</span>
         </h2>
-        <div class="row justify-content-center">
-          <div class="col-sm-12 col-md-8 col-lg-6">
-            <div class="container bg-white rounded my-2 px-0">
-              <div class="py-1 bg-info text-white">
-                <h1 style={{ textAlign: "center" }}>CUSTOM SUBJECT</h1>
-              </div>
-              <div class="mt-3 " style={{ textAlign: "center" }}>
-                <img src="register-icon.png" width="100px" alt="" />
-              </div>
-              <form action="">
-                <div class="py-3 mx-5">
-                  <label htmlFor="" className="mb-2">
-                    No. of Question
-                  </label>
-                  <input
-                    type="text"
-                    name="noOfQuestion"
-                    required
-                    class="form-control  border-info"
-                    placeholder="No. of Question"
-                  />
-                </div>
-                <div class="py-3 mx-5">
-                  <label htmlFor="" className="mb-2">
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    name="subject"
-                    required
-                    class="form-control  border-info"
-                    placeholder="Subject"
-                  />
-                </div>
-                <div class="py-3 mx-5">
-                  <label htmlFor="" className="mb-2">
-                    Topic
-                  </label>
-                  <input
-                    type="text"
-                    name="topic"
-                    required
-                    class="form-control  border-info"
-                    placeholder="Topic"
-                  />
-                </div>
-                <div class="py-3 mx-5">
-                  <label htmlFor="" className="mb-2">
-                    Sub Topic
-                  </label>
-                  <input
-                    type="text"
-                    name="subTopic"
-                    required
-                    class="form-control  border-info"
-                    placeholder="Sub Topic"
-                  />
-                </div>
-                <div class="py-3 mx-5">
-                  <label htmlFor="" className="mb-2">
-                    Difficulty Level
-                  </label>
-                  <input
-                    type="text"
-                    name="difficultyLevel"
-                    required
-                    class="form-control  border-info"
-                    placeholder="Difficulty Level"
-                  />
-                </div>
-                <div class="pt-3 mx-5 ">
-                  <input
-                    type="button"
-                    class="form-control btn-info text-white"
-                    value="Start Now"
-                    onClick={handleQuizBySub}
-                  />
-                </div>
-              </form>
+        <img src="/Quiz.jpg" alt="Quiz Image" />
+        <div className="customize">
+          <form>
+            <div>
+              <label htmlFor="category">Select Category : &nbsp;</label>
+              <select
+                style={{ textTransform: "capitalize" }}
+                onChange={(e) => {
+                  setSelectCategory(e.target.value);
+                }}
+                id="category"
+              >
+                <option value="">Select</option>
+                {allCategory.map((each) => (
+                  <option
+                    value={each._id}
+                    style={{ textTransform: "capitalize" }}
+                    id={each._id}
+                  >
+                    {each.name}
+                  </option>
+                ))}
+              </select>
             </div>
-          </div>
+            <div>
+              <label htmlFor="topics">Select Topic : &nbsp;</label>
+              <select
+                onClick={(e) => {
+                  setSelectedTopic(e.target.value);
+                }}
+                id="topics"
+              >
+                <option value="">Select</option>
+                {selectedCategroy !== "" &&
+                  allTopics.map((each) => (
+                    <option
+                      value={each._id}
+                      style={{ textTransform: "capitalize" }}
+                      id={each._id}
+                    >
+                      {each.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            {selectedCategroy === "" && (
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: ".8rem",
+                  color: "red",
+                  marginBottom: "-2%",
+                }}
+              >
+                * select category to get topics
+              </p>
+            )}
+            <div>
+              <label htmlFor="topics">Select Sub Topic : &nbsp;</label>
+              <select id="topics">
+                <option>Select</option>
+                {selectedCategroy !== "" &&
+                  selectedTopic !== "" &&
+                  allSubtopics.map((each) => (
+                    <option
+                      style={{ textTransform: "capitalize" }}
+                      id={each._id}
+                    >
+                      {each.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            {selectedTopic === "" && (
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: ".8rem",
+                  color: "red",
+                  marginBottom: "-2%",
+                }}
+              >
+                * select topic to get subtopics
+              </p>
+            )}
+          </form>
+          <form>
+            <div>
+              <label htmlFor="category">Difficulty Level : &nbsp;</label>
+              <select
+                onChange={(e) => {
+                  setData({
+                    ...remainingData,
+                    difficultyLevel: e.target.value,
+                  });
+                }}
+                id="category"
+              >
+                <option value="">Select</option>
+
+                <option value="easy" style={{ textTransform: "capitalize" }}>
+                  Easy
+                </option>
+                <option value="medium" style={{ textTransform: "capitalize" }}>
+                  Medium
+                </option>
+                <option value="hard" style={{ textTransform: "capitalize" }}>
+                  Hard
+                </option>
+                <option
+                  value="veryHard"
+                  style={{ textTransform: "capitalize" }}
+                >
+                  Very Hard
+                </option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="category">Select Type : &nbsp;</label>
+              <select
+                onChange={(e) => {
+                  setData({
+                    ...remainingData,
+                    type: e.target.value,
+                  });
+                }}
+              >
+                <option value="">Select</option>
+                <option value="currentAffair" className="currentAffair">
+                  Current Affair
+                </option>
+                <option value="previousYear" className="previousYear">
+                  Previous Year
+                </option>
+                <option value="misc" className="misc">
+                  Misc
+                </option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="category">Select Quiz Name : &nbsp;</label>
+              <select
+                onChange={(e) => {
+                  setData({
+                    ...remainingData,
+                    quizId: e.target.value,
+                  });
+                }}
+                id="category"
+              >
+                <option>Select</option>
+                {allQuizName.map((each) => (
+                  <option
+                    value={each._id}
+                    style={{ textTransform: "capitalize" }}
+                    id={each._id}
+                  >
+                    {each.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </form>
+          {
+            <button
+              onClick={() => {
+                if (
+                  remainingData.difficultyLevel === "" &&
+                  remainingData.type === "" &&
+                  remainingData.quizId === "" &&
+                  selectedCategroy === "" &&
+                  selectedTopic === "" &&
+                  selectedSubTopic === ""
+                ) {
+                  toast("Select atleast one option");
+                } else {
+                  window.location.href = `/mcqcustom?data=${encodeURIComponent(
+                    JSON.stringify({
+                      difficultyLevel: remainingData.difficultyLevel,
+                      type: remainingData.type,
+                      quizId: remainingData.quizId,
+                      categoryId: selectedCategroy,
+                      topicId: selectedTopic,
+                      subtopicId: selectedSubTopic,
+                    })
+                  )}`;
+                }
+              }}
+              type="button"
+            >
+              Start
+            </button>
+          }
         </div>
       </div>
-
-      <hr />
     </>
   );
 };

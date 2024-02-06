@@ -1,5 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
-import "./mcq.css";
+import { useEffect, useState } from "react";
 
 import Cookies from "js-cookie";
 
@@ -10,12 +9,17 @@ import { Hourglass } from "react-loader-spinner";
 import {
   useParams,
   useHistory,
+  useLocation,
 } from "react-router-dom/cjs/react-router-dom.min";
 
 import axios from "axios";
 
-const MCQ = () => {
+import "./mcqCustom.css";
+
+const MCQCustom = () => {
   const params = useParams();
+  const location = useLocation();
+
   const [currentQuestion, setCurrent] = useState("");
   const [mcqquestions, setQuestions] = useState(() => {
     return [];
@@ -23,61 +27,15 @@ const MCQ = () => {
   const [allQuestion, setAllQuestions] = useState(() => {
     return [];
   });
-
   const [submitted, setSubmitted] = useState("");
   const [showResults, setResults] = useState(false);
   const [totalCount, setCount] = useState(0);
 
-  const [timer, setTimer] = useState({
-    minutes: String(params.time),
-    seconds: "00",
-  });
   const [totalQuestions, setTotalQuestion] = useState(0);
-
   const [load, setLoad] = useState(true);
   const [load2, setLoad2] = useState(false);
-
   const [page, setPage] = useState(1);
   const history = useHistory();
-
-  useEffect(() => {
-    const timerId = setTimeout(() => {
-      if (timer.minutes === "00" && timer.seconds === "00") {
-        setSubmitted("Times Up");
-        setTimeout(() => {
-          clearTimeout(timerId);
-          setResults(true);
-        }, 1000);
-      } else if (timer.seconds === "00") {
-        if (timer.minutes <= "10") {
-          setTimer({
-            minutes: `0${String(parseInt(timer.minutes) - 1)}`,
-            seconds: "60",
-          });
-        } else {
-          setTimer({
-            minutes: String(parseInt(timer.minutes) - 1),
-            seconds: "60",
-          });
-        }
-      } else {
-        if (timer.seconds <= "10") {
-          setTimer({
-            minutes: timer.minutes,
-            seconds: `0${String(parseInt(timer.seconds) - 1)}`,
-          });
-        } else {
-          setTimer({
-            minutes: timer.minutes,
-            seconds: String(parseInt(timer.seconds) - 1),
-          });
-        }
-      }
-    }, 1000);
-    if (showResults === true) {
-      clearTimeout(timerId);
-    }
-  }, [timer.minutes, timer.seconds, showResults]);
 
   useEffect(() => {
     const evTypep = window.performance.getEntriesByType("navigation")[0].type;
@@ -87,24 +45,30 @@ const MCQ = () => {
   }, []);
 
   useEffect(() => {
-    getMockQuestions();
-  }, [page]);
+    const queryParams = new URLSearchParams(location.search);
+    const objectString = queryParams.get("data");
+    if (objectString) {
+      const myObject = JSON.parse(decodeURIComponent(objectString));
+      getCustomQuestions(myObject);
+    }
+  }, [location.search, page]);
 
-  const getMockQuestions = async () => {
+  const getCustomQuestions = async (obtainedObject) => {
     setLoad2(false);
     try {
-      const url = `https://exam-back-end-2.vercel.app/admin/getQuestionsByMockId/${params.id}?page=${page}&limit=10`;
-
-      const res = await axios.get(url);
+      const url = `https://exam-back-end-2.vercel.app/admin/getAllQuestionByFilters?page=${page}limit=10`;
+      const res = await axios.get(url, JSON.stringify(obtainedObject), {
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (res.status === 200) {
-        let updatedArr = res.data.data.map((each) => ({
+        console.log(res.data);
+        let updatedArr = res.data.result.map((each) => ({
           ...each,
           answered: "",
         }));
-
         if (mcqquestions.length === 0) {
-          setCount(res.data.count);
+          setCount(updatedArr.length);
           setQuestions(updatedArr);
           setCurrent(res.data.currentPage);
           setTotalQuestion(res.data.totalPages);
@@ -113,7 +77,6 @@ const MCQ = () => {
         } else {
           let newUpdatedArr = [];
           let matched = false;
-
           for (let question of updatedArr) {
             for (let each of allQuestion) {
               if (question._id === each._id) {
@@ -128,7 +91,6 @@ const MCQ = () => {
               matched = false;
             }
           }
-
           setQuestions(newUpdatedArr);
           setCurrent(res.data.currentPage);
           setTotalQuestion(res.data.totalPages);
@@ -148,14 +110,11 @@ const MCQ = () => {
       console.error(error);
     }
   };
-
   const Results = () => {
-    console.log(params);
     const [data, setData] = useState([
       { name: "Correct", value: 0 },
       { name: "Wrong", value: 0 },
     ]);
-
     useEffect(() => {
       const updatedData = allQuestion.reduce(
         (acc, each) => {
@@ -168,22 +127,17 @@ const MCQ = () => {
         },
         [...data] // Use a copy of the existing data to ensure immutability
       );
-
       updatedData.push({ name: "Attempted", value: allQuestion.length });
       updatedData.push({
         name: "Not Attempted",
         value: totalCount - allQuestion.length,
       });
-
       setData(updatedData);
-
       addingResultsToLeaderBoard(data[0].value * 2 - data[0].value * 0.5);
     }, []);
-
     const addingResultsToLeaderBoard = async (marks) => {
       try {
         const url = `https://exam-back-end.vercel.appadmin/createLeaderBoard`;
-
         const reqConfigure = {
           method: "POST",
           headers: {
@@ -195,15 +149,12 @@ const MCQ = () => {
             totalMark: marks,
           }),
         };
-
         await fetch(url, reqConfigure);
       } catch (error) {
         console.error(error);
       }
     };
-
     const COLORS = ["#00C49F", "#cc0000", "#FFBB28", "#598BAF"];
-
     return (
       <>
         <div className="submitBackground"></div>
@@ -260,68 +211,46 @@ const MCQ = () => {
             >
               Go To Home Page
             </button>
-            <button
-              onClick={() => {
-                history.push("/leaderboard");
-              }}
-              className="leaderboard"
-              type="button"
-            >
-              Show LeaderBoard
-            </button>
           </div>
         </div>
       </>
     );
   };
-
   const SubmitExam = () => {
     return (
       <>
         <div className="submitBackground"></div>
         <div className="submitExam">
-          <h1>{submitted}</h1>
-          <h4>
-            {timer.minutes} : {timer.seconds}
-          </h4>
-
-          {submitted !== "Times Up" && (
-            <>
-              <button
-                onClick={() => {
-                  setResults(true);
-                }}
-                className="submit"
-                type="button"
-              >
-                Submit
-              </button>
-              <button
-                id="close"
-                className="close"
-                onClick={() => {
-                  setSubmitted("");
-                }}
-                type="button"
-              >
-                Close
-              </button>
-            </>
-          )}
+          <h1 style={{ fontSize: "3rem" }}>{submitted}</h1>
+          <button
+            onClick={() => {
+              setResults(true);
+            }}
+            className="submit"
+            type="button"
+          >
+            Submit
+          </button>
+          <button
+            id="close"
+            className="close"
+            onClick={() => {
+              setSubmitted("");
+            }}
+            type="button"
+          >
+            Close
+          </button>
         </div>
       </>
     );
   };
-
   const handleAns = (id, ans, ea) => {
     const answeredArr = mcqquestions.map((each) =>
       each._id === id ? { ...each, answered: ans } : each
     );
-
     let match = false;
-
     let changedArr = [];
-
     allQuestion.map((each) => {
       if (each._id === id) {
         changedArr.push({ ...each, answered: ans });
@@ -330,13 +259,11 @@ const MCQ = () => {
         changedArr.push(each);
       }
     });
-
     setQuestions(answeredArr);
     setAllQuestions(
       match === true ? changedArr : [...changedArr, { ...ea, answered: ans }]
     );
   };
-
   return (
     <>
       {submitted !== "" && <SubmitExam />}
@@ -345,9 +272,7 @@ const MCQ = () => {
       {!load ? (
         <div className="mcq-con">
           <h1>Mock Test</h1>
-          <h4>
-            Timer {timer.minutes} : {timer.seconds}
-          </h4>
+
           {mcqquestions.length > 0 && (
             <div className="questions-box">
               {mcqquestions.map((each) => (
@@ -411,7 +336,6 @@ const MCQ = () => {
                       <p>{each.option4}</p>
                     </div>
                   </div>
-
                   {currentQuestion > 1 && load2 && (
                     <button
                       onClick={() => {
@@ -423,7 +347,6 @@ const MCQ = () => {
                       « Prev
                     </button>
                   )}
-
                   {currentQuestion < totalQuestions && load2 && (
                     <button
                       onClick={() => {
@@ -435,18 +358,18 @@ const MCQ = () => {
                       Next »
                     </button>
                   )}
-
-                  {currentQuestion === totalQuestions && (
-                    <button
-                      onClick={() => {
-                        setSubmitted("Are you sure to submit ?");
-                      }}
-                      className="next"
-                      type="button"
-                    >
-                      Submit Exam
-                    </button>
-                  )}
+                  {currentQuestion === totalQuestions &&
+                    allQuestion.length > 0 && (
+                      <button
+                        onClick={() => {
+                          setSubmitted("Are you sure to submit ?");
+                        }}
+                        className="next"
+                        type="button"
+                      >
+                        Submit Exam
+                      </button>
+                    )}
                 </div>
               ))}
             </div>
@@ -469,4 +392,4 @@ const MCQ = () => {
   );
 };
 
-export default MCQ;
+export default MCQCustom;
