@@ -114,6 +114,7 @@
 #detail {
   margin-bottom: 3%;
 }
+
 .containering {
   position: absolute;
   width: 50%;
@@ -129,6 +130,7 @@
   align-items: flex-start;
   border-radius: 1.2rem;
 }
+
 .containering {
   background: #fff;
   padding: 20px;
@@ -147,6 +149,7 @@
 .submitbutton:hover {
   background-color: #059652;
 }
+
 .form {
   width: 100%;
   max-width: 400px;
