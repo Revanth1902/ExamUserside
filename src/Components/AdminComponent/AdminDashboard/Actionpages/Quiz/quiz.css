@@ -1,0 +1,35 @@
+.themain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.QuizPage {
+  width: 80%;
+  margin: 20px;
+}
+.QuizList {
+  list-style: none;
+  padding: 0;
+}
+
+.QuizItem {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #ffff;
+}
+.delete-button {
+  background-color: #8498aa;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 1.5rem;
+  margin-top: 3%;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
+}

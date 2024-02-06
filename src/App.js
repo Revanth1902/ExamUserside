@@ -21,6 +21,7 @@ import Footer from "./Components/Footer";
 
 import LeaderBoard from "./Components/Leaderboard/leaderboard";
 import MCQ from "./Components/StudentComponent/StudentDashboard/MCQ/mcq";
+import Dashboard from "./Components/AdminComponent/AdminDashboard/Dashboard";
 
 import Dashboard from "./Components/AdminComponent/AdminDashboard/Dashboard";
 import MyProfile from "./Components/HomeComponent/userMainPage";

@@ -30,6 +30,7 @@ const StudentSignup = () => {
   let history = useHistory();
 
   async function handleSignup() {
+
     setLoad(true);
     try {
       if (userData.firstName === "") {

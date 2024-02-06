@@ -1,0 +1,35 @@
+.QuestionsList {
+  margin-top: 5%;
+  list-style: none;
+  padding: 0;
+}
+.questions-page-container {
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px;
+}
+.QuestionItem {
+  background-color: #ffff;
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+}
+.theDetails {
+  justify-content: space-between;
+}
+.question-options {
+  justify-content: space-between;
+  margin-bottom: 5%;
+}
+.question-details {
+  width: 50%;
+}
+.rightsidedetails {
+  width: 50%;
+  margin-left: 2%;
+}
+.question-answer {
+  margin-bottom: 5%;
+}
