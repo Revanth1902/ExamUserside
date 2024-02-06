@@ -1,0 +1,41 @@
+/* users.css */
+.users-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.users-container > h2 {
+  color: white;
+  margin-bottom: 3%;
+}
+
+.users-list {
+  list-style: none;
+  padding: 0;
+}
+
+.user-item {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #ffff;
+  padding: 4%;
+}
+
+.user-details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.user-info {
+  width: 48%;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .user-info {
+    width: 100%;
+  }
+}
