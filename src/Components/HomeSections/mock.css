@@ -193,11 +193,13 @@
   width: 35%;
 }
 
-.customize form {
+.customize > form {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
+
+  width: 30%;
 }
 
 .customize > form > div {
@@ -205,10 +207,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 32%;
+  width: 100%;
+}
+
+.customize > form > div > label {
+  margin: 0;
+  font-size: 1rem;
 }
 
 .customize > form > div > select {
   font-family: "EB Garamond", sans-serif;
   width: 30%;
+  font-size: 1rem;
+  margin: 0;
 }

@@ -1,17 +1,29 @@
-import React, { useEffect, useState } from "react";
+
+import React, { useState, useEffect } from "react";
+
 import Navbar from "../../HomeComponent/Navbar";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import Cookies from "js-cookie";
 
+import Dashboard from "../AdminDashboard/Dashboard";
+import { TailSpin } from "react-loader-spinner";
+
+
 const AdminLogin = () => {
+  const [loading, setLoading] = useState(false);
   const [admin, setAdmin] = useState({
     email: "",
     password: "",
   });
 
   const history = useHistory();
+  useEffect(() => {
+    if (Cookies.get("jwt_AdminToken") !== undefined) {
+      history.push("/Admindashboard");
+    }
+  });
 
   useEffect(() => {
     if (Cookies.get("jwt_AdminToken") !== undefined) {
@@ -27,6 +39,8 @@ const AdminLogin = () => {
   };
 
   const login = async () => {
+    setLoading(true);
+
     try {
       const response = await axios.post(
         "https://exam-back-end.vercel.app/admin/login",
@@ -36,12 +50,17 @@ const AdminLogin = () => {
       if (response.data) {
         Cookies.set("jwt_AdminToken", response.data.token, { expires: 7 });
         Cookies.set("jwt_AdminId", response.data.data._id, { expires: 7 });
+
         history.push("/AdminDashboard");
       } else {
         alert(response.data.message || "Login failed");
       }
     } catch (error) {
       console.error("Error during login:", error.message);
+
+    } finally {
+      setLoading(false);
+
     }
   };
 
@@ -78,12 +97,28 @@ const AdminLogin = () => {
                   />
                 </div>
                 <div className="py-3 mx-5">
-                  <input
-                    type="button"
-                    onClick={login}
-                    className="form-control btn-danger text-white"
-                    value="ADMIN LOGIN "
-                  />
+
+                  {loading ? (
+                    <button
+                      type="button"
+                      className="form-control btn-danger text-white"
+                      style={{ paddingLeft: "45%" }}
+                    >
+                      <TailSpin
+                        height={"10%"}
+                        width={"10%"}
+                        color={"#ffffff"}
+                      />
+                    </button>
+                  ) : (
+                    <input
+                      type="button"
+                      onClick={login}
+                      className="form-control btn-danger text-white"
+                      value="ADMIN LOGIN"
+                    />
+                  )}
+
                 </div>
               </form>
             </div>

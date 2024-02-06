@@ -57,6 +57,7 @@ const MyProflie = () => {
       )}`;
 
       const res = await axios.get(url);
+      console.log(res.data.data);
       if (res.status === 200) {
         setUser({
           ...res.data.data,
@@ -123,8 +124,8 @@ const MyProflie = () => {
             }}
           >
             <p style={{ margin: 0 }}>
-              {user.firstName[0]}
-              {user.lastName[0]}
+              {`${user.firstName}`[0]}
+              {`${user.lastName}`[0]}
             </p>
           </div>
           <h5>

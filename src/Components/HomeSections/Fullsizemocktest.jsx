@@ -78,7 +78,7 @@ const Fullsizemocktest = () => {
                 <h5>Total Marks : {each.totalMarks}</h5>
 
                 <h5>Exam Time : {each.examTiming} Mins</h5>
-                <div>
+                <div className="div-inside">
                   <input
                     onChange={() => {
                       setTerms(!acceptTerms);
@@ -160,7 +160,8 @@ const Fullsizemocktest = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                marginLeft: "40%",
+                marginLeft: "45%",
+                marginTop: "5%",
               }}
             >
               <Hourglass colors={["#212529", "#212529"]} />

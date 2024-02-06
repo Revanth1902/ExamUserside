@@ -1,32 +1,5 @@
-.mockmain {
-  height: 60%;
-  display: flex;
-  overflow-x: auto; /* Enable horizontal scrolling */
-  border: 2px solid transparent;
-  padding: 0%;
-  overflow-y: hidden;
-}
-
-.mockmain::-webkit-scrollbar {
-  width: auto;
-  height: 0.15rem;
-  cursor: pointer;
-}
-
-.mockmain::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-
-.mockmain::-webkit-scrollbar-thumb {
-  background-color: #212529;
-  border-radius: 2rem;
-}
-
-.mockmain > div {
-  flex: 0 0 auto;
-  margin-right: 20px; /* Adjust the gap as needed */
-}
-
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
 :root {
   /* Fonts */
   --font-default: "EB Garamond", system-ui, -apple-system, "Segoe UI", Roboto,
@@ -34,168 +7,80 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-primary: "EB Garamond", serif; /*'Playfair Display', serif;*/
   --font-secondary: "Inter", sans-serif;
-
   /* Colors */
   /* The *-rgb color names are simply the RGB converted value of the corresponding color for use in the rgba() function */
-
   /* Default text color */
   --color-default: #212529;
   --color-default-rgb: 33, 37, 41;
-
   /* Defult links color */
   --color-links: #212529;
   --color-links-hover: #15171a;
-
   /* Primay colors */
   --color-primary: #212529;
   --color-primary-light: #26282c;
   --color-primary-dark: #0b0c0e;
-
   --color-primary-rgb: 33, 37, 41;
   --color-primary-light-rgb: 38, 40, 44;
   --color-primary-dark-rgb: 11, 12, 14;
-
   /* Secondary colors */
   --color-secondary: #596d80;
   --color-secondary-light: #8498aa;
   --color-secondary-dark: #404f5c;
-
   --color-secondary-rgb: 89, 109, 128;
   --color-secondary-light-rgb: 132, 152, 170;
   --color-secondary-dark-rgb: 64, 79, 92;
-
   /* General colors */
   --color-blue: #0d6efd;
   --color-blue-rgb: 13, 110, 253;
-
   --color-indigo: #6610f2;
   --color-indigo-rgb: 102, 16, 242;
-
   --color-purple: #6f42c1;
   --color-purple-rgb: 111, 66, 193;
-
   --color-pink: #f3268c;
   --color-pink-rgb: 243, 38, 140;
-
   --color-red: #df1529;
   --color-red-rgb: 223, 21, 4;
-
   --color-orange: #fd7e14;
   --color-orange-rgb: 253, 126, 20;
-
   --color-yellow: #ffc107;
   --color-yellow-rgb: 255, 193, 7;
-
   --color-green: #059652;
   --color-green-rgb: 5, 150, 82;
-
   --color-teal: #20c997;
   --color-teal-rgb: 32, 201, 151;
-
   --color-cyan: #0dcaf0;
   --color-cyan-rgb: 13, 202, 240;
-
   --color-white: #ffffff;
   --color-white-rgb: 255, 255, 255;
-
   --color-gray: #6c757d;
   --color-gray-rgb: 108, 117, 125;
-
   --color-black: #000000;
   --color-black-rgb: 0, 0, 0;
 }
-
-.mock-div {
-  padding: 1%;
+.Navbaring {
+  height: 10%;
+  background-color: var(--color-default);
+  color: #fff;
+  padding: 0% 5%;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  border: 2px solid var(--color-default);
-  margin: 1%;
-  border-radius: 0.5rem;
 }
 
-.mock-div > div {
-  height: 100%;
-  width: 100%;
-  flex-direction: column;
-  justify-content: space-evenly;
-  align-items: center;
-  display: flex;
+h1 {
+  margin: 0;
 }
 
-.mock-div > div img {
-  height: 50%;
-  width: 100%;
-}
-
-.mock-div > div h3 {
-  text-align: center;
-  height: 100%;
-  width: 90%;
-  margin-top: 10%;
-  font-size: 2rem;
-}
-
-.mock-div > div button {
-  margin-top: 1%;
-  border: 0;
-  background-color: #222222;
-  color: #ffffff;
-  padding: 2% 10%;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 0.25rem;
-  border: 3px solid transparent;
+.logoutbutton {
+  background-color: #8498aa;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
   cursor: pointer;
+  font-size: 14px;
+  border-radius: 1.5rem;
 }
 
-.mock-div > div button:hover {
-  border: 3px solid rgb(113, 112, 113);
-}
-
-/**Model Box Css  Desktop**/
-
-.mock-model-con {
-  position: fixed;
-  top: 8%;
-  bottom: 8%;
-  left: 10%;
-  right: 10%;
-  background-color: #ffffff;
-  z-index: 1;
-  border-radius: 0.5rem;
-  padding: 2%;
-  text-align: center;
-}
-
-.div-inside {
-  position: relative;
-  width: 30%;
-  height: 5%;
-  margin-left: 35%;
-  display: flex;
-  justify-content: space-around;
-}
-
-.div-inside > input[type="checkbox"] {
-  width: auto;
-  margin: 0%;
-}
-
-.div-inside > p {
-  font-size: 1rem;
-  width: auto;
-  margin-top: -0.5%;
-}
-
-.mock-model-con > button {
-  margin-top: 2%;
-  padding: 0.5% 3%;
-  border: 0;
-  background-color: #222222;
-  border-radius: 0.3rem;
-  color: #ffffff;
-  cursor: pointer;
+.logoutbutton:hover {
+  background-color: #c0392b;
 }
