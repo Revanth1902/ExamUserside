@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const Quizbycustsubject = () => {
   const [allCategory, setAllCategory] = useState(() => {
@@ -283,7 +284,9 @@ const Quizbycustsubject = () => {
           {
             <button
               onClick={() => {
-                if (
+                if (Cookies.get("userToken") === undefined) {
+                  window.location.href = "/StudentLogin";
+                } else if (
                   remainingData.difficultyLevel === "" &&
                   remainingData.type === "" &&
                   remainingData.quizId === "" &&

@@ -3,6 +3,8 @@ import data from "../data.js";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import Cookies from "js-cookie";
+
 const Previousyearpapers = () => {
   const [weeklyNoOffElement, setweeklyNoOffElement] = useState(4);
 
@@ -47,7 +49,11 @@ const Previousyearpapers = () => {
                       <button
                         type="button"
                         class="btn btn-secondary"
-                        onClick={handlePreviousYear}
+                        onClick={() => {
+                          Cookies.get("userToken") === undefined
+                            ? (window.location.href = "/StudentLogin")
+                            : handlePreviousYear();
+                        }}
                       >
                         Start Now
                       </button>
