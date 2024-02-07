@@ -258,8 +258,8 @@ const QuestionsPage = () => {
             theme="light"
           />
           <div className="overlay" onClick={handleContainerClose}>
-            <div className="container" onClick={(e) => e.stopPropagation()}>
-              <form onSubmit={handleSubmit}>
+            <div className="containering" onClick={(e) => e.stopPropagation()}>
+              <form className="form" onSubmit={handleSubmit}>
                 <label htmlFor="type">Select Type:</label>
                 <select
                   id="type"

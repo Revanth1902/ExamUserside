@@ -128,8 +128,11 @@ const CategoryPage = () => {
               theme="light"
             />
             <div className="overlay" onClick={handleContainerClose}>
-              <div className="container" onClick={(e) => e.stopPropagation()}>
-                <form onSubmit={handleSubmit}>
+              <div
+                className="containering"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <form className="form" onSubmit={handleSubmit}>
                   <label htmlFor="name">Name:</label>
                   <input
                     type="text"
