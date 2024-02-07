@@ -141,7 +141,10 @@ const TopicsPage = () => {
               theme="light"
             />
             <div className="overlay" onClick={handleContainerClose}>
-              <div className="container" onClick={(e) => e.stopPropagation()}>
+              <div
+                className="containering"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <form className="form" onSubmit={handleSubmit}>
                   <label htmlFor="name">Name:</label>
                   <input

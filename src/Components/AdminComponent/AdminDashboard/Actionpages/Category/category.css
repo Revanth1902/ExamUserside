@@ -58,20 +58,21 @@
   --color-black: #000000;
   --color-black-rgb: 0, 0, 0;
 }
-
+.toping {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
 .CategoryPage {
-  max-width: 800px;
-  margin: 0 auto;
+  width: 80%;
+  margin: 20px;
 }
 .toping > h2 {
   color: #ffff;
   font-weight: 600;
 }
-.toping {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+
 .addcomponentbutton {
   background-color: #000000;
   color: #fff;
@@ -114,7 +115,18 @@
 #detail {
   margin-bottom: 3%;
 }
-
+.body {
+  flex: 1 1;
+  padding: 20px;
+  background-color: #8498aa;
+  left: 50%;
+  overflow-y: scroll;
+}
+.themain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .containering {
   position: absolute;
   width: 50%;

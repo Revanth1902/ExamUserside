@@ -4,6 +4,7 @@ import Profile from "./profile.js";
 import Changedpassword from "./changepassword.js";
 import Help from "./help.js";
 import Settings from "./settings.js";
+import { TailSpin } from "react-loader-spinner";
 
 import Cookies from "js-cookie";
 
@@ -36,6 +37,7 @@ const MyProflie = () => {
   const [selectedSection, setSelectedSection] = useState(
     userProfileTabs[0].myprofile
   );
+  const [load, setLoad] = useState(false);
 
   const [user, setUser] = useState(() => {
     return [];
@@ -51,6 +53,7 @@ const MyProflie = () => {
   }, []);
 
   const getUser = async () => {
+    setLoad(false);
     try {
       const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${Cookies.get(
         "jwt_userID"
@@ -63,6 +66,7 @@ const MyProflie = () => {
           ...res.data.data,
         });
       }
+      setLoad(true);
     } catch (error) {
       console.error(error);
     }
@@ -110,7 +114,7 @@ const MyProflie = () => {
     );
   };
 
-  return (
+  return load ? (
     <>
       {showLogOutModalBox && <LogOutModalBox />}
       <div className="myprofile">
@@ -202,6 +206,19 @@ const MyProflie = () => {
         </div>
       </div>
     </>
+  ) : (
+    <div
+      style={{
+        height: "100vh",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+      className="myprofile"
+    >
+      <TailSpin color="darkblue" />
+    </div>
   );
 };
 

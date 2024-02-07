@@ -68,9 +68,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="Last-footer">
-        <p>Design By Arun Choudhary</p>
-      </div>
     </>
   );
 };
