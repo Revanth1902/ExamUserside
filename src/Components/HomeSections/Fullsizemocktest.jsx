@@ -169,43 +169,6 @@ const Fullsizemocktest = () => {
           )}
         </div>
       </section>
-      {/* 
-      <section className="mock-container">
-        <h2 className="mock-head pb-4 text-center text-lg-start ">
-          Mock <span className="badge bg-secondary">Test</span>
-        </h2>
-        <div className="mock-div2">
-          {load ? (
-            <Slider {...settings}>
-              {receivedMocks.map((each) => (
-                <div key={each._id} className="mocking">
-                  <img src="./Mock.png" alt="Mock" />
-                  <h3 style={{ textTransform: "capitalize" }}>
-                    {each.testName}
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (Cookies.get("userToken") === undefined) {
-                        window.location.href = "/StudentLogin";
-                      } else if (Cookies.get("userToken") !== undefined) {
-                        setMockId(each._id);
-                        setShowModel(true);
-                      }
-                    }}
-                  >
-                    Take Test
-                  </button>
-                </div>
-              ))}
-            </Slider>
-          ) : (
-            <Slider {...settings2}>
-              <Hourglass colors={["#212529", "#212529"]} />
-            </Slider>
-          )}
-        </div>
-      </section> */}
     </>
   );
 };

@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { ThreeDots } from "react-loader-spinner";
 
 import { useHistory } from "react-router-dom";
 
@@ -15,6 +16,8 @@ const Changepassword = () => {
     newPassword: "",
     confirmPassword: "",
   });
+
+  const [load, setLoad] = useState(false);
 
   const updateUserDetails = async () => {
     if (password.oldPassword === "") {
@@ -27,17 +30,19 @@ const Changepassword = () => {
       toast("Password Don't Match");
     } else if (password.newPassword === password.confirmPassword) {
       try {
-        const url = `https://exam-back-end-2.vercel.app/user/updateDetails/${Cookies.get(
+        setLoad(true);
+        const url = `https://exam-back-end-2.vercel.app/user/updateUserPassword/${Cookies.get(
           "jwt_userID"
         )}`;
 
         const updatedData = {
-          password: password.newPassword,
+          oldPassword: password.oldPassword,
+          newPassword: password.newPassword,
         };
 
-        const res = await axios.put(url, { updatedData });
+        const res = await axios.put(url, updatedData);
 
-        if (res.status === 200) {
+        if (res.status === 201) {
           toast("Updated Password");
           setTimeout(() => {
             Cookies.remove("jwt_userID");
@@ -49,7 +54,8 @@ const Changepassword = () => {
           }, 1000);
         }
       } catch (error) {
-        console.error("Get User By Id", error);
+        toast(error.response.data.message);
+        setLoad(false);
       }
     }
   };
@@ -98,22 +104,31 @@ const Changepassword = () => {
           value={password.confirmPassword}
         />
       </form>
-      <button onClick={updateUserDetails} id="submit-button" type="button">
-        Submit
-      </button>
-      <button
-        onClick={() => {
-          setPassword({
-            oldPassword: "",
-            newPassword: "",
-            confirmPassword: "",
-          });
-        }}
-        id="cancle-button"
-        type="button"
-      >
-        Cancle
-      </button>
+
+      {!load ? (
+        <>
+          <button onClick={updateUserDetails} id="submit-button" type="button">
+            Submit
+          </button>
+          <button
+            onClick={() => {
+              setPassword({
+                oldPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+              });
+            }}
+            id="cancle-button"
+            type="button"
+          >
+            Cancle
+          </button>
+        </>
+      ) : (
+        <button id="submit-button" type="button">
+          <ThreeDots height={30} width={30} color="#ffffff" />
+        </button>
+      )}
     </div>
   );
 };

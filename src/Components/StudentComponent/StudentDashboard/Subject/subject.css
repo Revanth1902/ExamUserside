@@ -1,10 +1,12 @@
 .mockmain {
   height: 60%;
+  width: 100%;
   display: flex;
   overflow-x: auto; /* Enable horizontal scrolling */
   border: 2px solid transparent;
   padding: 0%;
   overflow-y: hidden;
+  position: absolute;
 }
 
 .mockmain::-webkit-scrollbar {

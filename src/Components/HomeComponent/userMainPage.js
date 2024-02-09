@@ -6,6 +6,8 @@ import Help from "./help.js";
 import Settings from "./settings.js";
 import { TailSpin } from "react-loader-spinner";
 
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min.js";
+
 import Cookies from "js-cookie";
 
 import axios from "axios";
@@ -33,6 +35,8 @@ const userProfileTabs = [
 ];
 
 const MyProflie = () => {
+  const history = useHistory();
+
   const [showLogOutModalBox, setShowLogOutModalBox] = useState(false);
   const [selectedSection, setSelectedSection] = useState(
     userProfileTabs[0].myprofile
@@ -119,6 +123,20 @@ const MyProflie = () => {
       {showLogOutModalBox && <LogOutModalBox />}
       <div className="myprofile">
         <div className="side-bar-userProfile">
+          <button
+            onClick={() => {
+              history.push("/");
+            }}
+            type="button"
+            style={{
+              fontSize: "2rem",
+              border: 0,
+              background: "transparent",
+              marginBottom: "1rem",
+            }}
+          >
+            ❮
+          </button>
           <div
             className="profilepic"
             style={{
