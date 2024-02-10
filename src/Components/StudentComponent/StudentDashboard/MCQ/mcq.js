@@ -3,7 +3,7 @@ import "./mcq.css";
 
 import Cookies from "js-cookie";
 
-import { PieChart, Pie, Cell, Label, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 import { Hourglass } from "react-loader-spinner";
 
@@ -16,6 +16,7 @@ import axios from "axios";
 
 const MCQ = () => {
   const params = useParams();
+
   const [currentQuestion, setCurrent] = useState("");
   const [mcqquestions, setQuestions] = useState(() => {
     return [];
@@ -26,6 +27,7 @@ const MCQ = () => {
 
   const [submitted, setSubmitted] = useState("");
   const [showResults, setResults] = useState(false);
+  const [showAns, setshowAns] = useState(false);
   const [totalCount, setCount] = useState(0);
 
   const [timer, setTimer] = useState({
@@ -150,7 +152,6 @@ const MCQ = () => {
   };
 
   const Results = () => {
-    console.log(params);
     const [data, setData] = useState([
       { name: "Correct", value: 0 },
       { name: "Wrong", value: 0 },
@@ -262,7 +263,18 @@ const MCQ = () => {
             </button>
             <button
               onClick={() => {
-                history.push("/leaderboard");
+                setResults(false);
+                setshowAns(true);
+              }}
+              className="leaderboard"
+              style={{ bottom: "22.5%" }}
+              type="button"
+            >
+              Check Answers
+            </button>
+            <button
+              onClick={() => {
+                history.push(`/leaderboard/${params.id}`);
               }}
               className="leaderboard"
               type="button"
@@ -271,6 +283,15 @@ const MCQ = () => {
             </button>
           </div>
         </div>
+      </>
+    );
+  };
+
+  const Ans = () => {
+    return (
+      <>
+        <div className="submitBackground"></div>
+        <div className="results">Answers</div>
       </>
     );
   };
@@ -340,7 +361,7 @@ const MCQ = () => {
   return (
     <>
       {submitted !== "" && <SubmitExam />}
-      {showResults === true && <Results />}
+      {showResults === true ? <Results /> : showAns && <Ans />}
       <div id="scrollToStart"></div>
       {!load ? (
         <div className="mcq-con">
@@ -349,7 +370,22 @@ const MCQ = () => {
             Timer {timer.minutes} : {timer.seconds}
           </h4>
           {mcqquestions.length > 0 && (
-            <div className="questions-box">
+            <div style={{ overflow: "hidden" }} className="questions-box">
+              {!load2 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    height: "110%",
+                    width: "110%",
+                    top: "-5%",
+                    left: "-5%",
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "#22222260",
+                    zIndex: 5,
+                  }}
+                ></div>
+              )}
               {mcqquestions.map((each) => (
                 <div key={each._id}>
                   <h3>Q. {each.question}</h3>

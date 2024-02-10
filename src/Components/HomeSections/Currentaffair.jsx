@@ -155,39 +155,72 @@ const Currentaffair = () => {
             zIndex: 1,
           }}
         ></div>
-        {receivedMocks.map(
-          (each) =>
-            each._id === mockId && (
-              <div className="mock-model-con">
-                <h1 style={{ textTransform: "capitalize" }}>{each.testName}</h1>
-                <p>{each.description}</p>
-                <h5>Total Marks : {sortedQuestion[mockId].length * 2}</h5>
-                <div className="div-inside">
-                  <input
-                    onChange={() => {
-                      setTerms(!acceptTerms);
+        {sortedQuestion[mockId].length * 2 === 0 ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            className="mock-model-con"
+          >
+            <h1>No Question's In This Week</h1>
+            <button
+              type="button"
+              onClick={() => {
+                setShowModel(false);
+              }}
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          receivedMocks.map(
+            (each) =>
+              each._id === mockId && (
+                <div className="mock-model-con">
+                  <h1 style={{ textTransform: "capitalize" }}>
+                    {each.testName}
+                  </h1>
+                  <p>{each.description}</p>
+                  <h5>Total Marks : {sortedQuestion[mockId].length * 2}</h5>
+                  <div className="div-inside">
+                    <input
+                      onChange={() => {
+                        setTerms(!acceptTerms);
+                      }}
+                      checked={acceptTerms}
+                      type="checkbox"
+                    />
+                    <p>Accept The Terms and Condition</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (acceptTerms === false) {
+                        toast("Please Accept Terms and conditions");
+                      } else {
+                        window.location.href = `/mcqcurrentAffairs?data=${encodeURIComponent(
+                          JSON.stringify(sortedQuestion[mockId])
+                        )}`;
+                      }
                     }}
-                    checked={acceptTerms}
-                    type="checkbox"
-                  />
-                  <p>Accept The Terms and Condition</p>
+                    button="button"
+                  >
+                    Go To Exam
+                  </button>
+                  <button
+                    style={{ marginLeft: "5%" }}
+                    type="button"
+                    onClick={() => {
+                      setShowModel(false);
+                    }}
+                  >
+                    Close
+                  </button>
                 </div>
-                <button
-                  onClick={() => {
-                    if (acceptTerms === false) {
-                      toast("Please Accept Terms and conditions");
-                    } else {
-                      window.location.href = `/mcqcurrentAffairs?data=${encodeURIComponent(
-                        JSON.stringify(sortedQuestion[mockId])
-                      )}`;
-                    }
-                  }}
-                  button="button"
-                >
-                  Go To Exam
-                </button>
-              </div>
-            )
+              )
+          )
         )}
       </>
     );

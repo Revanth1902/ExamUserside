@@ -6,7 +6,10 @@ import Help from "./help.js";
 import Settings from "./settings.js";
 import { TailSpin } from "react-loader-spinner";
 
-import { useHistory } from "react-router-dom/cjs/react-router-dom.min.js";
+import {
+  useHistory,
+  useParams,
+} from "react-router-dom/cjs/react-router-dom.min.js";
 
 import Cookies from "js-cookie";
 
@@ -35,11 +38,18 @@ const userProfileTabs = [
 ];
 
 const MyProflie = () => {
+  const params = useParams();
   const history = useHistory();
 
   const [showLogOutModalBox, setShowLogOutModalBox] = useState(false);
   const [selectedSection, setSelectedSection] = useState(
-    userProfileTabs[0].myprofile
+    params.name === "myprofile"
+      ? userProfileTabs[0].myprofile
+      : params.name === "changepassword"
+      ? userProfileTabs[0].changepassword
+      : params.name === "help"
+      ? userProfileTabs[0].help
+      : userProfileTabs[0].settings
   );
   const [load, setLoad] = useState(false);
 

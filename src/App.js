@@ -62,8 +62,8 @@ function App() {
             path="/StudentDashboard"
             component={StudentDashboard}
           ></Route>
-          <Route exact path="/myprofile" component={MyProfile} />
-          <Route exact path="/leaderboard" component={LeaderBoard} />
+          <Route exact path="/myprofile/:name" component={MyProfile} />
+          <Route exact path="/leaderboard/:mockid" component={LeaderBoard} />
           <Route exact path="/mockmcq/:time/:id" component={MCQ} />
           <Route exact path="/mcqcustom" component={MCQCustom} />
           <Route

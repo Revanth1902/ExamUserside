@@ -7,6 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { ThreeDots } from "react-loader-spinner";
 
 const indianStates = [
   "Andaman and Nicobar Islands",
@@ -55,6 +56,7 @@ const Profile = () => {
   const [editDetails, seteditDetails] = useState(() => {
     return {};
   });
+  const [load, setLoad] = useState(false);
 
   const history = useHistory();
 
@@ -127,6 +129,7 @@ const Profile = () => {
       ) {
         toast("Enter Valid Mobile Numer");
       } else {
+        setLoad(true);
         try {
           const url = `https://exam-back-end-2.vercel.app/user/updateDetails/${Cookies.get(
             "jwt_userID"
@@ -151,15 +154,9 @@ const Profile = () => {
           const res = await axios.put(url, updatedData);
 
           if (res.status === 201) {
+            setLoad(false);
+            setProfile(!editProfile);
             toast("Updated Details");
-            setTimeout(() => {
-              Cookies.remove("jwt_userID");
-              Cookies.remove("userToken");
-              Cookies.remove("jwt_firstName");
-              Cookies.remove("jwt_lastName");
-
-              history.push("/StudentLogin");
-            }, 1000);
           }
         } catch (error) {
           console.error("Get User By Id", error);
@@ -179,8 +176,6 @@ const Profile = () => {
 
   // console.log(editDetails);
   // console.log(userDetails);
-
-  console.log(userDetails.mobileNumber);
 
   return (
     <>
@@ -377,14 +372,20 @@ const Profile = () => {
               <input name="image" id="avatar" type="file" />
             </div> */}
           </form>
-          <button
-            onClick={() => {
-              updateUserDetails();
-            }}
-            type="button"
-          >
-            Done
-          </button>
+          {!load ? (
+            <button
+              onClick={() => {
+                updateUserDetails();
+              }}
+              type="button"
+            >
+              Done
+            </button>
+          ) : (
+            <button type="button">
+              <ThreeDots height={25} width={35} color="#ffffff" />
+            </button>
+          )}
         </div>
       )}
     </>

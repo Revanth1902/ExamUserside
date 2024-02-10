@@ -27,12 +27,14 @@ const MCQCurrentAffairs = () => {
   });
   const [submitted, setSubmitted] = useState("");
   const [showResults, setResults] = useState(false);
+  const [showAns, setshowAns] = useState(false);
   const [totalCount, setCount] = useState(0);
 
   const [totalQuestions, setTotalQuestion] = useState(0);
   const [load, setLoad] = useState(true);
   const [load2, setLoad2] = useState(false);
   const [page, setPage] = useState(1);
+
   const history = useHistory();
 
   useEffect(() => {
@@ -85,27 +87,27 @@ const MCQCurrentAffairs = () => {
         value: totalCount - allQuestion.length,
       });
       setData(updatedData);
-      addingResultsToLeaderBoard(data[0].value * 2 - data[0].value * 0.5);
+      // addingResultsToLeaderBoard(data[0].value * 2 - data[0].value * 0.5);
     }, []);
-    const addingResultsToLeaderBoard = async (marks) => {
-      try {
-        const url = `https://exam-back-end.vercel.appadmin/createLeaderBoard`;
-        const reqConfigure = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            mockId: params.id,
-            userId: Cookies.get("jwt_userID"),
-            totalMark: marks,
-          }),
-        };
-        await fetch(url, reqConfigure);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    // const addingResultsToLeaderBoard = async (marks) => {
+    //   try {
+    //     const url = `https://exam-back-end.vercel.appadmin/createLeaderBoard`;
+    //     const reqConfigure = {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({
+    //         mockId: params.id,
+    //         userId: Cookies.get("jwt_userID"),
+    //         totalMark: marks,
+    //       }),
+    //     };
+    //     await fetch(url, reqConfigure);
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // };
     const COLORS = ["#00C49F", "#cc0000", "#FFBB28", "#598BAF"];
     return (
       <>
@@ -163,11 +165,31 @@ const MCQCurrentAffairs = () => {
             >
               Go To Home Page
             </button>
+            <button
+              onClick={() => {
+                setResults(false);
+                setshowAns(true);
+              }}
+              className="leaderboard"
+              type="button"
+            >
+              Check Answers
+            </button>
           </div>
         </div>
       </>
     );
   };
+
+  const Ans = () => {
+    return (
+      <>
+        <div className="submitBackground"></div>
+        <div className="results">Answers</div>
+      </>
+    );
+  };
+
   const SubmitExam = () => {
     return (
       <>
@@ -216,17 +238,33 @@ const MCQCurrentAffairs = () => {
       match === true ? changedArr : [...changedArr, { ...ea, answered: ans }]
     );
   };
+
   return (
     <>
       {submitted !== "" && <SubmitExam />}
-      {showResults === true && <Results />}
+      {showResults === true ? <Results /> : showAns && <Ans />}
       <div id="scrollToStart"></div>
       {!load ? (
         <div className="mcq-con">
           <h1 style={{ marginBottom: "5" }}>Current Affairs</h1>
 
           {mcqquestions.length > 0 && (
-            <div className="questions-box">
+            <div style={{ overflow: "hidden" }} className="questions-box">
+              {!load2 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    height: "110%",
+                    width: "110%",
+                    top: "-5%",
+                    left: "-5%",
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "#22222260",
+                    zIndex: 5,
+                  }}
+                ></div>
+              )}
               {mcqquestions.map((each) => (
                 <div key={each._id}>
                   <h3>Q. {each.question}</h3>

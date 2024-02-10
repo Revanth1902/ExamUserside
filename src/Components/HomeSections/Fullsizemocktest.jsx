@@ -100,6 +100,15 @@ const Fullsizemocktest = () => {
                 >
                   Go To Exam
                 </button>
+                <button
+                  style={{ marginLeft: "5%" }}
+                  type="button"
+                  onClick={() => {
+                    setShowModel(false);
+                  }}
+                >
+                  Close
+                </button>
               </div>
             )
         )}

@@ -134,27 +134,6 @@ function StudentDashboard() {
               id="navbarNav"
             >
               <ul className="navbar-nav ms-auto nav_ul align-items-center">
-                {/* <li className="nav-item">
-                  <Link className="nav-link" to="/about">
-                    About
-                  </Link>
-                </li> */}
-                {/* <li className="nav-item">
-                  <Link className="nav-link" to="/services">
-                    Services
-                  </Link>
-                </li> */}
-                {/* <li className="nav-item">
-                  <Link className="nav-link" to="/document">
-                    Document
-                  </Link>
-                </li> */}
-                {/* <li className="nav-item">
-                  <Link className="nav-link" to="/contact">
-                    Contact Us
-                  </Link>
-                </li> */}
-
                 <div className="d-flex flex-wrap justify-content-around my-3 my-lg-0 ">
                   <Link exact to="/StudentDashboard">
                     <button type="button" className="btn1 mx-2 rounded-pill">

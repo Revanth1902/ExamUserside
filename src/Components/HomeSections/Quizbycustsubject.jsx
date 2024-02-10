@@ -142,6 +142,18 @@ const Quizbycustsubject = () => {
                 ))}
               </select>
             </div>
+            {selectedCategroy === "" && (
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: ".8rem",
+                  color: "red",
+                  marginBottom: "-2%",
+                }}
+              >
+                * required
+              </p>
+            )}
             <div>
               <label htmlFor="topics">Select Topic : &nbsp;</label>
               <select
@@ -163,7 +175,7 @@ const Quizbycustsubject = () => {
                   ))}
               </select>
             </div>
-            {selectedCategroy === "" && (
+            {selectedCategroy === "" ? (
               <p
                 style={{
                   margin: 0,
@@ -174,6 +186,19 @@ const Quizbycustsubject = () => {
               >
                 * select category to get topics
               </p>
+            ) : (
+              selectedTopic === "" && (
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: ".8rem",
+                    color: "red",
+                    marginBottom: "-2%",
+                  }}
+                >
+                  * required
+                </p>
+              )
             )}
             <div>
               <label htmlFor="topics">Select Sub Topic : &nbsp;</label>
@@ -235,72 +260,20 @@ const Quizbycustsubject = () => {
                 </option>
               </select>
             </div>
-            <div>
-              <label htmlFor="category">Select Type : &nbsp;</label>
-              <select
-                onChange={(e) => {
-                  setData({
-                    ...remainingData,
-                    type: e.target.value,
-                  });
-                }}
-              >
-                <option value="">Select</option>
-                <option value="currentAffair" className="currentAffair">
-                  Current Affair
-                </option>
-                <option value="previousYear" className="previousYear">
-                  Previous Year
-                </option>
-                <option value="misc" className="misc">
-                  Misc
-                </option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="category">Select Quiz Name : &nbsp;</label>
-              <select
-                onChange={(e) => {
-                  setData({
-                    ...remainingData,
-                    quizId: e.target.value,
-                  });
-                }}
-                id="category"
-              >
-                <option>Select</option>
-                {allQuizName.map((each) => (
-                  <option
-                    value={each._id}
-                    style={{ textTransform: "capitalize" }}
-                    id={each._id}
-                  >
-                    {each.name}
-                  </option>
-                ))}
-              </select>
-            </div>
           </form>
           {
             <button
               onClick={() => {
                 if (Cookies.get("userToken") === undefined) {
                   window.location.href = "/StudentLogin";
-                } else if (
-                  remainingData.difficultyLevel === "" &&
-                  remainingData.type === "" &&
-                  remainingData.quizId === "" &&
-                  selectedCategroy === "" &&
-                  selectedTopic === "" &&
-                  selectedSubTopic === ""
-                ) {
-                  toast("Select atleast one option");
+                } else if (selectedCategroy === "") {
+                  toast("Please Select Category");
+                } else if (selectedTopic === "") {
+                  toast("Please Select Topic");
                 } else {
                   window.location.href = `/mcqcustom?data=${encodeURIComponent(
                     JSON.stringify({
                       difficultyLevel: remainingData.difficultyLevel,
-                      type: remainingData.type,
-                      quizId: remainingData.quizId,
                       categoryId: selectedCategroy,
                       topicId: selectedTopic,
                       subtopicId: selectedSubTopic,
