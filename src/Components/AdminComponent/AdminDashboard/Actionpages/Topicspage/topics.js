@@ -28,6 +28,7 @@ const TopicsPage = () => {
       .then((data) => {
         setCategories(data.data);
       })
+
       .catch((error) => {
         console.error("Error fetching categories:", error);
       });
@@ -90,11 +91,7 @@ const TopicsPage = () => {
 
         toast.success("Topic added successfully");
 
-        setTopicsData((prevData) => [...prevData, data.topic]);
-
-        setTimeout(() => {
-          handleContainerClose();
-        }, 2000);
+        handleContainerClose();
       })
       .catch((error) => {
         console.error("Error adding topic:", error);
@@ -102,20 +99,27 @@ const TopicsPage = () => {
         toast.error("Error adding topic. Please try again.");
       });
   };
+  console.log("The categories :", categories);
 
   return (
     <div className="themain">
       <div className="TopicsPage">
-        <div className="toping">
-          <h2>Topics Page</h2>
-          <button
-            type="button"
-            className="addcomponentbutton"
-            onClick={handleAddComponent}
-          >
-            Add Topic
-          </button>
-        </div>
+        {loading ? (
+          <div className="loading-container">
+            <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
+          </div>
+        ) : (
+          <div className="toping">
+            <h2>Topics Page</h2>
+            <button
+              type="button"
+              className="addcomponentbutton"
+              onClick={handleAddComponent}
+            >
+              Add Topic
+            </button>
+          </div>
+        )}
         {showContainer && (
           <>
             <div
@@ -176,11 +180,15 @@ const TopicsPage = () => {
                   >
                     <option value="">Select a category</option>
                     {categories.map((category) => (
-                      <option key={category._id} value={category._id}>
-                        {capitalizeFirstLetter(category.name)}
+                      <option
+                        key={category?._id || ""}
+                        value={category?._id || ""}
+                      >
+                        {category && capitalizeFirstLetter(category.name)}
                       </option>
                     ))}
                   </select>
+
                   <button type="submit" className="submitbutton">
                     Add Topic
                   </button>

@@ -138,6 +138,11 @@ const QuizPage = () => {
         theme="light"
       />
       <div className="QuizPage">
+      {loading ? (
+        <div className="loading-container">
+          <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
+        </div>
+      ) : (
         <div className="toping">
           <h2>Quiz Page</h2>
           <button
@@ -148,6 +153,7 @@ const QuizPage = () => {
             Add Quiz
           </button>
         </div>
+      )}
         {showContainer && (
           <>
             <div
@@ -166,7 +172,9 @@ const QuizPage = () => {
                 className="containering"
                 onClick={(e) => e.stopPropagation()}
               >
+
                 <form className="form" onSubmit={handleSubmit}>
+
                   <label htmlFor="name">Quiz Name:</label>
                   <input
                     type="text"

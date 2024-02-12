@@ -115,18 +115,7 @@
 #detail {
   margin-bottom: 3%;
 }
-.body {
-  flex: 1 1;
-  padding: 20px;
-  background-color: #8498aa;
-  left: 50%;
-  overflow-y: scroll;
-}
-.themain {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+
 .containering {
   position: absolute;
   width: 50%;

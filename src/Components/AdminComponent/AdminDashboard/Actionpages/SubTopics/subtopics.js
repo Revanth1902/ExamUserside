@@ -104,16 +104,22 @@ const SubtopicsPage = () => {
   return (
     <div className="themain">
       <div className="SubtopicsPage">
-        <div className="toping">
-          <h2>Subtopics Page</h2>
-          <button
-            type="button"
-            className="addcomponentbutton"
-            onClick={handleAddComponent}
-          >
-            Add Subtopic
-          </button>
-        </div>
+        {loading ? (
+          <div className="loading-container">
+            <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
+          </div>
+        ) : (
+          <div className="toping">
+            <h2>Subtopics Page</h2>
+            <button
+              type="button"
+              className="addcomponentbutton"
+              onClick={handleAddComponent}
+            >
+              Add Subtopic
+            </button>
+          </div>
+        )}
         {showContainer && (
           <>
             <div

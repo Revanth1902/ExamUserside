@@ -77,11 +77,9 @@ const CategoryPage = () => {
 
         toast.success("Category added successfully");
 
-        setCategoryData((prevData) => [...prevData, data.category]);
+        // setCategoryData((prevData) => [...prevData, data.category])
 
-        setTimeout(() => {
-          handleContainerClose();
-        }, 2000);
+        handleContainerClose();
       })
       .catch((error) => {
         console.error("Error adding category:", error);
@@ -93,16 +91,22 @@ const CategoryPage = () => {
   return (
     <div className="themain">
       <div className="CategoryPage">
-        <div className="toping">
-          <h2>Category Page</h2>
-          <button
-            type="button"
-            className="addcomponentbutton"
-            onClick={handleAddComponent}
-          >
-            Add Category
-          </button>
-        </div>
+        {loading ? (
+          <div className="loading-container">
+            <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
+          </div>
+        ) : (
+          <div className="toping">
+            <h2>Category Page</h2>
+            <button
+              type="button"
+              className="addcomponentbutton"
+              onClick={handleAddComponent}
+            >
+              Add Category
+            </button>
+          </div>
+        )}
         {showContainer && (
           <>
             <div

@@ -127,16 +127,22 @@ const MockPage = () => {
 
   return (
     <div className="mock-page-container">
-      <div className="toping">
-        <h2>Mock Tests Page</h2>
-        <button
-          type="button"
-          className="addcomponentbutton"
-          onClick={handleAddComponent}
-        >
-          Add Mock Test
-        </button>
-      </div>
+      {loading ? (
+        <div className="loading-container">
+          <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
+        </div>
+      ) : (
+        <div className="toping">
+          <h2>Mock Tests Page</h2>
+          <button
+            type="button"
+            className="addcomponentbutton"
+            onClick={handleAddComponent}
+          >
+            Add Mock Test
+          </button>
+        </div>
+      )}
       {showContainer && (
         <>
           <div
