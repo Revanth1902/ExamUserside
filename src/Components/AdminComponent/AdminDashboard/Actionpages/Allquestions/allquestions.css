@@ -33,3 +33,100 @@
 .question-answer {
   margin-bottom: 5%;
 }
+
+/* Add this CSS to your existing stylesheet or create a new one */
+
+.update-details-container {
+  position: absolute;
+  width: 50%;
+  top: 20%;
+  bottom: 20%;
+  right: 30%;
+  left: 30%;
+  background-color: #ffff;
+  color: black;
+  overflow-y: overlay;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  border-radius: 1.2rem;
+}
+
+.update-details-form {
+  margin: 5%;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.update-submit-button {
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px;
+  cursor: pointer;
+  border: none;
+}
+
+.update-cancel-button {
+  background-color: #f44336;
+  color: #fff;
+  padding: 10px;
+  cursor: pointer;
+  border: none;
+  margin-top: 10px;
+}
+.buttonsspace {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+.pagination {
+  bottom: 5%;
+  width: 100%;
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination button {
+  cursor: pointer;
+  padding: 8px 12px;
+  margin: 0 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  color: #333;
+  transition: background-color 0.3s;
+}
+
+.pagination button:hover {
+  background-color: #ddd;
+}
+
+.pagination button.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Optional: Add styles for previous and next buttons */
+.pagination .prev-next {
+  display: flex;
+  align-items: center;
+}
+
+.pagination .prev-next button {
+  margin: 0;
+}
+
+.pagination .prev-next button:first-child {
+  margin-right: auto;
+}
+
+.pagination .prev-next button:last-child {
+  margin-left: auto;
+}
