@@ -413,6 +413,7 @@ const MCQCustom = () => {
                         }}
                         className="next"
                         type="button"
+                        style={{ bottom: "0.2%" }}
                       >
                         Submit Exam
                       </button>
