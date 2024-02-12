@@ -172,7 +172,9 @@ const QuizPage = () => {
                 className="containering"
                 onClick={(e) => e.stopPropagation()}
               >
-                <form className="form " onSubmit={handleSubmit}>
+
+                <form className="form" onSubmit={handleSubmit}>
+
                   <label htmlFor="name">Quiz Name:</label>
                   <input
                     type="text"

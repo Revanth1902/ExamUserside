@@ -3,7 +3,9 @@ import Cookies from "js-cookie";
 
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import Navbar from "./navbar";
+
+import Navba from "./navbar";
+
 import Sidebar from "./Sidebar";
 
 //all importing from Actionpages
@@ -53,7 +55,8 @@ const Dashboard = () => {
 
   return (
     <div className="maining">
-      <Navbar />
+      <Navba />
+
       <div className="thebody">
         <Sidebar
           selected={selectedCategory}

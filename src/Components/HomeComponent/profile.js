@@ -1,10 +1,52 @@
-import { useEffect, useState } from "react";
+import { isValidElement, useEffect, useState } from "react";
 import "./profile.css";
 import axios from "axios";
 import Cookies from "js-cookie";
 
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { ThreeDots } from "react-loader-spinner";
+
+const indianStates = [
+  "Andaman and Nicobar Islands",
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chandigarh",
+  "Chhattisgarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jammu and Kashmir",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Ladakh",
+  "Lakshadweep",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Puducherry",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+];
 
 const Profile = () => {
   const [editProfile, setProfile] = useState(false);
@@ -14,6 +56,9 @@ const Profile = () => {
   const [editDetails, seteditDetails] = useState(() => {
     return {};
   });
+  const [load, setLoad] = useState(false);
+
+  const history = useHistory();
 
   useEffect(() => {
     getUserDetails();
@@ -64,38 +109,58 @@ const Profile = () => {
       userDetails.email === editDetails.email &&
       userDetails.mobileNumber === editDetails.mobileNumber
     ) {
-      setProfile(false);
+      setProfile(!editProfile);
       toast("No Changes Made");
     } else {
-      try {
-        const url = `https://exam-back-end-2.vercel.app/user/updateDetails/${Cookies.get(
-          "jwt_userID"
-        )}`;
+      if (userDetails.firstName === "") {
+        toast("Enter First Name");
+      } else if (userDetails.lastName === "") {
+        toast("Enter Last Name");
+      } else if (userDetails.state === "") {
+        toast("Select State");
+      } else if (
+        userDetails.email === "" ||
+        !userDetails.email.endsWith("@gmail.com")
+      ) {
+        toast("Enter Valid Email");
+      } else if (
+        userDetails.mobileNumber === "" ||
+        `${userDetails.mobileNumber}`.length !== 10
+      ) {
+        toast("Enter Valid Mobile Numer");
+      } else {
+        setLoad(true);
+        try {
+          const url = `https://exam-back-end-2.vercel.app/user/updateDetails/${Cookies.get(
+            "jwt_userID"
+          )}`;
 
-        const updatedData = {
-          firstName: userDetails.firstName,
-          lastName: userDetails.lastName,
-          dob: userDetails.dob,
-          state: userDetails.state,
-          gender: userDetails.gender,
-        };
+          const updatedData = {
+            firstName: userDetails.firstName,
+            lastName: userDetails.lastName,
+            dob: userDetails.dob,
+            state: userDetails.state,
+            gender: userDetails.gender,
+          };
 
-        if (userDetails.mobileNumber !== editDetails.mobileNumber) {
-          updatedData.mobileNumber = userDetails.mobileNumber;
+          if (userDetails.mobileNumber !== editDetails.mobileNumber) {
+            updatedData.mobileNumber = userDetails.mobileNumber;
+          }
+
+          if (userDetails.email !== editDetails.email) {
+            updatedData.email = userDetails.email;
+          }
+
+          const res = await axios.put(url, updatedData);
+
+          if (res.status === 201) {
+            setLoad(false);
+            setProfile(!editProfile);
+            toast("Updated Details");
+          }
+        } catch (error) {
+          console.error("Get User By Id", error);
         }
-
-        if (userDetails.email !== editDetails.email) {
-          updatedData.email = userDetails.email;
-        }
-
-        const res = await axios.put(url, { updatedData });
-
-        if (res.status === 200) {
-          toast("Updated Details");
-          getUserDetails();
-        }
-      } catch (error) {
-        console.error("Get User By Id", error);
       }
     }
   };
@@ -103,9 +168,14 @@ const Profile = () => {
     if (e.target.name === "image") {
       setDetails({ ...userDetails, [e.target.name]: e.target.files[0] });
     } else {
+      if (e.target.name === "firstName") {
+      }
       setDetails({ ...userDetails, [e.target.name]: e.target.value });
     }
   };
+
+  // console.log(editDetails);
+  // console.log(userDetails);
 
   return (
     <>
@@ -180,16 +250,28 @@ const Profile = () => {
                 name="firstName"
                 type="text"
                 value={userDetails.firstName}
-                onChange={changeUserDetails}
+                onChange={(e) => {
+                  const regex = /^[a-zA-Z\s]*$/; // Regular expression to allow only letters and spaces
+                  const yesorno = regex.test(e.target.value);
+                  if (yesorno) {
+                    changeUserDetails(e);
+                  }
+                }}
               />
 
-              <label htmlFor="firstName">Last Name</label>
+              <label htmlFor="lastName">Last Name</label>
               <input
                 id="lastName"
                 name="lastName"
                 type="text"
                 value={userDetails.lastName}
-                onChange={changeUserDetails}
+                onChange={(e) => {
+                  const regex = /^[a-zA-Z\s]*$/; // Regular expression to allow only letters and spaces
+                  const yesorno = regex.test(e.target.value);
+                  if (yesorno) {
+                    changeUserDetails(e);
+                  }
+                }}
               />
             </div>
             <div>
@@ -227,13 +309,23 @@ const Profile = () => {
               />
 
               <label htmlFor="state">State</label>
-              <input
+              <select
+                style={{
+                  fontSize: ".9rem",
+                  padding: ".2% 2%",
+                  width: "11%",
+                }}
                 name="state"
                 id="state"
                 type="text"
                 value={userDetails.state}
                 onChange={changeUserDetails}
-              />
+              >
+                <option value="">Select</option>
+                {indianStates.map((each) => (
+                  <option value={each}>{each}</option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -245,29 +337,55 @@ const Profile = () => {
                 value={userDetails.email}
                 onChange={changeUserDetails}
               />
+              {!userDetails.email.endsWith("@gmail.com") && (
+                <p
+                  style={{ color: "red", fontSize: ".7rem", marginTop: ".5%" }}
+                >
+                  *Please Enter A Valid Email
+                </p>
+              )}
               <label htmlFor="mobileNumber">Mobile Number</label>
               <input
                 name="mobileNumber"
                 id="mobileNumber"
                 type="number"
                 value={userDetails.mobileNumber}
-                onChange={changeUserDetails}
+                onChange={(e) => {
+                  const regex = /^[a-zA-Z0-9\s]*$/; // Regular expression to allow alphanumeric characters and spaces only
+                  const isValidInput = regex.test(e.target.value);
+
+                  if (isValidInput) {
+                    changeUserDetails(e);
+                  }
+                }}
               />
+              {`${userDetails.mobileNumber}`.length !== 10 && (
+                <p
+                  style={{ color: "red", fontSize: ".7rem", marginTop: ".5%" }}
+                >
+                  *Please Enter A Valid Number
+                </p>
+              )}
             </div>
-            <div>
+            {/* <div>
               <label htmlFor="avatar">Avatar</label>
               <input name="image" id="avatar" type="file" />
-            </div>
+            </div> */}
           </form>
-          <button
-            onClick={() => {
-              setProfile(!editProfile);
-              updateUserDetails();
-            }}
-            type="button"
-          >
-            Done
-          </button>
+          {!load ? (
+            <button
+              onClick={() => {
+                updateUserDetails();
+              }}
+              type="button"
+            >
+              Done
+            </button>
+          ) : (
+            <button type="button">
+              <ThreeDots height={25} width={35} color="#ffffff" />
+            </button>
+          )}
         </div>
       )}
     </>

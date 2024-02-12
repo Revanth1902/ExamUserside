@@ -78,7 +78,7 @@ const Fullsizemocktest = () => {
                 <h5>Total Marks : {each.totalMarks}</h5>
 
                 <h5>Exam Time : {each.examTiming} Mins</h5>
-                <div>
+                <div className="div-inside">
                   <input
                     onChange={() => {
                       setTerms(!acceptTerms);
@@ -99,6 +99,15 @@ const Fullsizemocktest = () => {
                   button="button"
                 >
                   Go To Exam
+                </button>
+                <button
+                  style={{ marginLeft: "5%" }}
+                  type="button"
+                  onClick={() => {
+                    setShowModel(false);
+                  }}
+                >
+                  Close
                 </button>
               </div>
             )
@@ -160,7 +169,8 @@ const Fullsizemocktest = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                marginLeft: "40%",
+                marginLeft: "45%",
+                marginTop: "5%",
               }}
             >
               <Hourglass colors={["#212529", "#212529"]} />
@@ -168,43 +178,6 @@ const Fullsizemocktest = () => {
           )}
         </div>
       </section>
-      {/* 
-      <section className="mock-container">
-        <h2 className="mock-head pb-4 text-center text-lg-start ">
-          Mock <span className="badge bg-secondary">Test</span>
-        </h2>
-        <div className="mock-div2">
-          {load ? (
-            <Slider {...settings}>
-              {receivedMocks.map((each) => (
-                <div key={each._id} className="mocking">
-                  <img src="./Mock.png" alt="Mock" />
-                  <h3 style={{ textTransform: "capitalize" }}>
-                    {each.testName}
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (Cookies.get("userToken") === undefined) {
-                        window.location.href = "/StudentLogin";
-                      } else if (Cookies.get("userToken") !== undefined) {
-                        setMockId(each._id);
-                        setShowModel(true);
-                      }
-                    }}
-                  >
-                    Take Test
-                  </button>
-                </div>
-              ))}
-            </Slider>
-          ) : (
-            <Slider {...settings2}>
-              <Hourglass colors={["#212529", "#212529"]} />
-            </Slider>
-          )}
-        </div>
-      </section> */}
     </>
   );
 };

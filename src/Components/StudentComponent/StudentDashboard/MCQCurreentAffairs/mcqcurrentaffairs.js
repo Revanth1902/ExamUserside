@@ -5,7 +5,6 @@ import Cookies from "js-cookie";
 import { PieChart, Pie, Cell, Label, ResponsiveContainer } from "recharts";
 
 import { Hourglass } from "react-loader-spinner";
-import { v4 as uuidV4 } from "uuid";
 
 import {
   useParams,
@@ -13,11 +12,9 @@ import {
   useLocation,
 } from "react-router-dom/cjs/react-router-dom.min";
 
-import axios from "axios";
+import "./mcqcurrentaffairs.css";
 
-import "./mcqCustom.css";
-
-const MCQCustom = () => {
+const MCQCurrentAffairs = () => {
   const params = useParams();
   const location = useLocation();
 
@@ -37,6 +34,7 @@ const MCQCustom = () => {
   const [load, setLoad] = useState(true);
   const [load2, setLoad2] = useState(false);
   const [page, setPage] = useState(1);
+
   const history = useHistory();
 
   useEffect(() => {
@@ -51,74 +49,21 @@ const MCQCustom = () => {
     const objectString = queryParams.get("data");
     if (objectString) {
       const myObject = JSON.parse(decodeURIComponent(objectString));
-      getCustomQuestions(myObject);
-    }
-  }, [location.search, page]);
-
-  const getCustomQuestions = async (myObject) => {
-    setLoad2(false);
-    try {
-      const url = `https://exam-back-end.vercel.app/admin/getQuestionsByAllFilters`;
-
-      const filterdObj = {};
-
-      for (let each in myObject) {
-        if (myObject[each] !== "") {
-          filterdObj[each] = myObject[each];
-        }
-      }
-
-      const res = await axios.get(url, filterdObj);
-
-      if (res.status === 200) {
-        console.log(res.data);
-        let updatedArr = res.data.result.map((each) => ({
-          ...each,
-          answered: "",
-        }));
-        if (mcqquestions.length === 0) {
-          setCount(updatedArr.length);
-          setQuestions(updatedArr);
-          setCurrent(res.data.currentPage);
-          setTotalQuestion(res.data.totalPages);
-          setLoad(false);
-          setLoad2(true);
-        } else {
-          let newUpdatedArr = [];
-          let matched = false;
-          for (let question of updatedArr) {
-            for (let each of allQuestion) {
-              if (question._id === each._id) {
-                newUpdatedArr.push(each);
-                matched = true;
-                break;
-              }
-            }
-            if (matched === false) {
-              newUpdatedArr.push(question);
-            } else {
-              matched = false;
-            }
-          }
-          setQuestions(newUpdatedArr);
-          setCurrent(res.data.currentPage);
-          setTotalQuestion(res.data.totalPages);
-          setLoad(false);
-          setLoad2(true);
-        }
-      }
+      setCount(myObject.length);
+      setQuestions(myObject);
+      setCurrent(1);
+      setTotalQuestion(1);
+      setLoad(false);
+      setLoad2(true);
       const element = document.getElementById("scrollToStart");
       element.scrollIntoView({
         behavior: "smooth",
         block: "start",
         inline: "nearest",
       });
-    } catch (error) {
-      setLoad(false);
-      setLoad2(true);
-      console.error(error);
     }
-  };
+  }, [location.search, page]);
+
   const Results = () => {
     const [data, setData] = useState([
       { name: "Correct", value: 0 },
@@ -240,9 +185,7 @@ const MCQCustom = () => {
     return (
       <>
         <div className="submitBackground"></div>
-        <div className="results">
-          <h1>Check Answers</h1>
-        </div>
+        <div className="results">Answers</div>
       </>
     );
   };
@@ -295,6 +238,7 @@ const MCQCustom = () => {
       match === true ? changedArr : [...changedArr, { ...ea, answered: ans }]
     );
   };
+
   return (
     <>
       {submitted !== "" && <SubmitExam />}
@@ -302,7 +246,7 @@ const MCQCustom = () => {
       <div id="scrollToStart"></div>
       {!load ? (
         <div className="mcq-con">
-          <h1>Custom Quiz</h1>
+          <h1 style={{ marginBottom: "5" }}>Current Affairs</h1>
 
           {mcqquestions.length > 0 && (
             <div style={{ overflow: "hidden" }} className="questions-box">
@@ -324,7 +268,6 @@ const MCQCustom = () => {
               {mcqquestions.map((each) => (
                 <div key={each._id}>
                   <h3>Q. {each.question}</h3>
-
                   <div className="options">
                     <div>
                       <input
@@ -413,7 +356,6 @@ const MCQCustom = () => {
                         }}
                         className="next"
                         type="button"
-                        style={{ bottom: "0.2%" }}
                       >
                         Submit Exam
                       </button>
@@ -440,4 +382,4 @@ const MCQCustom = () => {
   );
 };
 
-export default MCQCustom;
+export default MCQCurrentAffairs;

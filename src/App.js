@@ -25,6 +25,7 @@ import MCQ from "./Components/StudentComponent/StudentDashboard/MCQ/mcq";
 import Dashboard from "./Components/AdminComponent/AdminDashboard/Dashboard";
 import MyProfile from "./Components/HomeComponent/userMainPage";
 import MCQCustom from "./Components/StudentComponent/StudentDashboard/MCQCustomQuiz/mcqCustom.js";
+import MCQCurrentAffairs from "./Components/StudentComponent/StudentDashboard/MCQCurreentAffairs/mcqcurrentaffairs.js";
 
 function App() {
   return (
@@ -61,10 +62,15 @@ function App() {
             path="/StudentDashboard"
             component={StudentDashboard}
           ></Route>
-          <Route exact path="/myprofile" component={MyProfile} />
-          <Route exact path="/leaderboard" component={LeaderBoard} />
+          <Route exact path="/myprofile/:name" component={MyProfile} />
+          <Route exact path="/leaderboard/:mockid" component={LeaderBoard} />
           <Route exact path="/mockmcq/:time/:id" component={MCQ} />
           <Route exact path="/mcqcustom" component={MCQCustom} />
+          <Route
+            exact
+            path="/mcqcurrentAffairs"
+            component={MCQCurrentAffairs}
+          />
         </Switch>
       </BrowserRouter>
     </>

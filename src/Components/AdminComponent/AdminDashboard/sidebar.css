@@ -75,6 +75,7 @@
 .sidebar li {
   padding: 10px;
   color: #ffff;
+  cursor: pointer;
 }
 
 .sidebar a {

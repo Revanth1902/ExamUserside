@@ -30,25 +30,32 @@ const StudentSignup = () => {
   let history = useHistory();
 
   async function handleSignup() {
-
     setLoad(true);
     try {
       if (userData.firstName === "") {
         toast("Enter First Name");
+        setLoad(false);
       } else if (userData.lastName === "") {
         toast("Enter Last Name");
+        setLoad(false);
       } else if (userData.gender === "Select") {
         toast("Select Gender");
+        setLoad(false);
       } else if (userData.mobileNumber === 0) {
         toast("Enter Mobile Number");
+        setLoad(false);
       } else if (userData.mobileNumber.length !== 10) {
         toast("Enter Valid Mobile Number");
+        setLoad(false);
       } else if (userData.email === "") {
         toast("Enter Email");
+        setLoad(false);
       } else if (!userData.email.endsWith("@gmail.com")) {
         toast("Enter Valid Email");
+        setLoad(false);
       } else if (userData.password === "") {
         toast("Enter Password");
+        setLoad(false);
       } else {
         const res = await axios.post(
           "https://exam-back-end.vercel.app/user/CreateUser",
@@ -65,6 +72,7 @@ const StudentSignup = () => {
       }
     } catch (error) {
       toast(error.response.data.message);
+      setLoad(false);
     }
   }
 
@@ -84,7 +92,13 @@ const StudentSignup = () => {
               <form action="">
                 <div class="py-3 mx-5">
                   <input
-                    onChange={(e) => onTextFieldChange(e)}
+                    onChange={(e) => {
+                      const regex = /^[a-zA-Z\s]*$/; // Regular expression to allow only letters and spaces
+                      const yesorno = regex.test(e.target.value);
+                      if (yesorno) {
+                        onTextFieldChange(e);
+                      }
+                    }}
                     type="text"
                     name="firstName"
                     required
@@ -94,7 +108,13 @@ const StudentSignup = () => {
                 </div>
                 <div class="py-3 mx-5">
                   <input
-                    onChange={(e) => onTextFieldChange(e)}
+                    onChange={(e) => {
+                      const regex = /^[a-zA-Z\s]*$/; // Regular expression to allow only letters and spaces
+                      const yesorno = regex.test(e.target.value);
+                      if (yesorno) {
+                        onTextFieldChange(e);
+                      }
+                    }}
                     type="text"
                     name="lastName"
                     required
@@ -117,7 +137,14 @@ const StudentSignup = () => {
                 </div>
                 <div class="py-3 mx-5">
                   <input
-                    onChange={(e) => onTextFieldChange(e)}
+                    onChange={(e) => {
+                      const regex = /^[a-zA-Z0-9\s]*$/; // Regular expression to allow alphanumeric characters and spaces only
+                      const isValidInput = regex.test(e.target.value);
+
+                      if (isValidInput) {
+                        onTextFieldChange(e);
+                      }
+                    }}
                     type="number"
                     name="mobileNumber"
                     required
