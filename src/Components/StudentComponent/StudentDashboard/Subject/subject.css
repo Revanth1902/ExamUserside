@@ -115,6 +115,7 @@
   border: 2px solid var(--color-default);
   margin: 1%;
   border-radius: 0.5rem;
+  max-width: 17%;
 }
 
 .mock-div > div {
