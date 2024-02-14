@@ -209,7 +209,7 @@ const MCQCustom = () => {
             ))}
             <p style={{ fontWeight: "bolder", marginTop: "5%" }}>
               Total Marks - {totalCount * 2}&nbsp; &nbsp; ObtainedMarks -{" "}
-              {data[0].value * 2 - data[0].value * 0.5}
+              {data[0].value * 2 - data[1].value * 0.5}
             </p>
             <button
               onClick={() => {
@@ -240,8 +240,111 @@ const MCQCustom = () => {
     return (
       <>
         <div className="submitBackground"></div>
-        <div className="results">
-          <h1>Check Answers</h1>
+        <div
+          className="results"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "scroll",
+            overflowX: "hidden",
+          }}
+        >
+          {mcqquestions.map((each) => (
+            <div style={{ position: "relative" }}>
+              <span
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  top: "18%",
+                  backgroundColor: "#00FF0050",
+                  paddingTop: "0%",
+                  paddingBottom: ".3%",
+                  paddingLeft: "1%",
+                  paddingRight: "1%",
+                  borderRadius: ".2rem",
+                }}
+              >
+                Ans : {each[each.answer]}
+              </span>
+              <h3 style={{ marginBottom: "2%" }}>
+                Q{each.no}.&nbsp;{each.question}
+              </h3>
+              <p
+                style={
+                  each.option1 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
+                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
+                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                }
+              >
+                I.&nbsp;{each.option1}
+              </p>
+              <p
+                style={
+                  each.option2 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
+                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
+                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                }
+              >
+                II.&nbsp;{each.option2}
+              </p>
+              <p
+                style={
+                  each.option3 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
+                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
+                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                }
+              >
+                III.&nbsp;{each.option3}
+              </p>
+              <p
+                style={
+                  each.option4 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
+                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
+                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                }
+              >
+                IV.&nbsp;{each.option4}
+              </p>
+              <p
+                style={{
+                  marginTop: "2%",
+                  marginBottom: "2%",
+                  paddingLeft: "2%",
+                }}
+              >
+                Explanation : {each.description}
+              </p>
+            </div>
+          ))}
+          <button
+            onClick={() => {
+              setResults(true);
+              setshowAns(false);
+            }}
+            style={{
+              backgroundColor: "#212529",
+              color: "white",
+              paddingTop: "0%",
+              paddingBottom: ".3%",
+              paddingLeft: "1%",
+              paddingRight: "1%",
+              borderRadius: ".2rem",
+              width: "10%",
+              marginLeft: "85%",
+              border: 0,
+            }}
+            type="button"
+          >
+            Close
+          </button>
         </div>
       </>
     );

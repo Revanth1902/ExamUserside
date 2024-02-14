@@ -121,7 +121,7 @@ const Changepassword = () => {
             id="cancle-button"
             type="button"
           >
-            Cancle
+            Cancel
           </button>
         </>
       ) : (

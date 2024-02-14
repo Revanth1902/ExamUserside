@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,7 +13,7 @@ const StudentSignup = () => {
     firstName: "",
     lastName: "",
     gender: "Select",
-    mobileNumber: 0,
+    mobileNumber: "",
     email: "",
     password: "",
   });
@@ -41,7 +41,7 @@ const StudentSignup = () => {
       } else if (userData.gender === "Select") {
         toast("Select Gender");
         setLoad(false);
-      } else if (userData.mobileNumber === 0) {
+      } else if (userData.mobileNumber === "") {
         toast("Enter Mobile Number");
         setLoad(false);
       } else if (userData.mobileNumber.length !== 10) {
@@ -104,8 +104,10 @@ const StudentSignup = () => {
                     required
                     class="form-control  border-info"
                     placeholder="Enter First name"
+                    value={userData.firstName}
                   />
                 </div>
+
                 <div class="py-3 mx-5">
                   <input
                     onChange={(e) => {
@@ -120,6 +122,7 @@ const StudentSignup = () => {
                     required
                     class="form-control  border-info"
                     placeholder="Enter Last name"
+                    value={userData.lastName}
                   />
                 </div>
                 <div class="py-3 mx-5">
@@ -129,13 +132,14 @@ const StudentSignup = () => {
                     required
                     class="form-control  border-info"
                     style={{ textTransform: "capitalize" }}
+                    value={userData.gender}
                   >
                     <option>Select</option>
                     <option>male</option>
                     <option>female</option>
                   </select>
                 </div>
-                <div class="py-3 mx-5">
+                <div style={{ position: "relative" }} class="py-3 mx-5">
                   <input
                     onChange={(e) => {
                       const regex = /^[a-zA-Z0-9\s]*$/; // Regular expression to allow alphanumeric characters and spaces only
@@ -150,10 +154,23 @@ const StudentSignup = () => {
                     required
                     class="form-control  border-info"
                     placeholder="Enter Mobile Number"
+                    value={userData.mobileNumber}
                   />
+                  {userData.mobileNumber.length !== 10 &&
+                    userData.mobileNumber !== "" && (
+                      <p
+                        style={{
+                          color: "red ",
+                          position: "absolute",
+                          bottom: "-25%",
+                        }}
+                      >
+                        * Enter Valid Mobile Number
+                      </p>
+                    )}
                 </div>
 
-                <div class="py-3 mx-5">
+                <div style={{ position: "relative" }} class="py-3 mx-5">
                   <input
                     onChange={(e) => onTextFieldChange(e)}
                     type="email"
@@ -161,7 +178,20 @@ const StudentSignup = () => {
                     required
                     class="form-control  border-info"
                     placeholder="Enter Email Address"
+                    value={userData.email}
                   />
+                  {userData.email !== "" &&
+                    !userData.email.endsWith("@gmail.com") && (
+                      <p
+                        style={{
+                          color: "red ",
+                          position: "absolute",
+                          bottom: "-25%",
+                        }}
+                      >
+                        * Enter Valid Email
+                      </p>
+                    )}
                 </div>
                 <div class="py-3 mx-5">
                   <input
@@ -171,6 +201,7 @@ const StudentSignup = () => {
                     required
                     class="form-control  border-info"
                     placeholder="Enter Password"
+                    value={userData.password}
                   />
                 </div>
 

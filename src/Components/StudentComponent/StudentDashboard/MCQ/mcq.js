@@ -250,7 +250,7 @@ const MCQ = () => {
             ))}
             <p style={{ fontWeight: "bolder", marginTop: "5%" }}>
               Total Marks - {totalCount * 2}&nbsp; &nbsp; ObtainedMarks -{" "}
-              {data[0].value * 2 - data[0].value * 0.5}
+              {data[0].value * 2 - data[1].value * 0.5}
             </p>
             <button
               onClick={() => {

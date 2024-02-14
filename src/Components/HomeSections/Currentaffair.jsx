@@ -200,9 +200,11 @@ const Currentaffair = () => {
                       if (acceptTerms === false) {
                         toast("Please Accept Terms and conditions");
                       } else {
-                        window.location.href = `/mcqcurrentAffairs?data=${encodeURIComponent(
+                        localStorage.setItem(
+                          "data",
                           JSON.stringify(sortedQuestion[mockId])
-                        )}`;
+                        );
+                        window.location.href = `/mcqcurrentAffairs`;
                       }
                     }}
                     button="button"
