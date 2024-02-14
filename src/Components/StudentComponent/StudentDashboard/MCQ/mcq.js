@@ -157,6 +157,8 @@ const MCQ = () => {
       { name: "Wrong", value: 0 },
     ]);
 
+    const [ontimeCall, setOneTimeCall] = useState(0);
+
     useEffect(() => {
       const updatedData = allQuestion.reduce(
         (acc, each) => {
@@ -178,12 +180,20 @@ const MCQ = () => {
 
       setData(updatedData);
 
-      addingResultsToLeaderBoard(data[0].value * 2 - data[0].value * 0.5);
+      addingResultsToLeaderBoard(data[0].value * 2 - data[1].value * 0.5);
+      setOneTimeCall(ontimeCall + 1);
     }, []);
 
+    useEffect(() => {
+      if (ontimeCall === 1) {
+        addingResultsToLeaderBoard(data[0].value * 2 - data[1].value * 0.5);
+      }
+    }, [ontimeCall]);
+
     const addingResultsToLeaderBoard = async (marks) => {
+      let count = 0;
       try {
-        const url = `https://exam-back-end.vercel.appadmin/createLeaderBoard`;
+        const url = `https://exam-back-end.vercel.app/admin/createLeaderBoard`;
 
         const reqConfigure = {
           method: "POST",
@@ -249,7 +259,7 @@ const MCQ = () => {
               </p>
             ))}
             <p style={{ fontWeight: "bolder", marginTop: "5%" }}>
-              Total Marks - {totalCount * 2}&nbsp; &nbsp; ObtainedMarks -{" "}
+              Total Marks - {totalCount * 2}&nbsp; &nbsp; ObtainedMarks - &nbsp;
               {data[0].value * 2 - data[1].value * 0.5}
             </p>
             <button
@@ -366,9 +376,28 @@ const MCQ = () => {
       {!load ? (
         <div className="mcq-con">
           <h1>Mock Test</h1>
+
           <h4>
             Timer {timer.minutes} : {timer.seconds}
           </h4>
+          <button
+            style={{
+              position: "fixed",
+              top: "5%",
+              left: "90%",
+              height: "10%",
+              right: 0,
+              width: "5%",
+              padding: "1% 2%",
+            }}
+            onClick={() => {
+              history.push("/");
+            }}
+            className="cls"
+            type="button"
+          >
+            X
+          </button>
           {mcqquestions.length > 0 && (
             <div style={{ overflow: "hidden" }} className="questions-box">
               {!load2 && (

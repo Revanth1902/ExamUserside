@@ -321,7 +321,7 @@ const Currentaffair = () => {
 
       <section className="mock-container">
         <h2 className="mock-head pb-4 text-center text-lg-start ">
-          Weekly <span className="badge bg-secondary">Current Affairs</span>
+          Monthly <span className="badge bg-secondary">Current Affairs</span>
         </h2>
         <div className="mockmain">
           {load ? (

@@ -158,7 +158,7 @@ const MCQCurrentAffairs = () => {
               </p>
             ))}
             <p style={{ fontWeight: "bolder", marginTop: "5%" }}>
-              Total Marks - {totalCount * 2}&nbsp; &nbsp; ObtainedMarks -{" "}
+              Total Marks - {totalCount * 2}&nbsp; &nbsp; ObtainedMarks - &nbsp;
               {data[0].value * 2 - data[1].value * 0.5}
             </p>
             <button
@@ -357,7 +357,24 @@ const MCQCurrentAffairs = () => {
       {!load ? (
         <div className="mcq-con">
           <h1 style={{ marginBottom: "5" }}>Current Affairs</h1>
-
+          <button
+            style={{
+              position: "fixed",
+              top: "5%",
+              left: "90%",
+              height: "10%",
+              right: 0,
+              width: "5%",
+              padding: "1% 2%",
+            }}
+            onClick={() => {
+              history.push("/");
+            }}
+            className="cls"
+            type="button"
+          >
+            X
+          </button>
           {mcqquestions.length > 0 && (
             <div style={{ overflow: "hidden" }} className="questions-box">
               {!load2 && (
