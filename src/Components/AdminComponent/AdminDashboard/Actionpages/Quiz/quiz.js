@@ -22,6 +22,7 @@ const QuizPage = () => {
     description: "",
     key: "",
   });
+  const [isAddingQuiz, setIsAddingQuiz] = useState(false);
 
   useEffect(() => {
     getAllQuiz();
@@ -50,6 +51,7 @@ const QuizPage = () => {
 
   const handleContainerClose = () => {
     setShowContainer(false);
+    getAllQuiz();
   };
 
   const handleChange = (e) => {
@@ -68,6 +70,9 @@ const QuizPage = () => {
       return;
     }
 
+    // Disable the button to prevent multiple clicks
+    setIsAddingQuiz(true);
+
     fetch("https://exam-back-end-2.vercel.app/admin/addQuiz", {
       method: "POST",
       headers: {
@@ -82,9 +87,12 @@ const QuizPage = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("Subtopic added successfully:", data);
+        console.log("Quiz added successfully:", data);
 
-        toast.success("Quiz Addeed Sucessfully");
+        toast.success("Quiz added successfully");
+
+        // Re-enable the button after a successful operation
+        setIsAddingQuiz(false);
 
         handleContainerClose();
         getAllQuiz();
@@ -93,6 +101,9 @@ const QuizPage = () => {
         console.error("Error adding Quiz:", error);
 
         toast.error("Error adding Quiz. Please try again.");
+
+        // Re-enable the button after an error
+        setIsAddingQuiz(false);
       });
   };
 
@@ -138,24 +149,48 @@ const QuizPage = () => {
         theme="light"
       />
       <div className="QuizPage">
-      {loading ? (
-        <div className="loading-container">
-          <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
-        </div>
-      ) : (
-        <div className="toping">
-          <h2>Quiz Page</h2>
-          <button
-            type="button"
-            className="addcomponentbutton"
-            onClick={handleAddComponent}
-          >
-            Add Quiz
-          </button>
-        </div>
-      )}
+        {loading ? (
+          <div className="loading-container">
+            <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
+          </div>
+        ) : (
+          <div className="toping">
+            <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
+            <h2>Quiz Page</h2>
+            <button
+              type="button"
+              className="addcomponentbutton"
+              onClick={handleAddComponent}
+            >
+              Add Quiz
+            </button>
+          </div>
+        )}
         {showContainer && (
           <>
+            <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
             <div
               style={{
                 position: "absolute",
@@ -172,9 +207,7 @@ const QuizPage = () => {
                 className="containering"
                 onClick={(e) => e.stopPropagation()}
               >
-
                 <form className="form" onSubmit={handleSubmit}>
-
                   <label htmlFor="name">Quiz Name:</label>
                   <input
                     type="text"
@@ -204,9 +237,31 @@ const QuizPage = () => {
                     onChange={handleChange}
                     required
                   />
+                  <span
+                    style={{
+                      color: "red",
+                      fontSize: "14px",
+                      fontStyle: "italic",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    The key should be unique. Don't give a key which is already
+                    in use.
+                  </span>
 
-                  <button type="submit" className="submitbutton">
-                    Add Quiz
+                  <button
+                    type="submit"
+                    className="submitbutton"
+                    disabled={isAddingQuiz}
+                  >
+                    {isAddingQuiz ? (
+                      <span>
+                        Adding...
+                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                      </span>
+                    ) : (
+                      "Add Quiz"
+                    )}
                   </button>
                   <button
                     type="button"
@@ -254,13 +309,13 @@ const QuizPage = () => {
                     <strong>Description:</strong> &nbsp;{quiz.description}
                   </div>
                 )}
-                <button
+                {/* <button
                   type="button"
                   onClick={() => handleDelete(quiz._id)}
                   className="delete-button"
                 >
                   Delete Quiz
-                </button>
+                </button> */}
               </li>
             ))}
           </ul>

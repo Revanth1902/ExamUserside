@@ -10,6 +10,9 @@ const capitalizeFirstLetter = (string) => {
 };
 
 const TopicsPage = () => {
+  const [showUpdateContainer, setShowUpdateContainer] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const [isUpdatingTopic, setIsUpdatingTopic] = useState(false);
   const [topicsData, setTopicsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showContainer, setShowContainer] = useState(false);
@@ -18,6 +21,7 @@ const TopicsPage = () => {
     description: "",
     categoryId: "",
   });
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -54,6 +58,7 @@ const TopicsPage = () => {
 
   const handleContainerClose = () => {
     setShowContainer(false);
+    getAllTopics();
   };
 
   const handleChange = (e) => {
@@ -72,6 +77,9 @@ const TopicsPage = () => {
       console.error("Name, description, and category are required");
       return;
     }
+
+    // Disable the button to prevent multiple clicks
+    setIsAddingCategory(true);
 
     fetch("https://exam-back-end-2.vercel.app/admin/addTopic", {
       method: "POST",
@@ -97,10 +105,80 @@ const TopicsPage = () => {
         console.error("Error adding topic:", error);
 
         toast.error("Error adding topic. Please try again.");
+      })
+      .finally(() => {
+        // Enable the button after the operation is completed (whether success or error)
+        setIsAddingCategory(false);
       });
   };
-  console.log("The categories :", categories);
 
+  const handleUpdateTopic = (topic) => {
+    setSelectedTopic(topic);
+    setFormData({
+      name: topic.name,
+      description: topic.description,
+      categoryId: topic.categoryId,
+    });
+    setShowUpdateContainer(true);
+  };
+
+  // Function to handle closing the update container
+  const handleUpdateContainerClose = () => {
+    setShowUpdateContainer(false);
+    setSelectedTopic(null);
+    getAllTopics();
+  };
+
+  // Function to handle updating a topic
+  const handleUpdateSubmit = (e) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.description || !formData.categoryId) {
+      console.error("Name, description, and category are required");
+      return;
+    }
+
+    // Disable the button to prevent multiple clicks
+    setIsUpdatingTopic(true);
+
+    const updateData = {
+      name: formData.name,
+      description: formData.description,
+    };
+
+    fetch(
+      `https://exam-back-end-2.vercel.app/admin/updateTopic/${selectedTopic._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateData),
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Topic updated successfully:", data);
+
+        toast.success("Topic updated successfully");
+
+        handleUpdateContainerClose();
+      })
+      .catch((error) => {
+        console.error("Error updating topic:", error);
+
+        toast.error("Error updating topic. Please try again.");
+      })
+      .finally(() => {
+        // Enable the button after the operation is completed (whether success or error)
+        setIsUpdatingTopic(false);
+      });
+  };
   return (
     <div className="themain">
       <div className="TopicsPage">
@@ -189,12 +267,100 @@ const TopicsPage = () => {
                     ))}
                   </select>
 
-                  <button type="submit" className="submitbutton">
-                    Add Topic
+                  <button
+                    type="submit"
+                    className="submitbutton"
+                    disabled={isAddingCategory}
+                  >
+                    {isAddingCategory ? (
+                      <span>
+                        Adding...
+                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                      </span>
+                    ) : (
+                      "Add Topic"
+                    )}
                   </button>
+
                   <button
                     type="button"
                     onClick={handleContainerClose}
+                    className="close-button"
+                  >
+                    <AiOutlineClose />
+                  </button>
+                </form>
+              </div>
+            </div>
+          </>
+        )}
+        {showUpdateContainer && selectedTopic && (
+          <>
+            <div
+              style={{
+                position: "absolute",
+                top: "10%",
+                bottom: "0",
+                left: "15%",
+                right: "0",
+                background: "#22222250",
+              }}
+            ></div>
+            <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
+            <div className="overlay" onClick={handleUpdateContainerClose}>
+              <div
+                className="containering"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <form className="form" onSubmit={handleUpdateSubmit}>
+                  <label htmlFor="name">Name:</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+
+                  <label htmlFor="description">Description:</label>
+                  <textarea
+                    rows={5}
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                  ></textarea>
+
+                  <button
+                    type="submit"
+                    className="submitbutton"
+                    disabled={isUpdatingTopic}
+                  >
+                    {isUpdatingTopic ? (
+                      <span>
+                        Updating...
+                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                      </span>
+                    ) : (
+                      "Update Topic"
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleUpdateContainerClose}
                     className="close-button"
                   >
                     <AiOutlineClose />
@@ -238,6 +404,15 @@ const TopicsPage = () => {
                     <strong>Description:</strong> &nbsp;{topic.description}
                   </div>
                 )}
+                <div className="buttonforupdatetopic">
+                  <button
+                    type="button"
+                    className="logoutbutton"
+                    onClick={() => handleUpdateTopic(topic)}
+                  >
+                    Update
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

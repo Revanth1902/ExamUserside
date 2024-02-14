@@ -14,12 +14,16 @@ const SubtopicsPage = () => {
   const [subtopicsData, setSubtopicsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showContainer, setShowContainer] = useState(false);
+  const [showUpdateContainer, setShowUpdateContainer] = useState(false);
+  const [selectedSubtopic, setSelectedSubtopic] = useState(null);
+  const [isUpdatingSubtopic, setIsUpdatingSubtopic] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     topicId: "",
   });
   const [topics, setTopics] = useState([]);
+  const [isAddingSubtopic, setIsAddingSubtopic] = useState(false);
 
   useEffect(() => {
     getAllSubtopics();
@@ -54,6 +58,7 @@ const SubtopicsPage = () => {
 
   const handleContainerClose = () => {
     setShowContainer(false);
+    getAllSubtopics();
   };
 
   const handleChange = (e) => {
@@ -71,6 +76,9 @@ const SubtopicsPage = () => {
       console.error("Name, description, and topic are required");
       return;
     }
+
+    // Disable the button to prevent multiple clicks
+    setIsAddingSubtopic(true);
 
     fetch("https://exam-back-end-2.vercel.app/admin/addSubtopic", {
       method: "POST",
@@ -90,6 +98,9 @@ const SubtopicsPage = () => {
 
         toast.success("Subtopic added successfully");
 
+        // Re-enable the button after a successful operation
+        setIsAddingSubtopic(false);
+
         setTimeout(() => {
           handleContainerClose();
           getAllSubtopics();
@@ -99,8 +110,76 @@ const SubtopicsPage = () => {
         console.error("Error adding subtopic:", error);
 
         toast.error("Error adding subtopic. Please try again.");
+
+        // Re-enable the button after an error
+        setIsAddingSubtopic(false);
       });
   };
+  const handleUpdateSubtopic = (subtopic) => {
+    setSelectedSubtopic(subtopic);
+    setFormData({
+      name: subtopic.name,
+      description: subtopic.description,
+      topicId: subtopic.topicId,
+    });
+    setShowUpdateContainer(true);
+  };
+
+  const handleUpdateContainerClose = () => {
+    setShowUpdateContainer(false);
+    setSelectedSubtopic(null);
+    getAllSubtopics();
+  };
+  const handleUpdateSubmit = (e) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.description || !formData.topicId) {
+      console.error("Name, description, and topic are required");
+      return;
+    }
+
+    // Disable the button to prevent multiple clicks
+    setIsUpdatingSubtopic(true);
+
+    fetch(
+      `https://exam-back-end-2.vercel.app/admin/updateSubTopic/${selectedSubtopic._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Subtopic updated successfully:", data);
+
+        toast.success("Subtopic updated successfully");
+
+        // Re-enable the button after a successful operation
+        setIsUpdatingSubtopic(false);
+
+        setTimeout(() => {
+          handleUpdateContainerClose();
+          getAllSubtopics();
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error("Error updating subtopic:", error);
+
+        toast.error("Error updating subtopic. Please try again.");
+
+        // Re-enable the button after an error
+        setIsUpdatingSubtopic(false);
+      });
+  };
+
   return (
     <div className="themain">
       <div className="SubtopicsPage">
@@ -185,8 +264,19 @@ const SubtopicsPage = () => {
                       </option>
                     ))}
                   </select>
-                  <button type="submit" className="submitbutton">
-                    Add Subtopic
+                  <button
+                    type="submit"
+                    className="submitbutton"
+                    disabled={isAddingSubtopic}
+                  >
+                    {isAddingSubtopic ? (
+                      <span>
+                        Adding...
+                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                      </span>
+                    ) : (
+                      "Add Subtopic"
+                    )}
                   </button>
                   <button
                     type="button"
@@ -200,6 +290,84 @@ const SubtopicsPage = () => {
             </div>
           </>
         )}
+        {showUpdateContainer && selectedSubtopic && (
+          <>
+            <div
+              style={{
+                position: "absolute",
+                top: "10%",
+                bottom: "0",
+                left: "15%",
+                right: "0",
+                background: "#22222250",
+              }}
+            ></div>
+            <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
+            <div className="overlay" onClick={handleUpdateContainerClose}>
+              <div
+                className="containering"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <form className="form" onSubmit={handleSubmit}>
+                  <label htmlFor="name">Name:</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+
+                  <label htmlFor="description">Description:</label>
+                  <textarea
+                    rows={5}
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                  ></textarea>
+
+                  <button
+                    type="submit"
+                    className="submitbutton"
+                    disabled={isUpdatingSubtopic}
+                    onClick={handleUpdateSubmit}
+                  >
+                    {isUpdatingSubtopic ? (
+                      <span>
+                        Updating...
+                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                      </span>
+                    ) : (
+                      "Update Subtopic"
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleUpdateContainerClose}
+                    className="close-button"
+                  >
+                    <AiOutlineClose />
+                  </button>
+                </form>
+              </div>
+            </div>
+          </>
+        )}
+
         {loading ? (
           <div className="loading-container">
             <TailSpin height={"10%"} width={"10%"} color={"#ffffff"} />
@@ -234,6 +402,15 @@ const SubtopicsPage = () => {
                     <strong>Description:</strong> &nbsp;{subtopic.description}
                   </div>
                 )}
+                <div className="buttonforupdatetopic">
+                  <button
+                    type="button"
+                    className="logoutbutton"
+                    onClick={() => handleUpdateSubtopic(subtopic)}
+                  >
+                    Update
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
