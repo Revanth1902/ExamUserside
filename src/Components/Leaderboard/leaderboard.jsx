@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./leaderboard.css";
+import { useParams } from "react-router-dom";
+import { Hourglass } from "react-loader-spinner";
 
 // Library imports
 import { CgProfile } from "react-icons/cg";
+
+import axios from "axios";
 
 const backgroundColors = [
   "#FFD700", // Gold
@@ -38,6 +42,8 @@ const backgroundColors = [
 ];
 
 const LeaderBoard = () => {
+  const params = useParams();
+
   const leaderboardData = [
     {
       position: 1,
@@ -141,79 +147,120 @@ const LeaderBoard = () => {
     },
   ];
 
+  const [leaderboardResults, setLeaderBoardResults] = useState(() => {
+    return [];
+  });
+
+  useEffect(() => {
+    getLeaderboardDetailsByMockId();
+  }, []);
+
+  useEffect(() => {
+    const evTypep = window.performance.getEntriesByType("navigation")[0].type;
+    if (evTypep === "reload" || evTypep === "back_forward") {
+      window.location.replace("/");
+    }
+  }, []);
+
+  const getLeaderboardDetailsByMockId = async () => {
+    const url = `https://exam-back-end-2.vercel.app/admin/getLeaderBoardByMockId/${params.mockid}`;
+
+    const res = await axios.get(url);
+
+    if (res.status === 200) {
+      console.log(res.data);
+    }
+  };
+
   return (
     <div className="leaderboard-container">
-      <div>
-        <h1>Leaderboard</h1>
-      </div>
-      <table>
-        <thead>
-          <tr className="table-head">
-            <th></th>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Entered On</th>
-            <th>Time Taken</th>
-            <th>Total Questions</th>
-            <th>Attempted</th>
-            <th>Score</th>
-            <th>Result</th>
-          </tr>
-        </thead>
-        <tbody>
-          {leaderboardData.map((data, index) => (
-            <tr
-              key={index}
-              style={{
-                backgroundColor: `${
-                  backgroundColors[
-                    Math.ceil(Math.random() * backgroundColors.length)
-                  ]
-                }`,
-              }}
-              className={
-                index < 3
-                  ? index === 0
-                    ? "highlighted"
-                    : index === 1
-                    ? "highlighted2"
-                    : "highlighted3"
-                  : ""
-              }
-            >
-              <td>
-                <CgProfile />
-              </td>
-              <td style={{ position: "relative" }}>
-                {data.name}
-                {data.position === 1 ||
-                data.position === 2 ||
-                data.position === 3 ? (
-                  <img
-                    className="medal"
-                    src={
-                      data.position === 1
-                        ? "/badge1.png"
-                        : data.position === 2
-                        ? "/badge2.png"
-                        : data.position === 3 && "/badge3.png"
-                    }
-                  />
-                ) : (
-                  ""
-                )}
-              </td>
-              <td>{data.position}</td>
-              <td>{data.enteredOn}</td>
-              <td>{data.timeTaken}</td>
-              <td>{data.totalQuestions}</td>
-              <td>{data.attempted}</td>
-              <td>{data.score}</td>
-              <td>{data.result}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {leaderboardResults.length > 0 ? (
+        <>
+          <div>
+            <h1>Leaderboard</h1>
+          </div>
+          <table>
+            <thead>
+              <tr className="table-head">
+                <th></th>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Entered On</th>
+                <th>Time Taken</th>
+                <th>Total Questions</th>
+                <th>Attempted</th>
+                <th>Score</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leaderboardData.map((data, index) => (
+                <tr
+                  key={index}
+                  style={{
+                    backgroundColor: `${
+                      backgroundColors[
+                        Math.ceil(Math.random() * backgroundColors.length)
+                      ]
+                    }`,
+                  }}
+                  className={
+                    index < 3
+                      ? index === 0
+                        ? "highlighted"
+                        : index === 1
+                        ? "highlighted2"
+                        : "highlighted3"
+                      : ""
+                  }
+                >
+                  <td>
+                    <CgProfile />
+                  </td>
+                  <td style={{ position: "relative" }}>
+                    {data.name}
+                    {data.position === 1 ||
+                    data.position === 2 ||
+                    data.position === 3 ? (
+                      <img
+                        className="medal"
+                        src={
+                          data.position === 1
+                            ? "/badge1.png"
+                            : data.position === 2
+                            ? "/badge2.png"
+                            : data.position === 3 && "/badge3.png"
+                        }
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </td>
+                  <td>{data.position}</td>
+                  <td>{data.enteredOn}</td>
+                  <td>{data.timeTaken}</td>
+                  <td>{data.totalQuestions}</td>
+                  <td>{data.attempted}</td>
+                  <td>{data.score}</td>
+                  <td>{data.result}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      ) : (
+        <div
+          style={{
+            height: "100vh",
+            width: "85vw",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Hourglass colors={["#212529", "#212529"]} />
+        </div>
+      )}
     </div>
   );
 };

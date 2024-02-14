@@ -4,6 +4,12 @@ import Profile from "./profile.js";
 import Changedpassword from "./changepassword.js";
 import Help from "./help.js";
 import Settings from "./settings.js";
+import { TailSpin } from "react-loader-spinner";
+
+import {
+  useHistory,
+  useParams,
+} from "react-router-dom/cjs/react-router-dom.min.js";
 
 import Cookies from "js-cookie";
 
@@ -32,10 +38,20 @@ const userProfileTabs = [
 ];
 
 const MyProflie = () => {
+  const params = useParams();
+  const history = useHistory();
+
   const [showLogOutModalBox, setShowLogOutModalBox] = useState(false);
   const [selectedSection, setSelectedSection] = useState(
-    userProfileTabs[0].myprofile
+    params.name === "myprofile"
+      ? userProfileTabs[0].myprofile
+      : params.name === "changepassword"
+      ? userProfileTabs[0].changepassword
+      : params.name === "help"
+      ? userProfileTabs[0].help
+      : userProfileTabs[0].settings
   );
+  const [load, setLoad] = useState(false);
 
   const [user, setUser] = useState(() => {
     return [];
@@ -51,17 +67,20 @@ const MyProflie = () => {
   }, []);
 
   const getUser = async () => {
+    setLoad(false);
     try {
       const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${Cookies.get(
         "jwt_userID"
       )}`;
 
       const res = await axios.get(url);
+      console.log(res.data.data);
       if (res.status === 200) {
         setUser({
           ...res.data.data,
         });
       }
+      setLoad(true);
     } catch (error) {
       console.error(error);
     }
@@ -109,11 +128,25 @@ const MyProflie = () => {
     );
   };
 
-  return (
+  return load ? (
     <>
       {showLogOutModalBox && <LogOutModalBox />}
       <div className="myprofile">
         <div className="side-bar-userProfile">
+          <button
+            onClick={() => {
+              history.push("/");
+            }}
+            type="button"
+            style={{
+              fontSize: "2rem",
+              border: 0,
+              background: "transparent",
+              marginBottom: "1rem",
+            }}
+          >
+            ❮
+          </button>
           <div
             className="profilepic"
             style={{
@@ -123,8 +156,8 @@ const MyProflie = () => {
             }}
           >
             <p style={{ margin: 0 }}>
-              {user.firstName[0]}
-              {user.lastName[0]}
+              {`${user.firstName}`[0]}
+              {`${user.lastName}`[0]}
             </p>
           </div>
           <h5>
@@ -201,6 +234,19 @@ const MyProflie = () => {
         </div>
       </div>
     </>
+  ) : (
+    <div
+      style={{
+        height: "100vh",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+      className="myprofile"
+    >
+      <TailSpin color="darkblue" />
+    </div>
   );
 };
 

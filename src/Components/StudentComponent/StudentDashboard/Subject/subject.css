@@ -1,10 +1,12 @@
 .mockmain {
   height: 60%;
+  width: 100%;
   display: flex;
   overflow-x: auto; /* Enable horizontal scrolling */
   border: 2px solid transparent;
   padding: 0%;
   overflow-y: hidden;
+  position: absolute;
 }
 
 .mockmain::-webkit-scrollbar {
@@ -113,6 +115,7 @@
   border: 2px solid var(--color-default);
   margin: 1%;
   border-radius: 0.5rem;
+  max-width: 17%;
 }
 
 .mock-div > div {
@@ -170,19 +173,24 @@
   text-align: center;
 }
 
-.mock-model-con > div {
+.div-inside {
   position: relative;
   width: 30%;
   height: 5%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: flex-start;
   margin-left: 35%;
+  display: flex;
+  justify-content: space-around;
 }
 
-.mock-model-con > div input[type="checkbox"] {
-  margin-top: 2.5%;
+.div-inside > input[type="checkbox"] {
+  width: auto;
+  margin: 0%;
+}
+
+.div-inside > p {
+  font-size: 1rem;
+  width: auto;
+  margin-top: -0.5%;
 }
 
 .mock-model-con > button {

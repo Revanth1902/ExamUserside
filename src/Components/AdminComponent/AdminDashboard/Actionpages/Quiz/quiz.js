@@ -243,7 +243,6 @@ const QuizPage = () => {
                       fontSize: "14px",
                       fontStyle: "italic",
                       marginBottom: "10px",
-                      
                     }}
                   >
                     The key should be unique. Don't give a key which is already

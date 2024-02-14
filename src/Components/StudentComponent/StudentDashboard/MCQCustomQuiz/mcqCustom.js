@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { PieChart, Pie, Cell, Label, ResponsiveContainer } from "recharts";
 
 import { Hourglass } from "react-loader-spinner";
+import { v4 as uuidV4 } from "uuid";
 
 import {
   useParams,
@@ -29,6 +30,7 @@ const MCQCustom = () => {
   });
   const [submitted, setSubmitted] = useState("");
   const [showResults, setResults] = useState(false);
+  const [showAns, setshowAns] = useState(false);
   const [totalCount, setCount] = useState(0);
 
   const [totalQuestions, setTotalQuestion] = useState(0);
@@ -53,13 +55,20 @@ const MCQCustom = () => {
     }
   }, [location.search, page]);
 
-  const getCustomQuestions = async (obtainedObject) => {
+  const getCustomQuestions = async (myObject) => {
     setLoad2(false);
     try {
-      const url = `https://exam-back-end-2.vercel.app/admin/getAllQuestionByFilters?page=${page}limit=10`;
-      const res = await axios.get(url, JSON.stringify(obtainedObject), {
-        headers: { "Content-Type": "application/json" },
-      });
+      const url = `https://exam-back-end.vercel.app/admin/getQuestionsByAllFilters`;
+
+      const filterdObj = {};
+
+      for (let each in myObject) {
+        if (myObject[each] !== "") {
+          filterdObj[each] = myObject[each];
+        }
+      }
+
+      const res = await axios.get(url, filterdObj);
 
       if (res.status === 200) {
         console.log(res.data);
@@ -133,27 +142,27 @@ const MCQCustom = () => {
         value: totalCount - allQuestion.length,
       });
       setData(updatedData);
-      addingResultsToLeaderBoard(data[0].value * 2 - data[0].value * 0.5);
+      // addingResultsToLeaderBoard(data[0].value * 2 - data[0].value * 0.5);
     }, []);
-    const addingResultsToLeaderBoard = async (marks) => {
-      try {
-        const url = `https://exam-back-end.vercel.appadmin/createLeaderBoard`;
-        const reqConfigure = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            mockId: params.id,
-            userId: Cookies.get("jwt_userID"),
-            totalMark: marks,
-          }),
-        };
-        await fetch(url, reqConfigure);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    // const addingResultsToLeaderBoard = async (marks) => {
+    //   try {
+    //     const url = `https://exam-back-end.vercel.appadmin/createLeaderBoard`;
+    //     const reqConfigure = {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({
+    //         mockId: params.id,
+    //         userId: Cookies.get("jwt_userID"),
+    //         totalMark: marks,
+    //       }),
+    //     };
+    //     await fetch(url, reqConfigure);
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // };
     const COLORS = ["#00C49F", "#cc0000", "#FFBB28", "#598BAF"];
     return (
       <>
@@ -199,8 +208,8 @@ const MCQCustom = () => {
               </p>
             ))}
             <p style={{ fontWeight: "bolder", marginTop: "5%" }}>
-              Total Marks - {totalCount * 2}&nbsp; &nbsp; ObtainedMarks -{" "}
-              {data[0].value * 2 - data[0].value * 0.5}
+              Total Marks - {totalCount * 2}&nbsp; &nbsp; ObtainedMarks - &nbsp;
+              {data[0].value * 2 - data[1].value * 0.5}
             </p>
             <button
               onClick={() => {
@@ -211,11 +220,136 @@ const MCQCustom = () => {
             >
               Go To Home Page
             </button>
+            <button
+              onClick={() => {
+                setResults(false);
+                setshowAns(true);
+              }}
+              className="leaderboard"
+              type="button"
+            >
+              Check Answers
+            </button>
           </div>
         </div>
       </>
     );
   };
+
+  const Ans = () => {
+    return (
+      <>
+        <div className="submitBackground"></div>
+        <div
+          className="results"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "scroll",
+            overflowX: "hidden",
+          }}
+        >
+          {mcqquestions.map((each) => (
+            <div style={{ position: "relative" }}>
+              <span
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  top: "18%",
+                  backgroundColor: "#00FF0050",
+                  paddingTop: "0%",
+                  paddingBottom: ".3%",
+                  paddingLeft: "1%",
+                  paddingRight: "1%",
+                  borderRadius: ".2rem",
+                }}
+              >
+                Ans : {each[each.answer]}
+              </span>
+              <h3 style={{ marginBottom: "2%" }}>
+                Q{each.no}.&nbsp;{each.question}
+              </h3>
+              <p
+                style={
+                  each.option1 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
+                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
+                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                }
+              >
+                I.&nbsp;{each.option1}
+              </p>
+              <p
+                style={
+                  each.option2 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
+                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
+                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                }
+              >
+                II.&nbsp;{each.option2}
+              </p>
+              <p
+                style={
+                  each.option3 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
+                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
+                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                }
+              >
+                III.&nbsp;{each.option3}
+              </p>
+              <p
+                style={
+                  each.option4 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
+                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
+                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                }
+              >
+                IV.&nbsp;{each.option4}
+              </p>
+              <p
+                style={{
+                  marginTop: "2%",
+                  marginBottom: "2%",
+                  paddingLeft: "2%",
+                }}
+              >
+                Explanation : {each.description}
+              </p>
+            </div>
+          ))}
+          <button
+            onClick={() => {
+              setResults(true);
+              setshowAns(false);
+            }}
+            style={{
+              backgroundColor: "#212529",
+              color: "white",
+              paddingTop: "0%",
+              paddingBottom: ".3%",
+              paddingLeft: "1%",
+              paddingRight: "1%",
+              borderRadius: ".2rem",
+              width: "10%",
+              marginLeft: "85%",
+              border: 0,
+            }}
+            type="button"
+          >
+            Close
+          </button>
+        </div>
+      </>
+    );
+  };
+
   const SubmitExam = () => {
     return (
       <>
@@ -267,17 +401,51 @@ const MCQCustom = () => {
   return (
     <>
       {submitted !== "" && <SubmitExam />}
-      {showResults === true && <Results />}
+      {showResults === true ? <Results /> : showAns && <Ans />}
       <div id="scrollToStart"></div>
       {!load ? (
         <div className="mcq-con">
-          <h1>Mock Test</h1>
+          <h1>Custom Quiz</h1>
+          <button
+            style={{
+              position: "fixed",
+              top: "5%",
+              left: "90%",
+              height: "10%",
+              right: 0,
+              width: "5%",
+              padding: "1% 2%",
+            }}
+            onClick={() => {
+              history.push("/");
+            }}
+            className="cls"
+            type="button"
+          >
+            X
+          </button>
 
           {mcqquestions.length > 0 && (
-            <div className="questions-box">
+            <div style={{ overflow: "hidden" }} className="questions-box">
+              {!load2 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    height: "110%",
+                    width: "110%",
+                    top: "-5%",
+                    left: "-5%",
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "#22222260",
+                    zIndex: 5,
+                  }}
+                ></div>
+              )}
               {mcqquestions.map((each) => (
                 <div key={each._id}>
                   <h3>Q. {each.question}</h3>
+
                   <div className="options">
                     <div>
                       <input
@@ -366,6 +534,7 @@ const MCQCustom = () => {
                         }}
                         className="next"
                         type="button"
+                        style={{ bottom: "0.2%" }}
                       >
                         Submit Exam
                       </button>

@@ -90,7 +90,7 @@ const Home = () => {
                 : "unselectedComponent"
             }
           >
-            Mock Test's
+            Mock Tests
           </h5>
         </div>
         {selectedSection === "currentaffairsweekly" ? (

@@ -3,7 +3,7 @@ import "./navbar.css";
 
 import { useHistory } from "react-router-dom";
 
-const Navbar = () => {
+const Navba = () => {
   const history = useHistory();
   const deleteCookie = (cookieName) => {
     document.cookie =
@@ -25,4 +25,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Navba;
