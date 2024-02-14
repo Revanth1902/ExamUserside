@@ -55,6 +55,7 @@ const QuestionsPage = () => {
     answer: "",
     description: "",
     type: "",
+    mockId: "",
   });
   const [categories, setCategories] = useState([]);
   const [topics, setTopics] = useState([]);
@@ -62,6 +63,12 @@ const QuestionsPage = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [questionDetails, setQuestionDetails] = useState({});
   const [updateFormData, setupdateFormData] = useState({});
+  const [mocks, setMocks] = useState([]);
+  const [selectedMock, setSelectedMock] = useState("");
+
+  const [isAddingQuestion, setIsAddingQuestion] = useState(false);
+  const [isUpdatingQuestion, setIsUpdatingQuestion] = useState(false);
+
   useEffect(() => {
     fetchQuestionsData(currentPage);
   }, [updateFormData]);
@@ -76,18 +83,22 @@ const QuestionsPage = () => {
   useEffect(() => {
     fetchQuestionsData(currentPage); // Call fetchQuestionsData with the initial currentPage value
   }, []); // Empty dependency array to ensure it runs only once on mount
+
   const handleUpdate = (question) => {
     setShowUpdateContainer(true);
     setSelectedQuestion(question);
-    console.log(question);
-    // Populate updatedFormData with existing details of the selected question
-    setupdateFormData({
+    console.log("the question data", question._id);
+
+    setUpdatedFormData({
+      questionid: question._id,
+      selectedYear: question.selectedYear,
       type: question.type,
       description: question.description,
       selectedCategory: question.categoryId,
       selectedTopic: question.topicId,
       selectedSubtopic: question.subtopicId,
       selectedQuiz: question.quizId,
+      selectedMock: question.mockId,
       question: question.question,
       option1: question.option1,
       option2: question.option2,
@@ -97,75 +108,68 @@ const QuestionsPage = () => {
       difficultyLevel: question.difficultyLevel,
     });
   };
-  useEffect(() => {
-    if (selectedQuestion) {
-      setUpdatedFormData({
-        type: selectedQuestion.type,
-        description: selectedQuestion.description || "",
-        selectedCategory: selectedQuestion.categoryId || "",
-        selectedTopic: selectedQuestion.topicId || "",
-        selectedSubtopic: selectedQuestion.subtopicId || "",
-        selectedQuiz: selectedQuestion.quizId || "",
-        question: selectedQuestion.question || "",
-        option1: selectedQuestion.option1 || "",
-        option2: selectedQuestion.option2 || "",
-        option3: selectedQuestion.option3 || "",
-        option4: selectedQuestion.option4 || "",
-        answer: selectedQuestion.answer || "",
-        difficultyLevel: selectedQuestion.difficultyLevel || "",
-      });
-    }
-  }, [selectedQuestion]);
+  // useEffect(() => {
+  //   if (selectedQuestion) {
+  //     setUpdatedFormData(selectedQuestion);
+  //   }
+  // }, [selectedQuestion]);
   const handleCancelUpdate = () => {
     setShowUpdateContainer(false);
     setSelectedQuestion(null);
   };
 
   const handleUpdateSubmit = () => {
-    if (selectedQuestionData && selectedQuestionData._id) {
-      const { _id } = selectedQuestionData;
+    const dataToSend = {
+      ...updatedFormData,
+      categoryId: updatedFormData.selectedCategory,
+      topicId: updatedFormData.selectedTopic,
+      subtopicId: updatedFormData.selectedSubtopic,
+      quizId: updatedFormData.selectedQuiz,
+      mockId: updatedFormData.mockId,
+    };
 
-      const dataToSend = {
-        ...updatedFormData,
-        categoryId: updatedFormData.selectedCategory,
-        topicId: updatedFormData.selectedTopic,
-        subtopicId: updatedFormData.selectedSubtopic,
-        quizId: updatedFormData.selectedQuiz,
-      };
+    // Set loading state to true
+    setIsUpdatingQuestion(true);
 
-      fetch(`https://exam-back-end-2.vercel.app/admin/updateQuestions/${_id}`, {
+    fetch(
+      `https://exam-back-end-2.vercel.app/admin/updateQuestions/${updatedFormData.questionid}`,
+      {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(dataToSend),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Question updated successfully:", data);
+        toast.success("Question updated successfully");
+
+        setTimeout(() => {
+          handleCancelUpdate();
+          fetchQuestionsData(currentPage);
+          // Set loading state to false after successful update
+          setIsUpdatingQuestion(false);
+        }, 3000);
       })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Question updated successfully:", data);
-          toast.success("Question updated successfully");
+      .catch((error) => {
+        console.error("Error updating question:", error);
+        toast.error("Error updating question. Please try again.");
 
-          setTimeout(() => {
-            handleCancelUpdate();
-            fetchQuestionsData(currentPage);
-          }, 3000);
-        })
-        .catch((error) => {
-          console.error("Error updating question:", error);
-          toast.error("Error updating question. Please try again.");
-        });
+        // Set loading state to false on error
+        setIsUpdatingQuestion(false);
+      });
 
-      // Assuming setQuestionsData is a state updater function
-      setQuestionsData((prevData) =>
-        prevData.map((question) =>
-          question._id === _id ? { ...question, ...dataToSend } : question
-        )
-      );
+    setQuestionsData((prevData) =>
+      prevData.map((question) =>
+        question._id === updatedFormData.questionid
+          ? { ...question, ...dataToSend }
+          : question
+      )
+    );
 
-      setSelectedQuestionData(null);
-    } else {
-      console.error("Selected question data or _id is null.");
-    }
+    setSelectedQuestionData(null);
   };
 
   const handleCategoryChange = (e) => {
@@ -264,6 +268,16 @@ const QuestionsPage = () => {
       .catch((error) => {
         console.error("Error fetching quizzes:", error);
       });
+
+    fetch(`${baseApi}getAllMocks`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Assuming data.data is an array of mocks
+        setMocks(data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching mocks:", error);
+      });
   };
 
   const handleAddComponent = () => {
@@ -273,25 +287,25 @@ const QuestionsPage = () => {
   const handleContainerClose = () => {
     setShowContainer(false);
   };
-  useEffect(() => {
-    if (selectedQuestion) {
-      setUpdatedFormData({
-        type: selectedQuestion.type,
-        description: selectedQuestion.description || "",
-        selectedCategory: selectedQuestion.categoryId || "",
-        selectedTopic: selectedQuestion.topicId || "",
-        selectedSubtopic: selectedQuestion.subtopicId || "",
-        selectedQuiz: selectedQuestion.quizId || "",
-        question: selectedQuestion.question || "",
-        option1: selectedQuestion.option1 || "",
-        option2: selectedQuestion.option2 || "",
-        option3: selectedQuestion.option3 || "",
-        option4: selectedQuestion.option4 || "",
-        answer: selectedQuestion.answer || "",
-        difficultyLevel: selectedQuestion.difficultyLevel || "",
-      });
-    }
-  }, [selectedQuestion]);
+  // useEffect(() => {
+  //   if (selectedQuestion) {
+  //     setUpdatedFormData({
+  //       type: selectedQuestion.type,
+  //       description: selectedQuestion.description || "",
+  //       selectedCategory: selectedQuestion.categoryId || "",
+  //       selectedTopic: selectedQuestion.topicId || "",
+  //       selectedSubtopic: selectedQuestion.subtopicId || "",
+  //       selectedQuiz: selectedQuestion.quizId || "",
+  //       question: selectedQuestion.question || "",
+  //       option1: selectedQuestion.option1 || "",
+  //       option2: selectedQuestion.option2 || "",
+  //       option3: selectedQuestion.option3 || "",
+  //       option4: selectedQuestion.option4 || "",
+  //       answer: selectedQuestion.answer || "",
+  //       difficultyLevel: selectedQuestion.difficultyLevel || "",
+  //     });
+  //   }
+  // }, [selectedQuestion]);
   const handleChange = (e, isUpdated = false) => {
     const { name, value } = e.target;
 
@@ -318,16 +332,67 @@ const QuestionsPage = () => {
       }));
     }
   };
-
   const handleUpdateChange = (e) => {
     const { name, value } = e.target;
 
-    console.log(`Updating ${name} to ${value}`);
+    //   setUpdatedFormData((prevData) => {if(name==="categoryId"){
+    //     return(
+    //       {
 
-    setUpdatedFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    //         ...prevData,
+    //         selectedCategory: value,
+    //       }
+    //     )
+    //   }
+    //   else if{
+
+    //   }
+    // }
+
+    //   );
+
+    // Update selectedCategory, selectedTopic, and selectedSubtopic based on dropdown changes
+    if (name === "categoryId") {
+      setUpdatedFormData((prevData) => ({
+        ...prevData,
+        selectedCategory: value,
+        selectedTopic: "", // Reset selectedTopic when category changes
+        selectedSubtopic: "", // Reset selectedSubtopic when category changes
+        selectedQuiz: "", // Reset selectedQuiz when category changes
+        selectedMock: "", // Reset selectedMock when category changes
+      }));
+    } else if (name === "topicId") {
+      setUpdatedFormData((prevData) => ({
+        ...prevData,
+        selectedTopic: value,
+        selectedSubtopic: "", // Reset selectedSubtopic when topic changes
+        selectedQuiz: "", // Reset selectedQuiz when topic changes
+        selectedMock: "", // Reset selectedMock when topic changes
+      }));
+    } else if (name === "subtopicId") {
+      setUpdatedFormData((prevData) => ({
+        ...prevData,
+        selectedSubtopic: value,
+        selectedQuiz: "", // Reset selectedQuiz when subtopic changes
+        selectedMock: "", // Reset selectedMock when subtopic changes
+      }));
+    } else if (name === "quizId") {
+      setUpdatedFormData((prevData) => ({
+        ...prevData,
+        selectedQuiz: value,
+        selectedMock: "", // Reset selectedMock when quiz changes
+      }));
+    } else if (name === "mockId") {
+      setUpdatedFormData((prevData) => ({
+        ...prevData,
+        selectedMock: value,
+      }));
+    } else {
+      setUpdatedFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
 
     setValidationErrors((prevErrors) => ({
       ...prevErrors,
@@ -338,6 +403,9 @@ const QuestionsPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Set loading state to true
+    setIsAddingQuestion(true);
+
     const submitButton = document.querySelector(".submitbutton");
     submitButton.setAttribute("disabled", "true");
 
@@ -347,6 +415,9 @@ const QuestionsPage = () => {
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
       submitButton.removeAttribute("disabled");
+
+      // Set loading state to false on validation errors
+      setIsAddingQuestion(false);
       return;
     }
 
@@ -354,6 +425,7 @@ const QuestionsPage = () => {
       ...formData,
       categoryId: selectedCategory,
       topicId: selectedTopic,
+      mockId: selectedMock,
       subtopicId: selectedSubtopic,
       quizId: selectedQuiz,
     };
@@ -376,9 +448,10 @@ const QuestionsPage = () => {
         toast.success("Question added successfully");
 
         // Re-enable the button after successful submission
+        submitButton.removeAttribute("disabled");
 
         setTimeout(() => {
-          submitButton.removeAttribute("disabled");
+          setIsAddingQuestion(false);
           handleContainerClose();
           fetchQuestionsData(currentPage);
         }, 3000);
@@ -389,6 +462,9 @@ const QuestionsPage = () => {
         // Re-enable the button on error
         submitButton.removeAttribute("disabled");
         toast.error("Error adding question. Please try again.");
+
+        // Set loading state to false on error
+        setIsAddingQuestion(false);
       });
   };
 
@@ -414,7 +490,7 @@ const QuestionsPage = () => {
         toast.error("Error deleting question. Please try again.");
       });
   };
-
+  console.log(updatedFormData);
   return (
     <div className="questions-page-container">
       <ToastContainer
@@ -518,17 +594,7 @@ const QuestionsPage = () => {
                     )}
                   </>
                 )}
-                <label htmlFor="description">Description:</label>
-                <textarea
-                  rows={3}
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                />
-                {validationErrors.description && (
-                  <span className="error">{validationErrors.description}</span>
-                )}
+
                 <label htmlFor="categoryId">Category:</label>
                 <select
                   id="categoryId"
@@ -593,6 +659,21 @@ const QuestionsPage = () => {
                     </option>
                   ))}
                 </select>
+                <label htmlFor="mockId">Mock:</label>
+                <select
+                  id="mockId"
+                  name="mockId"
+                  value={selectedMock}
+                  onChange={(e) => setSelectedMock(e.target.value)}
+                >
+                  <option value="">Select a mock (optional)</option>
+                  {mocks.map((mock) => (
+                    <option key={mock._id} value={mock._id}>
+                      {mock.testName}
+                    </option>
+                  ))}
+                </select>
+
                 <label htmlFor="question">Question:</label>
                 <textarea
                   rows={5}
@@ -672,6 +753,17 @@ const QuestionsPage = () => {
                     {validationErrors.correctAnswer}
                   </span>
                 )}
+                <label htmlFor="description">Description:</label>
+                <textarea
+                  rows={3}
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                />
+                {validationErrors.description && (
+                  <span className="error">{validationErrors.description}</span>
+                )}
                 <label htmlFor="difficultyLevel">Difficulty Level:</label>
                 <select
                   id="difficultyLevel"
@@ -691,8 +783,17 @@ const QuestionsPage = () => {
                     {validationErrors.difficultyLevel}
                   </span>
                 )}
-                <button type="submit" className="submitbutton">
-                  Add Question
+                <button
+                  type="submit"
+                  className="submitbutton"
+                  disabled={isAddingQuestion}
+                  onClick={handleSubmit}
+                >
+                  {isAddingQuestion ? (
+                    <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
+                  ) : (
+                    "Add Question"
+                  )}
                 </button>
                 <button
                   type="button"
@@ -718,7 +819,13 @@ const QuestionsPage = () => {
                 <div id="detail">
                   <strong>ID:</strong> &nbsp;{question._id}
                 </div>
-
+                <div id="detail">
+                  <strong>Type:</strong> &nbsp;{question.type}
+                </div>
+                <div id="detail">
+                  <strong>Year:</strong> &nbsp;
+                  {question.selectedYear || "Not mentioned"}
+                </div>
                 <div id="detail">
                   <strong> Category ID:</strong> &nbsp;{question.categoryId}
                 </div>
@@ -727,6 +834,10 @@ const QuestionsPage = () => {
                 </div>
                 <div id="detail">
                   <strong> Quiz ID:</strong> &nbsp;{question.quizId}
+                </div>
+
+                <div id="detail">
+                  <strong> Mock ID:</strong> &nbsp;{question.mockId}
                 </div>
                 <div id="detail">
                   <strong> Created At:</strong> &nbsp;
@@ -826,25 +937,41 @@ const QuestionsPage = () => {
               {validationErrors.type && (
                 <span className="error">{validationErrors.type}</span>
               )}
-
-              <label htmlFor="description">Description:</label>
-              <textarea
-                rows={3}
-                id="description"
-                name="description"
-                value={updatedFormData.description}
-                onChange={handleUpdateChange}
-              />
-              {validationErrors.description && (
-                <span className="error">{validationErrors.description}</span>
+              {updatedFormData.type === "previousYear" && (
+                <>
+                  <label htmlFor="selectedYear">Select Year:</label>
+                  <select
+                    id="selectedYear"
+                    name="selectedYear"
+                    value={updatedFormData.selectedYear}
+                    onChange={handleUpdateChange}
+                    required
+                  >
+                    <option value="">Select a year</option>
+                    {/* get all years from 50 years */}
+                    {Array.from({ length: 21 }, (_, index) => {
+                      const year = new Date().getFullYear() - index;
+                      return (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  {validationErrors.selectedYear && (
+                    <span className="error">
+                      {validationErrors.selectedYear}
+                    </span>
+                  )}
+                </>
               )}
 
-              <label htmlFor="categoryId">Category:</label>
+              <lable htmlFor="categoryId">Category:</lable>
               <select
                 id="categoryId"
                 name="categoryId"
-                value={selectedCategory}
-                onChange={handleCategoryChange}
+                value={updatedFormData.selectedCategory}
+                onChange={handleUpdateChange}
                 required
               >
                 <option value="">Select a category</option>
@@ -854,55 +981,71 @@ const QuestionsPage = () => {
                   </option>
                 ))}
               </select>
-
               <label htmlFor="topicId">Topic:</label>
               <select
                 id="topicId"
                 name="topicId"
-                value={selectedTopic}
-                onChange={handleTopicChange}
+                value={updatedFormData.selectedTopic}
+                onChange={handleUpdateChange}
                 required={selectedCategory !== ""}
               >
                 <option value="">Select a topic</option>
-                {topics
-                  .filter((topic) => topic.categoryId === selectedCategory)
-                  .map((topic) => (
-                    <option key={topic._id} value={topic._id}>
-                      {topic.name}
-                    </option>
-                  ))}
+                {topics.map(
+                  (topic) =>
+                    topic.categoryId === updatedFormData.selectedCategory && (
+                      <option key={topic._id} value={topic._id}>
+                        {topic.name}
+                      </option>
+                    )
+                )}
               </select>
 
               <label htmlFor="subtopicId">Subtopic:</label>
               <select
                 id="subtopicId"
                 name="subtopicId"
-                value={selectedSubtopic}
-                onChange={handleSubtopicChange}
+                value={updatedFormData.selectedSubtopic}
+                onChange={handleUpdateChange}
                 required={selectedTopic !== ""}
               >
                 <option value="">Select a subtopic</option>
-                {subtopics
-                  .filter((subtopic) => subtopic.topicId === selectedTopic)
-                  .map((subtopic) => (
-                    <option key={subtopic._id} value={subtopic._id}>
-                      {subtopic.name}
-                    </option>
-                  ))}
+                {subtopics.map(
+                  (subtopic) =>
+                    subtopic.topicId === updatedFormData.selectedTopic && (
+                      <option key={subtopic._id} value={subtopic._id}>
+                        {subtopic.name}
+                      </option>
+                    )
+                )}
               </select>
 
               <label htmlFor="quizId">Quiz:</label>
               <select
                 id="quizId"
                 name="quizId"
-                value={selectedQuiz}
-                onChange={handleQuizChange}
+                value={updatedFormData.selectedQuiz}
+                onChange={handleUpdateChange}
                 required={selectedSubtopic !== ""}
               >
                 <option value="">Select a quiz</option>
                 {quizzes.map((quiz) => (
                   <option key={quiz._id} value={quiz._id}>
                     {quiz.name}
+                  </option>
+                ))}
+              </select>
+
+              <label htmlFor="mockId">Mock:</label>
+              <select
+                id="mockId"
+                name="mockId"
+                value={updatedFormData.selectedMock}
+                onChange={handleUpdateChange}
+              >
+                <option value="">Select a mock (optional)</option>
+                {mocks.map((mock) => (
+                  <option key={mock._id} value={mock._id}>
+                    {mock.testName}
                   </option>
                 ))}
               </select>
@@ -989,6 +1132,17 @@ const QuestionsPage = () => {
               {validationErrors.correctAnswer && (
                 <span className="error">{validationErrors.correctAnswer}</span>
               )}
+              <label htmlFor="description">Description:</label>
+              <textarea
+                rows={3}
+                id="description"
+                name="description"
+                value={updatedFormData.description}
+                onChange={handleUpdateChange}
+              />
+              {validationErrors.description && (
+                <span className="error">{validationErrors.description}</span>
+              )}
               <label htmlFor="difficultyLevel">Difficulty Level:</label>
               <select
                 id="difficultyLevel"
@@ -1012,10 +1166,18 @@ const QuestionsPage = () => {
               <button
                 type="submit"
                 className="update-submit-button"
-                onClick={() => handleUpdateSubmit(updatedFormData)}
+                disabled={isUpdatingQuestion}
+                onClick={() => {
+                  handleUpdateSubmit();
+                }}
               >
-                Update Question
+                {isUpdatingQuestion ? (
+                  <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
+                ) : (
+                  "Update Question"
+                )}
               </button>
+
               <button
                 type="button"
                 onClick={handleCancelUpdate}

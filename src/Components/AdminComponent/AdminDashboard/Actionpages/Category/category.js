@@ -10,6 +10,9 @@ const capitalizeFirstLetter = (string) => {
 };
 
 const CategoryPage = () => {
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [showUpdateContainer, setShowUpdateContainer] = useState(false);
+  const [isUpdatingCategory, setIsUpdatingCategory] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showContainer, setShowContainer] = useState(false);
@@ -17,6 +20,7 @@ const CategoryPage = () => {
     name: "",
     description: "",
   });
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
 
   useEffect(() => {
     getAllCategories();
@@ -41,6 +45,7 @@ const CategoryPage = () => {
 
   const handleContainerClose = () => {
     setShowContainer(false);
+    getAllCategories();
   };
 
   const handleChange = (e) => {
@@ -58,6 +63,9 @@ const CategoryPage = () => {
       console.error("Name and description are required");
       return;
     }
+
+    // Disable the button to prevent multiple clicks
+    setIsAddingCategory(true);
 
     fetch("https://exam-back-end-2.vercel.app/admin/addCategory", {
       method: "POST",
@@ -77,17 +85,81 @@ const CategoryPage = () => {
 
         toast.success("Category added successfully");
 
-        // setCategoryData((prevData) => [...prevData, data.category])
-
         handleContainerClose();
       })
       .catch((error) => {
         console.error("Error adding category:", error);
 
         toast.error("Error adding category. Please try again.");
+      })
+      .finally(() => {
+        // Enable the button after the operation is completed (whether success or error)
+        setIsAddingCategory(false);
       });
   };
+  const handleUpdateCategory = (category) => {
+    setSelectedCategory(category);
+    setFormData({
+      name: category.name,
+      description: category.description,
+    });
+    setShowUpdateContainer(true);
+  };
 
+  const handleUpdateContainerClose = () => {
+    setShowUpdateContainer(false);
+    setSelectedCategory(null);
+  };
+
+  const handleUpdateSubmit = (e) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.description) {
+      console.error("Name and description are required");
+      return;
+    }
+
+    // Disable the button to prevent multiple clicks
+    setIsUpdatingCategory(true);
+
+    fetch(
+      `https://exam-back-end-2.vercel.app/admin/updateCategory/${selectedCategory._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Category updated successfully:", data);
+
+        toast.success("Category updated successfully");
+
+        // Re-enable the button after a successful operation
+        setIsUpdatingCategory(false);
+
+        setTimeout(() => {
+          handleUpdateContainerClose();
+          getAllCategories();
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error("Error updating category:", error);
+
+        toast.error("Error updating category. Please try again.");
+
+        // Re-enable the button after an error
+        setIsUpdatingCategory(false);
+      });
+  };
   return (
     <div className="themain">
       <div className="CategoryPage">
@@ -157,12 +229,100 @@ const CategoryPage = () => {
                     required
                   ></textarea>
 
-                  <button type="submit" className="submitbutton">
-                    Add Category
+                  <button
+                    type="submit"
+                    className="submitbutton"
+                    disabled={isAddingCategory} // Disable the button when adding category
+                  >
+                    {isAddingCategory ? (
+                      <span>
+                        Adding...
+                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                      </span>
+                    ) : (
+                      "Add Category"
+                    )}
                   </button>
+
                   <button
                     type="button"
                     onClick={handleContainerClose}
+                    className="close-button"
+                  >
+                    <AiOutlineClose />
+                  </button>
+                </form>
+              </div>
+            </div>
+          </>
+        )}
+        {showUpdateContainer && selectedCategory && (
+          <>
+            <div
+              style={{
+                position: "absolute",
+                top: "10%",
+                bottom: "0",
+                left: "15%",
+                right: "0",
+                background: "#22222250",
+              }}
+            ></div>
+            <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
+            <div className="overlay" onClick={handleUpdateContainerClose}>
+              <div
+                className="containering"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <form className="form" onSubmit={handleUpdateSubmit}>
+                  <label htmlFor="name">Name:</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+
+                  <label htmlFor="description">Description:</label>
+                  <textarea
+                    rows={5}
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                  ></textarea>
+
+                  <button
+                    type="submit"
+                    className="submitbutton"
+                    disabled={isUpdatingCategory}
+                  >
+                    {isUpdatingCategory ? (
+                      <span>
+                        Updating...
+                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                      </span>
+                    ) : (
+                      "Update Category"
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleUpdateContainerClose}
                     className="close-button"
                   >
                     <AiOutlineClose />
@@ -191,7 +351,6 @@ const CategoryPage = () => {
                     &nbsp;
                     {capitalizeFirstLetter(category.name)}
                   </div>
-
                   <div id="detail">
                     <strong> Created At:</strong> &nbsp;
                     {new Date(category.createdAt).toLocaleString()}
@@ -199,6 +358,15 @@ const CategoryPage = () => {
                 </div>
                 <div className="description">
                   <strong>Description:</strong> &nbsp;{category.description}
+                </div>
+                <div className="buttonforupdatecategory">
+                  <button
+                    type="button"
+                    className="logoutbutton"
+                    onClick={() => handleUpdateCategory(category)}
+                  >
+                    Update
+                  </button>
                 </div>
               </li>
             ))}
