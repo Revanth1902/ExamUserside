@@ -67,7 +67,7 @@ const StudentSignup = () => {
           toast("Your account has created");
           // toast("Please Login");
           toast("Please Login");
-          history.push("/StudentLogin");
+          history.replace("/StudentLogin");
         }
       }
     } catch (error) {

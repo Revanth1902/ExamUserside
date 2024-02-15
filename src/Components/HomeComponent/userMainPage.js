@@ -135,7 +135,7 @@ const MyProflie = () => {
         <div className="side-bar-userProfile">
           <button
             onClick={() => {
-              history.push("/");
+              history.replace("/");
             }}
             type="button"
             style={{

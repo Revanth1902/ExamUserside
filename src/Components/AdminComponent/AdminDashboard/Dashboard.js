@@ -49,7 +49,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (Cookies.get("jwt_AdminToken") === undefined) {
-      history.push("/AdminLogin");
+      history.replace("/AdminLogin");
     }
   });
 

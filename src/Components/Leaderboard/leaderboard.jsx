@@ -44,109 +44,6 @@ const backgroundColors = [
 const LeaderBoard = () => {
   const params = useParams();
 
-  const leaderboardData = [
-    {
-      position: 1,
-      name: "Sharmila",
-      enteredOn: "2024-01-18",
-      timeTaken: "1:30",
-      totalQuestions: 10,
-      attempted: 8,
-      score: 80,
-      result: "Pass",
-    },
-    {
-      position: 2,
-      name: "Abhishek",
-      enteredOn: "2024-01-19",
-      timeTaken: "1:45",
-      totalQuestions: 10,
-      attempted: 9,
-      score: 75,
-      result: "Pass",
-    },
-    {
-      position: 3,
-      name: "Arun",
-      enteredOn: "2024-01-20",
-      timeTaken: "2:00",
-      totalQuestions: 10,
-      attempted: 7,
-      score: 70,
-      result: "Pass",
-    },
-    {
-      position: 4,
-      name: "Purna",
-      enteredOn: "2024-01-21",
-      timeTaken: "1:20",
-      totalQuestions: 10,
-      attempted: 8,
-      score: 85,
-      result: "Pass",
-    },
-    {
-      position: 5,
-      name: "Noy",
-      enteredOn: "2024-01-22",
-      timeTaken: "1:15",
-      totalQuestions: 10,
-      attempted: 9,
-      score: 78,
-      result: "Pass",
-    },
-    {
-      position: 6,
-      name: "Vamsi",
-      enteredOn: "2024-01-18",
-      timeTaken: "1:30",
-      totalQuestions: 10,
-      attempted: 8,
-      score: 80,
-      result: "Pass",
-    },
-    {
-      position: 7,
-      name: "John",
-      enteredOn: "2024-01-19",
-      timeTaken: "1:45",
-      totalQuestions: 10,
-      attempted: 9,
-      score: 75,
-      result: "Pass",
-    },
-    {
-      position: 8,
-      name: "Emma",
-      enteredOn: "2024-01-20",
-      timeTaken: "2:00",
-      totalQuestions: 10,
-      attempted: 7,
-      score: 70,
-      result: "Pass",
-    },
-    {
-      position: 9,
-      name: "Alex",
-      enteredOn: "2024-01-21",
-      timeTaken: "1:20",
-      totalQuestions: 10,
-      attempted: 8,
-      score: 85,
-      result: "Pass",
-    },
-    {
-      position: 10,
-      name: "Sophie",
-      enteredOn: "2024-01-22",
-      timeTaken: "1:15",
-      totalQuestions: 10,
-      attempted: 9,
-      score: 78,
-      result: "Pass",
-    },
-  ];
-
   const [leaderboardResults, setLeaderBoardResults] = useState(() => {
     return [];
   });
@@ -168,7 +65,13 @@ const LeaderBoard = () => {
     const res = await axios.get(url);
 
     if (res.status === 200) {
-      console.log(res.data);
+      const sortedArr = res.data.data.sort((a, b) => b.totalMark - a.totalMark);
+      let position = 0;
+      const positionAdded = sortedArr.map((each) => {
+        position = position + 1;
+        return { ...each, position: position };
+      });
+      setLeaderBoardResults(positionAdded);
     }
   };
 
@@ -185,18 +88,14 @@ const LeaderBoard = () => {
                 <th></th>
                 <th>Name</th>
                 <th>Position</th>
-                <th>Entered On</th>
-                <th>Time Taken</th>
-                <th>Total Questions</th>
-                <th>Attempted</th>
-                <th>Score</th>
-                <th>Result</th>
+                <th>Total Marks</th>
+                <th>Email</th>
               </tr>
             </thead>
             <tbody>
-              {leaderboardData.map((data, index) => (
+              {leaderboardResults.map((data, index) => (
                 <tr
-                  key={index}
+                  key={data.position}
                   style={{
                     backgroundColor: `${
                       backgroundColors[
@@ -218,7 +117,7 @@ const LeaderBoard = () => {
                     <CgProfile />
                   </td>
                   <td style={{ position: "relative" }}>
-                    {data.name}
+                    {`${data.userId.firstName} ${data.userId.lastName}`}
                     {data.position === 1 ||
                     data.position === 2 ||
                     data.position === 3 ? (
@@ -237,12 +136,8 @@ const LeaderBoard = () => {
                     )}
                   </td>
                   <td>{data.position}</td>
-                  <td>{data.enteredOn}</td>
-                  <td>{data.timeTaken}</td>
-                  <td>{data.totalQuestions}</td>
-                  <td>{data.attempted}</td>
-                  <td>{data.score}</td>
-                  <td>{data.result}</td>
+                  <td>{data.totalMark}</td>
+                  <td>{data.userId.email}</td>
                 </tr>
               ))}
             </tbody>

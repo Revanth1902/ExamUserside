@@ -163,7 +163,7 @@ const MCQCurrentAffairs = () => {
             </p>
             <button
               onClick={() => {
-                history.push("/");
+                history.replace("/");
               }}
               className="cls"
               type="button"
@@ -199,7 +199,7 @@ const MCQCurrentAffairs = () => {
             overflowX: "hidden",
           }}
         >
-          {mcqquestions.map((each) => (
+          {allQuestion.map((each) => (
             <div style={{ position: "relative" }}>
               <span
                 style={{
@@ -219,50 +219,102 @@ const MCQCurrentAffairs = () => {
               <h3 style={{ marginBottom: "2%" }}>
                 Q{each.no}.&nbsp;{each.question}
               </h3>
-              <p
+              <span
                 style={
                   each.option1 === each.answered && each.answered !== undefined
                     ? each[each.answer] === each.answered
-                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
-                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
-                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                      ? {
+                          backgroundColor: "#00FF0050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                      : {
+                          backgroundColor: "#FF000050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                    : {
+                        backgroundColor: "transparent",
+                        marginLeft: "2%",
+                        padding: "0% 2%",
+                      }
                 }
               >
                 I.&nbsp;{each.option1}
-              </p>
-              <p
+              </span>
+              <br />
+              <span
                 style={
                   each.option2 === each.answered && each.answered !== undefined
                     ? each[each.answer] === each.answered
-                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
-                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
-                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                      ? {
+                          backgroundColor: "#00FF0050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                      : {
+                          backgroundColor: "#FF000050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                    : {
+                        backgroundColor: "transparent",
+                        marginLeft: "2%",
+                        padding: "0% 2%",
+                      }
                 }
               >
                 II.&nbsp;{each.option2}
-              </p>
-              <p
+              </span>
+              <br />
+              <span
                 style={
                   each.option3 === each.answered && each.answered !== undefined
                     ? each[each.answer] === each.answered
-                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
-                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
-                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                      ? {
+                          backgroundColor: "#00FF0050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                      : {
+                          backgroundColor: "#FF000050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                    : {
+                        backgroundColor: "transparent",
+                        marginLeft: "2%",
+                        padding: "0% 2%",
+                      }
                 }
               >
                 III.&nbsp;{each.option3}
-              </p>
-              <p
+              </span>
+              <br />
+              <span
                 style={
                   each.option4 === each.answered && each.answered !== undefined
                     ? each[each.answer] === each.answered
-                      ? { backgroundColor: "#00FF0050", paddingLeft: "2%" }
-                      : { backgroundColor: "#FF000050", paddingLeft: "2%" }
-                    : { backgroundColor: "transparent", paddingLeft: "2%" }
+                      ? {
+                          backgroundColor: "#00FF0050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                      : {
+                          backgroundColor: "#FF000050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                    : {
+                        backgroundColor: "transparent",
+                        marginLeft: "2%",
+                        padding: "0% 2%",
+                      }
                 }
               >
                 IV.&nbsp;{each.option4}
-              </p>
+              </span>
+              <br />
               <p
                 style={{
                   marginTop: "2%",
@@ -368,7 +420,7 @@ const MCQCurrentAffairs = () => {
               padding: "1% 2%",
             }}
             onClick={() => {
-              history.push("/");
+              history.replace("/");
             }}
             className="cls"
             type="button"
@@ -485,6 +537,7 @@ const MCQCurrentAffairs = () => {
                         }}
                         className="next"
                         type="button"
+                        style={{ bottom: "0.2%" }}
                       >
                         Submit Exam
                       </button>

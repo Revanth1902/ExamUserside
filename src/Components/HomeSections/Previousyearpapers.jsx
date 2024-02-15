@@ -1,21 +1,26 @@
-import React, { useState } from "react";
-import data from "../data.js";
+import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import axios from "axios";
 import Cookies from "js-cookie";
 
 const Previousyearpapers = () => {
-  const [weeklyNoOffElement, setweeklyNoOffElement] = useState(4);
+  const [allYears, setAllYears] = useState(() => {
+    return [];
+  });
+  const [selectedYear, setSelectedYear] = useState("");
 
-  const slice = data.previousyearpaper.slice(0, weeklyNoOffElement);
+  useEffect(() => {
+    generatePrevious20Years();
+  }, []);
 
-  const loadMore = () => {
-    setweeklyNoOffElement(weeklyNoOffElement + weeklyNoOffElement);
-  };
-
-  const handlePreviousYear = () => {
-    toast("You cannot access without logging in. \n please login first.");
+  const generatePrevious20Years = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = 1; i < 20; i++) {
+      years.push(currentYear - i);
+    }
+    setAllYears(years);
   };
 
   return (
@@ -32,47 +37,67 @@ const Previousyearpapers = () => {
         pauseOnHover
         theme="dark"
       />
-      <section className="py-4 container">
-        <h2 className="pb-4 text-center text-lg-start">
-          Previous year Paper <span class="badge bg-secondary">New</span>
-        </h2>
-        <div className="row justify-content-center">
-          {slice.map((item, index) => {
-            return (
-              <div className="col-11 col-md-6 col-lg-3 mx-0 mb-4">
-                <div className="card p-0 overflow-hidden h-100 shadow">
-                  <img src={item.img} alt="" className="card-img-top" />
-                  <div className="card-body">
-                    <h5 className="card-title">{item.title}</h5>
-                    <p className="card-text">{item.desc}</p>
-                    <div className="text-center">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        onClick={() => {
-                          Cookies.get("userToken") === undefined
-                            ? (window.location.href = "/StudentLogin")
-                            : handlePreviousYear();
-                        }}
-                      >
-                        Start Now
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <button
-          className="btn btn-dark d-block w-100"
-          onClick={() => loadMore()}
-        >
-          Load More
-        </button>
-      </section>
 
-      <hr />
+      <div className="customquiz">
+        <h2 className="mock-head pb-4 text-center text-lg-start ">
+          Previous Year <span className="badge bg-secondary">Papers</span>
+        </h2>
+        <img src="/Quiz.jpg" alt="Quiz Image" />
+        <div className="customize">
+          <form style={{ marginTop: "10%" }}>
+            <div>
+              <label htmlFor="category">Select Year : &nbsp;</label>
+              <select
+                style={{ textTransform: "capitalize" }}
+                onChange={(e) => {
+                  setSelectedYear(e.target.value);
+                }}
+                id="category"
+              >
+                <option value="">Select</option>
+                {allYears.map((each) => (
+                  <option
+                    value={each}
+                    style={{ textTransform: "capitalize" }}
+                    id={each}
+                  >
+                    {each}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {selectedYear === "" && (
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: ".8rem",
+                  color: "red",
+                  marginBottom: "-2%",
+                }}
+              >
+                * required
+              </p>
+            )}
+          </form>
+
+          {
+            <button
+              onClick={() => {
+                if (Cookies.get("userToken") === undefined) {
+                  window.location.href = "/StudentLogin";
+                } else if (selectedYear === "") {
+                  toast("Please Select Year");
+                } else {
+                  window.location.href = `/mcqprev/${selectedYear}`;
+                }
+              }}
+              type="button"
+            >
+              Start
+            </button>
+          }
+        </div>
+      </div>
     </>
   );
 };

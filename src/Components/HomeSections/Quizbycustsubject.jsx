@@ -202,12 +202,18 @@ const Quizbycustsubject = () => {
             )}
             <div>
               <label htmlFor="topics">Select Sub Topic : &nbsp;</label>
-              <select id="topics">
-                <option>Select</option>
+              <select
+                onClick={(e) => {
+                  setSelectedSubTopic(e.target.value);
+                }}
+                id="topics"
+              >
+                <option value="">Select</option>
                 {selectedCategroy !== "" &&
                   selectedTopic !== "" &&
                   allSubtopics.map((each) => (
                     <option
+                      value={each._id}
                       style={{ textTransform: "capitalize" }}
                       id={each._id}
                     >

@@ -33,7 +33,7 @@
 //       setCheck(true);
 //       alert("success");
 //       sessionStorage.setItem("user", user.user_email);
-//       history.push("/StudentDashboard");
+//       history.replace("/StudentDashboard");
 //     }
 //   }
 //   if (check) alert(" Wrong User Email or password");
@@ -127,7 +127,7 @@
 //         setCheck(true);
 //         alert("success");
 //         sessionStorage.setItem("user", user.user_email);
-//         history.push("/StudentDashboard");
+//         history.replace("/StudentDashboard");
 //       }
 //     }
 //     if (check) alert(" Wrong User Email or password");
@@ -259,7 +259,7 @@ const StudentLogin = () => {
           Cookies.set("jwt_lastName", response.data.data.lastName, {
             expires: 7,
           });
-          history.push("/");
+          history.replace("/");
         }
       }
     } catch (error) {

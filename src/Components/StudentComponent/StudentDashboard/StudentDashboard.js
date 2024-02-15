@@ -15,7 +15,7 @@
 //         useEffect( () => {
 //                 if(sessionStorage.getItem("user") == null){
 //                     alert("Detect Illegal Way of Entering");
-//                     history.push("/StudentLogin");
+//                     history.replace("/StudentLogin");
 //                 }
 //         })
 
@@ -23,7 +23,7 @@
 
 //          function logout(){
 //              sessionStorage.clear();
-//             history.push("/StudentLogin");
+//             history.replace("/StudentLogin");
 //          }
 
 //           return (
@@ -86,7 +86,7 @@ function StudentDashboard() {
   useEffect(() => {
     if (Cookies.get("userToken") === undefined) {
       toast("Detect Illegal Way of Entering");
-      history.push("/StudentLogin");
+      history.replace("/StudentLogin");
     }
   });
 
@@ -94,7 +94,7 @@ function StudentDashboard() {
 
   function logout() {
     Cookies.remove();
-    history.push("/StudentLogin");
+    history.replace("/StudentLogin");
   }
 
   return (

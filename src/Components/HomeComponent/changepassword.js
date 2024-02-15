@@ -50,7 +50,7 @@ const Changepassword = () => {
             Cookies.remove("jwt_firstName");
             Cookies.remove("jwt_lastName");
 
-            history.push("/StudentLogin");
+            history.replace("/StudentLogin");
           }, 1000);
         }
       } catch (error) {

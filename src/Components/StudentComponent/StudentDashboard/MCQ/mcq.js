@@ -1,5 +1,7 @@
 import { useEffect, useReducer, useState } from "react";
 import "./mcq.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Cookies from "js-cookie";
 
@@ -27,6 +29,7 @@ const MCQ = () => {
 
   const [submitted, setSubmitted] = useState("");
   const [showResults, setResults] = useState(false);
+  const [onetime, setOneTime] = useState(0);
   const [showAns, setshowAns] = useState(false);
   const [totalCount, setCount] = useState(0);
 
@@ -40,6 +43,7 @@ const MCQ = () => {
   const [load2, setLoad2] = useState(false);
 
   const [page, setPage] = useState(1);
+
   const history = useHistory();
 
   useEffect(() => {
@@ -78,6 +82,7 @@ const MCQ = () => {
     }, 1000);
     if (showResults === true) {
       clearTimeout(timerId);
+      setOneTime((prevTime) => prevTime + 1);
     }
   }, [timer.minutes, timer.seconds, showResults]);
 
@@ -100,10 +105,15 @@ const MCQ = () => {
       const res = await axios.get(url);
 
       if (res.status === 200) {
-        let updatedArr = res.data.data.map((each) => ({
-          ...each,
-          answered: "",
-        }));
+        let numbering = res.data.currentPage * 10 - 10;
+        let updatedArr = res.data.data.map((each) => {
+          numbering = numbering + 1;
+          return {
+            ...each,
+            qno: numbering,
+            answered: "",
+          };
+        });
 
         if (mcqquestions.length === 0) {
           setCount(res.data.count);
@@ -131,11 +141,18 @@ const MCQ = () => {
             }
           }
 
-          setQuestions(newUpdatedArr);
-          setCurrent(res.data.currentPage);
-          setTotalQuestion(res.data.totalPages);
-          setLoad(false);
-          setLoad2(true);
+          if (newUpdatedArr.length === 0) {
+            toast("No Questions Available");
+            setTimeout(() => {
+              window.location.href = "/";
+            }, 1000);
+          } else {
+            setQuestions(newUpdatedArr);
+            setCurrent(res.data.currentPage);
+            setTotalQuestion(res.data.totalPages);
+            setLoad(false);
+            setLoad2(true);
+          }
         }
       }
       const element = document.getElementById("scrollToStart");
@@ -145,6 +162,10 @@ const MCQ = () => {
         inline: "nearest",
       });
     } catch (error) {
+      toast("No Questions Available");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
       setLoad(false);
       setLoad2(true);
       console.error(error);
@@ -157,41 +178,32 @@ const MCQ = () => {
       { name: "Wrong", value: 0 },
     ]);
 
-    const [ontimeCall, setOneTimeCall] = useState(0);
-
     useEffect(() => {
       const updatedData = allQuestion.reduce(
         (acc, each) => {
           if (each.answered === each[each.answer]) {
-            acc[0].value += 1; // Increment 'Correct' value
+            acc[0].value += 1;
           } else {
-            acc[1].value += 1; // Increment 'Wrong' value
+            acc[1].value += 1;
           }
           return acc;
         },
         [...data] // Use a copy of the existing data to ensure immutability
       );
 
-      updatedData.push({ name: "Attempted", value: allQuestion.length });
-      updatedData.push({
-        name: "Not Attempted",
-        value: totalCount - allQuestion.length,
-      });
+      updatedData.push(
+        { name: "Attempted", value: allQuestion.length },
+        {
+          name: "Not Attempted",
+          value: totalCount - allQuestion.length,
+        }
+      );
+      addingResultsToLeaderBoard(data[0].value * 2 - data[1].value * 0.5);
 
       setData(updatedData);
-
-      addingResultsToLeaderBoard(data[0].value * 2 - data[1].value * 0.5);
-      setOneTimeCall(ontimeCall + 1);
     }, []);
 
-    useEffect(() => {
-      if (ontimeCall === 1) {
-        addingResultsToLeaderBoard(data[0].value * 2 - data[1].value * 0.5);
-      }
-    }, [ontimeCall]);
-
     const addingResultsToLeaderBoard = async (marks) => {
-      let count = 0;
       try {
         const url = `https://exam-back-end.vercel.app/admin/createLeaderBoard`;
 
@@ -264,7 +276,7 @@ const MCQ = () => {
             </p>
             <button
               onClick={() => {
-                history.push("/");
+                history.replace("/");
               }}
               className="cls"
               type="button"
@@ -277,14 +289,14 @@ const MCQ = () => {
                 setshowAns(true);
               }}
               className="leaderboard"
-              style={{ bottom: "22.5%" }}
+              style={{ bottom: "22.5%", right: "0%" }}
               type="button"
             >
               Check Answers
             </button>
             <button
               onClick={() => {
-                history.push(`/leaderboard/${params.id}`);
+                history.replace(`/leaderboard/${params.id}`);
               }}
               className="leaderboard"
               type="button"
@@ -301,7 +313,164 @@ const MCQ = () => {
     return (
       <>
         <div className="submitBackground"></div>
-        <div className="results">Answers</div>
+        <div
+          className="results"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "scroll",
+            overflowX: "hidden",
+          }}
+        >
+          {allQuestion.map((each) => (
+            <div style={{ position: "relative" }}>
+              <span
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  top: "18%",
+                  backgroundColor: "#00FF0050",
+                  paddingTop: "0%",
+                  paddingBottom: ".3%",
+                  paddingLeft: "1%",
+                  paddingRight: "1%",
+                  borderRadius: ".2rem",
+                }}
+              >
+                Ans : {each[each.answer]}
+              </span>
+              <h3 style={{ marginBottom: "2%" }}>
+                Q{each.no}.&nbsp;{each.question}
+              </h3>
+              <span
+                style={
+                  each.option1 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? {
+                          backgroundColor: "#00FF0050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                      : {
+                          backgroundColor: "#FF000050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                    : {
+                        backgroundColor: "transparent",
+                        marginLeft: "2%",
+                        padding: "0% 2%",
+                      }
+                }
+              >
+                I.&nbsp;{each.option1}
+              </span>
+              <br />
+              <span
+                style={
+                  each.option2 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? {
+                          backgroundColor: "#00FF0050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                      : {
+                          backgroundColor: "#FF000050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                    : {
+                        backgroundColor: "transparent",
+                        marginLeft: "2%",
+                        padding: "0% 2%",
+                      }
+                }
+              >
+                II.&nbsp;{each.option2}
+              </span>
+              <br />
+              <span
+                style={
+                  each.option3 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? {
+                          backgroundColor: "#00FF0050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                      : {
+                          backgroundColor: "#FF000050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                    : {
+                        backgroundColor: "transparent",
+                        marginLeft: "2%",
+                        padding: "0% 2%",
+                      }
+                }
+              >
+                III.&nbsp;{each.option3}
+              </span>
+              <br />
+              <span
+                style={
+                  each.option4 === each.answered && each.answered !== undefined
+                    ? each[each.answer] === each.answered
+                      ? {
+                          backgroundColor: "#00FF0050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                      : {
+                          backgroundColor: "#FF000050",
+                          marginLeft: "2%",
+                          padding: "0% 2%",
+                        }
+                    : {
+                        backgroundColor: "transparent",
+                        marginLeft: "2%",
+                        padding: "0% 2%",
+                      }
+                }
+              >
+                IV.&nbsp;{each.option4}
+              </span>
+              <br />
+              <p
+                style={{
+                  marginTop: "2%",
+                  marginBottom: "2%",
+                  paddingLeft: "2%",
+                }}
+              >
+                Explanation : {each.description}
+              </p>
+            </div>
+          ))}
+          <button
+            onClick={() => {
+              setResults(true);
+              setshowAns(false);
+            }}
+            style={{
+              backgroundColor: "#212529",
+              color: "white",
+              paddingTop: "0%",
+              paddingBottom: ".3%",
+              paddingLeft: "1%",
+              paddingRight: "1%",
+              borderRadius: ".2rem",
+              width: "10%",
+              marginLeft: "85%",
+              border: 0,
+            }}
+            type="button"
+          >
+            Close
+          </button>
+        </div>
       </>
     );
   };
@@ -371,9 +540,26 @@ const MCQ = () => {
   return (
     <>
       {submitted !== "" && <SubmitExam />}
-      {showResults === true ? <Results /> : showAns && <Ans />}
-      <div id="scrollToStart"></div>
-      {!load ? (
+      {showResults === true && onetime === 2 ? (
+        <Results />
+      ) : (
+        showAns === true && onetime === 2 && <Ans />
+      )}
+      <div id="scrollToStart">
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+      </div>
+      {!load && mcqquestions.length > 0 ? (
         <div className="mcq-con">
           <h1>Mock Test</h1>
 
@@ -391,7 +577,7 @@ const MCQ = () => {
               padding: "1% 2%",
             }}
             onClick={() => {
-              history.push("/");
+              history.replace("/");
             }}
             className="cls"
             type="button"
@@ -417,7 +603,9 @@ const MCQ = () => {
               )}
               {mcqquestions.map((each) => (
                 <div key={each._id}>
-                  <h3>Q. {each.question}</h3>
+                  <h3>
+                    Q{each.qno}.&nbsp;{each.question}
+                  </h3>
                   <div className="options">
                     <div>
                       <input

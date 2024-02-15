@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 
 import Cookies from "js-cookie";
+import axios from "axios";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { PieChart, Pie, Cell, Label, ResponsiveContainer } from "recharts";
 
@@ -12,11 +16,9 @@ import {
   useLocation,
 } from "react-router-dom/cjs/react-router-dom.min";
 
-import axios from "axios";
+import "./mcqprev.css";
 
-import "./mcqCustom.css";
-
-const MCQCustom = () => {
+const MCQPrev = () => {
   const params = useParams();
   const location = useLocation();
 
@@ -36,6 +38,7 @@ const MCQCustom = () => {
   const [load, setLoad] = useState(true);
   const [load2, setLoad2] = useState(false);
   const [page, setPage] = useState(1);
+
   const history = useHistory();
 
   useEffect(() => {
@@ -46,90 +49,58 @@ const MCQCustom = () => {
   }, []);
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const objectString = queryParams.get("data");
-    if (objectString) {
-      const myObject = JSON.parse(decodeURIComponent(objectString));
-      getCustomQuestions(myObject);
-    }
+    getPrevQuestion();
   }, [location.search, page]);
 
-  const getCustomQuestions = async (myObject) => {
-    setLoad2(false);
+  const getPrevQuestion = async () => {
     try {
-      const filterdObj = {};
-
-      for (let each in myObject) {
-        if (myObject[each] !== "") {
-          filterdObj[each] = myObject[each];
-        }
-      }
-
-      console.log(filterdObj);
-
-      const url = `https://exam-back-end.vercel.app/admin/getQuestionsByAllFilters?difficultyLevel=${
-        filterdObj.difficultyLevel !== undefined
-          ? filterdObj.difficultyLevel
-          : ""
-      }&categoryId=${
-        filterdObj.categoryId !== undefined ? filterdObj.categoryId : ""
-      }&topicId=${
-        filterdObj.topicId !== undefined ? filterdObj.topicId : ""
-      }&subtopicId=${
-        filterdObj.subtopicId !== undefined ? filterdObj.subtopicId : ""
-      }`;
-
+      const url = `https://exam-back-end-2.vercel.app/admin/getQuestionBySelectedYear?selectedYear=${params.year}`;
       const res = await axios.get(url);
-
-      if (res.status === 200) {
-        console.log(res.data);
-        let updatedArr = res.data.result.map((each) => ({
-          ...each,
-          answered: "",
-        }));
-        if (mcqquestions.length === 0) {
-          setCount(updatedArr.length);
-          setQuestions(updatedArr);
-          setCurrent(res.data.currentPage);
-          setTotalQuestion(res.data.totalPages);
+      if (res.data.count === 0) {
+        toast("No Questions Available");
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1000);
+      } else if (res.status === 200) {
+        const myObject = res.data.data;
+        if (myObject.length > 0) {
+          let count = 0;
+          const addedCount = myObject.map((each) => {
+            count = count + 1;
+            return { no: count, ...each };
+          });
+          setCount(myObject.length);
+          setQuestions(addedCount);
+          setCurrent(1);
+          setTotalQuestion(1);
           setLoad(false);
           setLoad2(true);
-        } else {
-          let newUpdatedArr = [];
-          let matched = false;
-          for (let question of updatedArr) {
-            for (let each of allQuestion) {
-              if (question._id === each._id) {
-                newUpdatedArr.push(each);
-                matched = true;
-                break;
-              }
-            }
-            if (matched === false) {
-              newUpdatedArr.push(question);
-            } else {
-              matched = false;
-            }
-          }
-          setQuestions(newUpdatedArr);
-          setCurrent(res.data.currentPage);
-          setTotalQuestion(res.data.totalPages);
-          setLoad(false);
-          setLoad2(true);
+          const element = document.getElementById("scrollToStart");
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest",
+          });
         }
+      } else {
+        toast("No Questions Available");
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1000);
+        setLoad(false);
+        setLoad2(true);
       }
-      const element = document.getElementById("scrollToStart");
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-        inline: "nearest",
-      });
     } catch (error) {
+      toast(error);
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
       setLoad(false);
       setLoad2(true);
       console.error(error);
     }
   };
+
   const Results = () => {
     const [data, setData] = useState([
       { name: "Correct", value: 0 },
@@ -238,7 +209,6 @@ const MCQCustom = () => {
               }}
               className="leaderboard"
               type="button"
-              style={{ marginLeft: "3%" }}
             >
               Check Answers
             </button>
@@ -462,14 +432,28 @@ const MCQCustom = () => {
       match === true ? changedArr : [...changedArr, { ...ea, answered: ans }]
     );
   };
+
   return (
     <>
       {submitted !== "" && <SubmitExam />}
       {showResults === true ? <Results /> : showAns && <Ans />}
-      <div id="scrollToStart"></div>
+      <div id="scrollToStart">
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+      </div>
       {!load ? (
         <div className="mcq-con">
-          <h1>Custom Quiz</h1>
+          <h1 style={{ marginBottom: "5" }}>Prev Year Questions</h1>
           <button
             style={{
               position: "fixed",
@@ -488,7 +472,6 @@ const MCQCustom = () => {
           >
             X
           </button>
-
           {mcqquestions.length > 0 && (
             <div style={{ overflow: "hidden" }} className="questions-box">
               {!load2 && (
@@ -508,8 +491,9 @@ const MCQCustom = () => {
               )}
               {mcqquestions.map((each) => (
                 <div key={each._id}>
-                  <h3>Q. {each.question}</h3>
-
+                  <h3>
+                    Q{each.no}. &nbsp;{each.question}
+                  </h3>
                   <div className="options">
                     <div>
                       <input
@@ -625,4 +609,4 @@ const MCQCustom = () => {
   );
 };
 
-export default MCQCustom;
+export default MCQPrev;

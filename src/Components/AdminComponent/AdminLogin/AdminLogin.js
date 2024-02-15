@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 
 import Navbar from "../../HomeComponent/Navbar";
@@ -10,7 +9,6 @@ import Cookies from "js-cookie";
 import Dashboard from "../AdminDashboard/Dashboard";
 import { TailSpin } from "react-loader-spinner";
 
-
 const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [admin, setAdmin] = useState({
@@ -21,13 +19,13 @@ const AdminLogin = () => {
   const history = useHistory();
   useEffect(() => {
     if (Cookies.get("jwt_AdminToken") !== undefined) {
-      history.push("/Admindashboard");
+      history.replace("/Admindashboard");
     }
   });
 
   useEffect(() => {
     if (Cookies.get("jwt_AdminToken") !== undefined) {
-      history.push("/Admindashboard");
+      history.replace("/Admindashboard");
     }
   });
 
@@ -51,16 +49,14 @@ const AdminLogin = () => {
         Cookies.set("jwt_AdminToken", response.data.token, { expires: 7 });
         Cookies.set("jwt_AdminId", response.data.data._id, { expires: 7 });
 
-        history.push("/AdminDashboard");
+        history.replace("/AdminDashboard");
       } else {
         alert(response.data.message || "Login failed");
       }
     } catch (error) {
       console.error("Error during login:", error.message);
-
     } finally {
       setLoading(false);
-
     }
   };
 
@@ -97,7 +93,6 @@ const AdminLogin = () => {
                   />
                 </div>
                 <div className="py-3 mx-5">
-
                   {loading ? (
                     <button
                       type="button"
@@ -118,7 +113,6 @@ const AdminLogin = () => {
                       value="ADMIN LOGIN"
                     />
                   )}
-
                 </div>
               </form>
             </div>

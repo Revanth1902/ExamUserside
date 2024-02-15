@@ -253,7 +253,7 @@ const Currentaffair = () => {
             receivedMocks.map((each) => (
               <div
                 key={each._id}
-                style={{ width: "20%", marginLeft: "3%" }}
+                style={{ width: "20%", marginLeft: "5%" }}
                 className="mock-div"
               >
                 <div>

@@ -86,7 +86,7 @@ function Test() {
     };
 
     await axios.post("http://localhost:3333/result", data);
-    history.push("/StudentDashboard/Result");
+    history.replace("/StudentDashboard/Result");
   }
 
   let history = useHistory();

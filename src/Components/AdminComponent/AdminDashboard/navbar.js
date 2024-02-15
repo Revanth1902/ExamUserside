@@ -13,7 +13,7 @@ const Navba = () => {
   const handleLogout = () => {
     deleteCookie("jwt_AdminToken");
     deleteCookie("jwt_AdminId");
-    history.push("/AdminLogin");
+    history.replace("/AdminLogin");
   };
   return (
     <div className="Navbaring">
