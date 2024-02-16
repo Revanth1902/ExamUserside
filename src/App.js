@@ -69,7 +69,7 @@ function App() {
           <Route exact path="/mcqcustom" component={MCQCustom} />
           <Route
             exact
-            path="/mcqcurrentAffairs"
+            path="/mcqcurrentAffairs/:id"
             component={MCQCurrentAffairs}
           />
           <Route exact path="/mcqprev/:year" component={MCQPrev} />

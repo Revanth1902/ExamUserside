@@ -3,6 +3,8 @@ import "./leaderboard.css";
 import { useParams } from "react-router-dom";
 import { Hourglass } from "react-loader-spinner";
 
+import Cookies from "js-cookie";
+
 // Library imports
 import { CgProfile } from "react-icons/cg";
 
@@ -82,6 +84,21 @@ const LeaderBoard = () => {
           <div>
             <h1>Leaderboard</h1>
           </div>
+          {leaderboardResults.map(
+            (each) =>
+              each.userId._id === Cookies.get("jwt_userID") && (
+                <h5
+                  style={{
+                    position: "absolute",
+                    right: "8%",
+                    top: "15%",
+                    fontWeight: "bolder",
+                  }}
+                >
+                  Your Position - {each.position}
+                </h5>
+              )
+          )}
           <table>
             <thead>
               <tr className="table-head">
@@ -137,7 +154,10 @@ const LeaderBoard = () => {
                   </td>
                   <td>{data.position}</td>
                   <td>{data.totalMark}</td>
-                  <td>{data.userId.email}</td>
+                  <td>
+                    {data.userId.email}
+                    {data.usr}
+                  </td>
                 </tr>
               ))}
             </tbody>

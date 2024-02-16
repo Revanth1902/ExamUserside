@@ -43,6 +43,7 @@ const MCQCustom = () => {
   const history = useHistory();
 
   useEffect(() => {
+    localStorage.setItem("section", JSON.stringify("custom"));
     const evTypep = window.performance.getEntriesByType("navigation")[0].type;
     if (evTypep === "reload" || evTypep === "back_forward") {
       window.location.replace("/");
@@ -273,23 +274,24 @@ const MCQCustom = () => {
         >
           {mcqquestions.map((each) => (
             <div style={{ position: "relative" }}>
-              <span
-                style={{
-                  position: "absolute",
-                  right: 0,
-                  top: "18%",
-                  backgroundColor: "#00FF0050",
-                  paddingTop: "0%",
-                  paddingBottom: ".3%",
-                  paddingLeft: "1%",
-                  paddingRight: "1%",
-                  borderRadius: ".2rem",
-                }}
-              >
-                Ans : {each[each.answer]}
-              </span>
               <h3 style={{ marginBottom: "2%" }}>
-                Q{each.no}.&nbsp;{each.question}
+                Q{each.no}.&nbsp;{each.question} &nbsp;
+                <span
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "18%",
+                    backgroundColor: "#00FF0050",
+                    paddingTop: "0%",
+                    paddingBottom: ".3%",
+                    paddingLeft: "1%",
+                    paddingRight: "1%",
+                    borderRadius: ".2rem",
+                    fontSize: ".8rem",
+                  }}
+                >
+                  Ans : {each[each.answer]}
+                </span>
               </h3>
               <span
                 style={
@@ -627,7 +629,7 @@ const MCQCustom = () => {
                         }}
                         className="next"
                         type="button"
-                        style={{ bottom: "1.5%" }}
+                        style={{ bottom: "0.5%" }}
                       >
                         Submit Exam
                       </button>

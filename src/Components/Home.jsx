@@ -9,7 +9,6 @@ import Quizbycustsubject from "./HomeSections/Quizbycustsubject";
 import Footer from "../Components/Footer.jsx";
 
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 
 const sections = {
   currentaffairsweekly: "currentaffairsweekly",
@@ -21,9 +20,23 @@ const sections = {
 
 const Home = () => {
   const [handleSidebar, setSidebar] = useState(false);
+
+  const section = JSON.parse(localStorage.getItem("section"));
+
   const [selectedSection, setSelectedSection] = useState(
-    sections.currentaffairsweekly
+    section !== null
+      ? section === "weekly"
+        ? sections.currentaffairsweekly
+        : section === "monthly"
+        ? sections.currentaffairsmonthly
+        : section === "prev"
+        ? sections.previousyearspapers
+        : section === "custom"
+        ? sections.customquiz
+        : section === "mock" && sections.mocktest
+      : sections.currentaffairsweekly
   );
+  localStorage.removeItem("section");
 
   return (
     <div className="home-component">

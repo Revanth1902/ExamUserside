@@ -279,7 +279,7 @@ const Currentaffair = () => {
                           "data",
                           JSON.stringify(sortedQuestion[mockId])
                         );
-                        window.location.href = `/mcqcurrentAffairs`;
+                        window.location.href = `/mcqcurrentAffairs/monthly`;
                       }
                     }}
                     button="button"

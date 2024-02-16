@@ -38,6 +38,7 @@ const MCQCurrentAffairs = () => {
   const history = useHistory();
 
   useEffect(() => {
+    localStorage.setItem("section", JSON.stringify(params.id));
     const evTypep = window.performance.getEntriesByType("navigation")[0].type;
     if (evTypep === "reload" || evTypep === "back_forward") {
       window.location.replace("/");
@@ -201,23 +202,25 @@ const MCQCurrentAffairs = () => {
         >
           {allQuestion.map((each) => (
             <div style={{ position: "relative" }}>
-              <span
-                style={{
-                  position: "absolute",
-                  right: 0,
-                  top: "18%",
-                  backgroundColor: "#00FF0050",
-                  paddingTop: "0%",
-                  paddingBottom: ".3%",
-                  paddingLeft: "1%",
-                  paddingRight: "1%",
-                  borderRadius: ".2rem",
-                }}
-              >
-                Ans : {each[each.answer]}
-              </span>
               <h3 style={{ marginBottom: "2%" }}>
                 Q{each.no}.&nbsp;{each.question}
+                &nbsp;
+                <span
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "18%",
+                    backgroundColor: "#00FF0050",
+                    paddingTop: "0%",
+                    paddingBottom: ".3%",
+                    paddingLeft: "1%",
+                    paddingRight: "1%",
+                    borderRadius: ".2rem",
+                    fontSize: ".8rem",
+                  }}
+                >
+                  Ans : {each[each.answer]}
+                </span>
               </h3>
               <span
                 style={
@@ -408,7 +411,10 @@ const MCQCurrentAffairs = () => {
       <div id="scrollToStart"></div>
       {!load ? (
         <div className="mcq-con">
-          <h1 style={{ marginBottom: "5" }}>Current Affairs</h1>
+          <h1 style={{ marginBottom: "5" }}>
+            <span style={{ textTransform: "capitalize" }}>{params.id}</span>{" "}
+            &nbsp; Current Affairs
+          </h1>
           <button
             style={{
               position: "fixed",
@@ -539,7 +545,7 @@ const MCQCurrentAffairs = () => {
                         }}
                         className="next"
                         type="button"
-                        style={{ bottom: "1.5%" }}
+                        style={{ bottom: "0.5%" }}
                       >
                         Submit Exam
                       </button>
