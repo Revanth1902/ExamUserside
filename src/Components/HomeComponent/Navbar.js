@@ -182,6 +182,9 @@ function Navbar() {
                               margin: 0,
                               marginLeft: "30%",
                               marginTop: "4%",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
                             }}
                           >
                             {Cookies.get("jwt_firstName")}&nbsp;

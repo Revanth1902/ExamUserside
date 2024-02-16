@@ -238,9 +238,6 @@ const MCQPrev = () => {
                 Q{each.no}.&nbsp;{each.question} &nbsp;{" "}
                 <span
                   style={{
-                    position: "absolute",
-                    right: 0,
-                    top: "18%",
                     backgroundColor: "#00FF0050",
                     paddingTop: "0%",
                     paddingBottom: ".3%",
