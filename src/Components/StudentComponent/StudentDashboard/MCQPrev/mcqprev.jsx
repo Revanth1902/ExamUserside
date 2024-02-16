@@ -463,11 +463,13 @@ const MCQPrev = () => {
               right: 0,
               width: "5%",
               padding: "1% 2%",
+              background: "transparent",
+              border: 0,
+              color: "white",
             }}
             onClick={() => {
               history.replace("/");
             }}
-            className="cls"
             type="button"
           >
             X
@@ -582,7 +584,7 @@ const MCQPrev = () => {
                         }}
                         className="next"
                         type="button"
-                        style={{ bottom: "0.2%" }}
+                        style={{ bottom: "1.5%" }}
                       >
                         Submit Exam
                       </button>

@@ -43,6 +43,7 @@ const MCQ = () => {
   const [load2, setLoad2] = useState(false);
 
   const [page, setPage] = useState(1);
+  const [timerr, setTimerId] = useState("");
 
   const history = useHistory();
 
@@ -80,6 +81,7 @@ const MCQ = () => {
         }
       }
     }, 1000);
+    setTimerId(timerId);
     if (showResults === true) {
       clearTimeout(timerId);
       setOneTime((prevTime) => prevTime + 1);
@@ -179,6 +181,7 @@ const MCQ = () => {
     ]);
 
     useEffect(() => {
+      clearTimeout(timerr);
       const updatedData = allQuestion.reduce(
         (acc, each) => {
           if (each.answered === each[each.answer]) {
@@ -310,6 +313,9 @@ const MCQ = () => {
   };
 
   const Ans = () => {
+    useEffect(() => {
+      clearTimeout(timerr);
+    }, []);
     return (
       <>
         <div className="submitBackground"></div>
@@ -340,7 +346,7 @@ const MCQ = () => {
                 Ans : {each[each.answer]}
               </span>
               <h3 style={{ marginBottom: "2%" }}>
-                Q{each.no}.&nbsp;{each.question}
+                Q{each.qno}.&nbsp;{each.question}
               </h3>
               <span
                 style={
@@ -451,6 +457,7 @@ const MCQ = () => {
           ))}
           <button
             onClick={() => {
+              setOneTime(1);
               setResults(true);
               setshowAns(false);
             }}
@@ -545,6 +552,7 @@ const MCQ = () => {
       ) : (
         showAns === true && onetime === 2 && <Ans />
       )}
+
       <div id="scrollToStart">
         <ToastContainer
           position="top-center"
@@ -559,6 +567,7 @@ const MCQ = () => {
           theme="light"
         />
       </div>
+
       {!load && mcqquestions.length > 0 ? (
         <div className="mcq-con">
           <h1>Mock Test</h1>
@@ -575,11 +584,13 @@ const MCQ = () => {
               right: 0,
               width: "5%",
               padding: "1% 2%",
+              background: "transparent",
+              border: 0,
+              color: "white",
             }}
             onClick={() => {
               history.replace("/");
             }}
-            className="cls"
             type="button"
           >
             X
@@ -696,6 +707,7 @@ const MCQ = () => {
                       }}
                       className="next"
                       type="button"
+                      style={{ bottom: "1.2%" }}
                     >
                       Submit Exam
                     </button>
