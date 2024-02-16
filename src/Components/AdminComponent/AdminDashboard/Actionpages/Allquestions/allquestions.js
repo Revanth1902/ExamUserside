@@ -844,13 +844,18 @@ const QuestionsPage = () => {
                   {capitalizeFirstLetter(question.topicId.name)}
                 </div>
                 <div id="detail">
+                  <strong>Subtopic : </strong>&nbsp;
+                  {capitalizeFirstLetter(question.subtopicId.name)}
+                </div>
+                <div id="detail">
                   <strong> Quiz :</strong> &nbsp;
                   {capitalizeFirstLetter(question.quizId.name)}
                 </div>
-
                 <div id="detail">
                   <strong> Mock :</strong> &nbsp;
-                  {capitalizeFirstLetter(question.mockId.testName)}
+                  {question.mockId
+                    ? capitalizeFirstLetter(question.mockId.testName)
+                    : "Not Available"}
                 </div>
                 <div id="detail">
                   <strong> Created At:</strong> &nbsp;
