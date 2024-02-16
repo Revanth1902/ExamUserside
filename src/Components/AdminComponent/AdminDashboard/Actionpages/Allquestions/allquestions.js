@@ -94,11 +94,11 @@ const QuestionsPage = () => {
       selectedYear: question.selectedYear,
       type: question.type,
       description: question.description,
-      selectedCategory: question.categoryId,
-      selectedTopic: question.topicId,
-      selectedSubtopic: question.subtopicId,
-      selectedQuiz: question.quizId,
-      selectedMock: question.mockId,
+      selectedCategory: question.categoryId._id,
+      selectedTopic: question.topicId._id,
+      selectedSubtopic: question.subtopicId._id,
+      selectedQuiz: question.quizId.id,
+      selectedMock: question.mockId._id,
       question: question.question,
       option1: question.option1,
       option2: question.option2,
@@ -151,7 +151,7 @@ const QuestionsPage = () => {
           fetchQuestionsData(currentPage);
           // Set loading state to false after successful update
           setIsUpdatingQuestion(false);
-        }, 3000);
+        }, 300);
       })
       .catch((error) => {
         console.error("Error updating question:", error);
@@ -399,6 +399,14 @@ const QuestionsPage = () => {
       [name]: "", // Clear validation error when the field is updated
     }));
   };
+  const capitalizeFirstLetter = (string) => {
+    if (string === undefined || string === null) {
+      // Handle the case when string is undefined or null
+      return "";
+    }
+
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -454,7 +462,7 @@ const QuestionsPage = () => {
           setIsAddingQuestion(false);
           handleContainerClose();
           fetchQuestionsData(currentPage);
-        }, 3000);
+        }, 300);
       })
       .catch((error) => {
         console.error("Error adding question:", error);
@@ -493,7 +501,6 @@ const QuestionsPage = () => {
   console.log(updatedFormData);
   return (
     <div className="questions-page-container">
-
       <ToastContainer
         position="top-center"
         autoClose={5000}
@@ -523,7 +530,6 @@ const QuestionsPage = () => {
           </button>
         </div>
       )}
-
 
       {showContainer && (
         <>
@@ -622,7 +628,9 @@ const QuestionsPage = () => {
                 >
                   <option value="">Select a topic</option>
                   {topics
-                    .filter((topic) => topic.categoryId === selectedCategory)
+                    .filter(
+                      (topic) => topic.categoryId._id === selectedCategory
+                    )
                     .map((topic) => (
                       <option key={topic._id} value={topic._id}>
                         {topic.name}
@@ -639,7 +647,9 @@ const QuestionsPage = () => {
                 >
                   <option value="">Select a subtopic</option>
                   {subtopics
-                    .filter((subtopic) => subtopic.topicId === selectedTopic)
+                    .filter(
+                      (subtopic) => subtopic.topicId._id === selectedTopic
+                    )
                     .map((subtopic) => (
                       <option key={subtopic._id} value={subtopic._id}>
                         {subtopic.name}
@@ -791,11 +801,7 @@ const QuestionsPage = () => {
                   disabled={isAddingQuestion}
                   onClick={handleSubmit}
                 >
-                  {isAddingQuestion ? (
-                    <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
-                  ) : (
-                    "Add Question"
-                  )}
+                  {isAddingQuestion ? "Adding ....." : "Add Question"}
                 </button>
                 <button
                   type="button"
@@ -822,24 +828,29 @@ const QuestionsPage = () => {
                   <strong>ID:</strong> &nbsp;{question._id}
                 </div>
                 <div id="detail">
-                  <strong>Type:</strong> &nbsp;{question.type}
+                  <strong>Type:</strong> &nbsp;
+                  {capitalizeFirstLetter(question.type)}
                 </div>
                 <div id="detail">
                   <strong>Year:</strong> &nbsp;
                   {question.selectedYear || "Not mentioned"}
                 </div>
                 <div id="detail">
-                  <strong> Category ID:</strong> &nbsp;{question.categoryId}
+                  <strong> Category:</strong> &nbsp;
+                  {capitalizeFirstLetter(question.categoryId.name)}
                 </div>
                 <div id="detail">
-                  <strong> Topic ID:</strong> &nbsp;{question.topicId}
+                  <strong> Topic :</strong> &nbsp;
+                  {capitalizeFirstLetter(question.topicId.name)}
                 </div>
                 <div id="detail">
-                  <strong> Quiz ID:</strong> &nbsp;{question.quizId}
+                  <strong> Quiz :</strong> &nbsp;
+                  {capitalizeFirstLetter(question.quizId.name)}
                 </div>
 
                 <div id="detail">
-                  <strong> Mock ID:</strong> &nbsp;{question.mockId}
+                  <strong> Mock :</strong> &nbsp;
+                  {capitalizeFirstLetter(question.mockId.testName)}
                 </div>
                 <div id="detail">
                   <strong> Created At:</strong> &nbsp;
@@ -857,7 +868,7 @@ const QuestionsPage = () => {
                 </div>
                 <div className="question-answer">
                   <strong>Difficulty Level :</strong> &nbsp;
-                  {question.difficultyLevel}
+                  {capitalizeFirstLetter(question.difficultyLevel)}
                 </div>
                 <div className="question-options">
                   <div id="option">Option 1: {question.option1}</div>
@@ -994,7 +1005,8 @@ const QuestionsPage = () => {
                 <option value="">Select a topic</option>
                 {topics.map(
                   (topic) =>
-                    topic.categoryId === updatedFormData.selectedCategory && (
+                    topic.categoryId._id ===
+                      updatedFormData.selectedCategory && (
                       <option key={topic._id} value={topic._id}>
                         {topic.name}
                       </option>
@@ -1013,7 +1025,7 @@ const QuestionsPage = () => {
                 <option value="">Select a subtopic</option>
                 {subtopics.map(
                   (subtopic) =>
-                    subtopic.topicId === updatedFormData.selectedTopic && (
+                    subtopic.topicId._id === updatedFormData.selectedTopic && (
                       <option key={subtopic._id} value={subtopic._id}>
                         {subtopic.name}
                       </option>
@@ -1173,11 +1185,7 @@ const QuestionsPage = () => {
                   handleUpdateSubmit();
                 }}
               >
-                {isUpdatingQuestion ? (
-                  <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
-                ) : (
-                  "Update Question"
-                )}
+                {isUpdatingQuestion ? "Updating...." : "Update Question"}
               </button>
 
               <button

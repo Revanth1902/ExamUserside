@@ -24,7 +24,9 @@ const MockPage = () => {
   useEffect(() => {
     fetchMockData();
   }, []);
-
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
   const fetchMockData = () => {
     fetch("https://exam-back-end-2.vercel.app/admin/getAllMocks")
       .then((response) => response.json())
@@ -134,7 +136,7 @@ const MockPage = () => {
 
         setTimeout(() => {
           handleContainerClose();
-        }, 1000);
+        }, 300);
       })
       .catch((error) => {
         console.error("Error adding mock:", error);
@@ -199,7 +201,7 @@ const MockPage = () => {
 
         setTimeout(() => {
           handleUpdateContainerClose();
-        }, 1000);
+        }, 300);
       })
       .catch((error) => {
         console.error("Error updating mock:", error);
@@ -319,8 +321,19 @@ const MockPage = () => {
                   <span className="error">{validationErrors.examTiming}</span>
                 )}
 
-                <button type="submit" className="submitbutton">
-                  Add Mock Test
+                <button
+                  type="submit"
+                  className="submitbutton"
+                  disabled={isAddingMock}
+                >
+                  {isAddingMock ? (
+                    <span>
+                      Adding...
+                    
+                    </span>
+                  ) : (
+                    "Add Mock Test"
+                  )}
                 </button>
                 <button
                   type="button"
@@ -425,7 +438,7 @@ const MockPage = () => {
                   {isUpdatingMock ? (
                     <span>
                       Updating...
-                      <TailSpin height={12} width={12} color={"#ffffff"} />
+                    
                     </span>
                   ) : (
                     "Update Mock Test"
@@ -456,7 +469,7 @@ const MockPage = () => {
                     <strong>Test Name:</strong>
                   </span>
                   &nbsp;
-                  {mock.testName}
+                  {capitalizeFirstLetter(mock.testName)}
                 </div>
 
                 <div id="detail">

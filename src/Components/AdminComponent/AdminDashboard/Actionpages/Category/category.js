@@ -149,7 +149,7 @@ const CategoryPage = () => {
         setTimeout(() => {
           handleUpdateContainerClose();
           getAllCategories();
-        }, 3000);
+        }, 300);
       })
       .catch((error) => {
         console.error("Error updating category:", error);
@@ -237,7 +237,7 @@ const CategoryPage = () => {
                     {isAddingCategory ? (
                       <span>
                         Adding...
-                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                       
                       </span>
                     ) : (
                       "Add Category"
@@ -314,7 +314,7 @@ const CategoryPage = () => {
                     {isUpdatingCategory ? (
                       <span>
                         Updating...
-                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                       
                       </span>
                     ) : (
                       "Update Category"
