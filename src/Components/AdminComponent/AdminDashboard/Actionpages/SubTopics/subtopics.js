@@ -104,7 +104,7 @@ const SubtopicsPage = () => {
         setTimeout(() => {
           handleContainerClose();
           getAllSubtopics();
-        }, 3000);
+        }, 300);
       })
       .catch((error) => {
         console.error("Error adding subtopic:", error);
@@ -168,7 +168,7 @@ const SubtopicsPage = () => {
         setTimeout(() => {
           handleUpdateContainerClose();
           getAllSubtopics();
-        }, 3000);
+        }, 300);
       })
       .catch((error) => {
         console.error("Error updating subtopic:", error);
@@ -272,7 +272,7 @@ const SubtopicsPage = () => {
                     {isAddingSubtopic ? (
                       <span>
                         Adding...
-                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                       
                       </span>
                     ) : (
                       "Add Subtopic"
@@ -349,7 +349,7 @@ const SubtopicsPage = () => {
                     {isUpdatingSubtopic ? (
                       <span>
                         Updating...
-                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                       
                       </span>
                     ) : (
                       "Update Subtopic"
@@ -389,7 +389,8 @@ const SubtopicsPage = () => {
                   </div>
 
                   <div id="detail">
-                    <strong> Topic ID:</strong> &nbsp;{subtopic.topicId}
+                    <strong> Topic :</strong> &nbsp;
+                    {capitalizeFirstLetter(subtopic.topicId.name)}
                   </div>
 
                   <div id="detail">

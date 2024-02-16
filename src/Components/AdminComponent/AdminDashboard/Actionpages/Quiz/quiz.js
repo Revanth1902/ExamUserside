@@ -14,6 +14,15 @@ const capitalizeFirstLetter = (string) => {
 };
 
 const QuizPage = () => {
+  const [showUpdateContainer, setShowUpdateContainer] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [updateFormData, setUpdateFormData] = useState({
+    name: "",
+    description: "",
+    key: "",
+  });
+  const [isUpdatingQuiz, setIsUpdatingQuiz] = useState(false);
+
   const [quizData, setQuizData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showContainer, setShowContainer] = useState(false);
@@ -43,6 +52,88 @@ const QuizPage = () => {
         console.error("Error fetching quiz data:", error);
         setLoading(false);
       });
+  };
+  const handleUpdateQuiz = (quiz) => {
+    setSelectedQuiz(quiz);
+    setUpdateFormData({
+      name: quiz.name,
+      description: quiz.description,
+      key: quiz.key,
+    });
+    setShowUpdateContainer(true);
+  };
+
+  const handleUpdateChange = (e) => {
+    const { name, value } = e.target;
+    setUpdateFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdateSubmit = (e) => {
+    e.preventDefault();
+
+    if (
+      !updateFormData.name ||
+      !updateFormData.description ||
+      !updateFormData.key
+    ) {
+      console.error("Updated Quiz name, description, and key are required");
+      return;
+    }
+
+    // Disable the button to prevent multiple clicks
+    setIsUpdatingQuiz(true);
+
+    fetch(
+      `https://exam-back-end-2.vercel.app/admin/updateQuiz/${selectedQuiz._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updateFormData),
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Quiz updated successfully:", data);
+
+        toast.success("Quiz updated successfully");
+
+        // Re-enable the button after a successful operation
+        setIsUpdatingQuiz(false);
+
+        setTimeout(() => {
+          handleUpdateContainerClose();
+          getAllQuiz();
+        }, 300);
+      })
+      .catch((error) => {
+        console.error("Error updating Quiz:", error);
+
+        toast.error("Error updating Quiz. Please try again.");
+
+        // Re-enable the button after an error
+        setIsUpdatingQuiz(false);
+      });
+  };
+
+  const handleUpdateContainerClose = () => {
+    setShowUpdateContainer(false);
+    setSelectedQuiz(null);
+    setUpdateFormData({
+      name: "",
+      description: "",
+      key: "",
+    });
+    getAllQuiz();
   };
 
   const handleAddComponent = () => {
@@ -257,7 +348,7 @@ const QuizPage = () => {
                     {isAddingQuiz ? (
                       <span>
                         Adding...
-                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                     
                       </span>
                     ) : (
                       "Add Quiz"
@@ -266,6 +357,95 @@ const QuizPage = () => {
                   <button
                     type="button"
                     onClick={handleContainerClose}
+                    className="close-button"
+                  >
+                    <AiOutlineClose />
+                  </button>
+                </form>
+              </div>
+            </div>
+          </>
+        )}
+        {showUpdateContainer && selectedQuiz && (
+          <>
+            <div
+              style={{
+                position: "absolute",
+                top: "10%",
+                bottom: "0",
+                left: "15%",
+                right: "0",
+                background: "#22222250",
+              }}
+            ></div>
+            <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
+            <div className="overlay" onClick={handleUpdateContainerClose}>
+              <div
+                className="containering"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <form className="form" onSubmit={handleUpdateSubmit}>
+                  <label htmlFor="updateName">Updated Quiz Name:</label>
+                  <input
+                    type="text"
+                    id="updateName"
+                    name="updateName"
+                    value={updateFormData.name}
+                    onChange={handleUpdateChange}
+                    required
+                  />
+
+                  <label htmlFor="updateDescription">
+                    Updated Description:
+                  </label>
+                  <textarea
+                    rows={5}
+                    id="updateDescription"
+                    name="updateDescription"
+                    value={updateFormData.description}
+                    onChange={handleUpdateChange}
+                    required
+                  ></textarea>
+
+                  <label htmlFor="updateKey">Updated Key:</label>
+                  <input
+                    type="text"
+                    id="updateKey"
+                    name="updateKey"
+                    value={updateFormData.key}
+                    onChange={handleUpdateChange}
+                    required
+                  />
+
+                  <button
+                    type="submit"
+                    className="submitbutton"
+                    disabled={isUpdatingQuiz}
+                  >
+                    {isUpdatingQuiz ? (
+                      <span>
+                        Updating...
+                       
+                      </span>
+                    ) : (
+                      "Update Quiz"
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleUpdateContainerClose}
                     className="close-button"
                   >
                     <AiOutlineClose />
@@ -309,13 +489,13 @@ const QuizPage = () => {
                     <strong>Description:</strong> &nbsp;{quiz.description}
                   </div>
                 )}
-                {/* <button
+                <button
                   type="button"
-                  onClick={() => handleDelete(quiz._id)}
-                  className="delete-button"
+                  onClick={() => handleUpdateQuiz(quiz)}
+                  className="logoutbutton"
                 >
-                  Delete Quiz
-                </button> */}
+                  Update Quiz
+                </button>
               </li>
             ))}
           </ul>

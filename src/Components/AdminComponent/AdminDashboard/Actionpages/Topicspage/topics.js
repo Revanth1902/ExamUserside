@@ -275,7 +275,7 @@ const TopicsPage = () => {
                     {isAddingCategory ? (
                       <span>
                         Adding...
-                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                       
                       </span>
                     ) : (
                       "Add Topic"
@@ -352,7 +352,7 @@ const TopicsPage = () => {
                     {isUpdatingTopic ? (
                       <span>
                         Updating...
-                        <TailSpin height={12} width={12} color={"#ffffff"} />
+                       
                       </span>
                     ) : (
                       "Update Topic"
@@ -391,7 +391,8 @@ const TopicsPage = () => {
                   </div>
 
                   <div id="detail">
-                    <strong> Topic ID:</strong> &nbsp;{topic.categoryId}
+                    <strong> Category :</strong> &nbsp;
+                    {capitalizeFirstLetter(topic.categoryId.name)}
                   </div>
 
                   <div id="detail">

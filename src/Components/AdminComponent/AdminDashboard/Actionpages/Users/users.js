@@ -22,6 +22,9 @@ const Users = () => {
         setLoading(false);
       });
   }, []);
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
   return (
     <>
@@ -38,16 +41,20 @@ const Users = () => {
                 <li key={user._id} className="user-item">
                   <div className="user-details">
                     <div className="user-info">
-                      <strong>First Name:</strong> {user.firstName}
+                      <strong>First Name:</strong>{" "}
+                      {capitalizeFirstLetter(user.firstName)}
                     </div>
                     <div className="user-info">
-                      <strong>Last Name:</strong> {user.lastName}
+                      <strong>Last Name:</strong>{" "}
+                      {capitalizeFirstLetter(user.lastName)}
                     </div>
                     <div className="user-info">
-                      <strong>Gender:</strong> {user.gender}
+                      <strong>Gender:</strong>{" "}
+                      {capitalizeFirstLetter(user.gender)}
                     </div>
+
                     <div className="user-info">
-                      <strong>DOB:</strong> {user.dob}
+                      <strong>DOB:</strong> {user.dob || "Not mentioned"}
                     </div>
                     <div className="user-info">
                       <strong>Mobile Number:</strong> {user.mobileNumber}
@@ -56,7 +63,7 @@ const Users = () => {
                       <strong>Email:</strong> {user.email}
                     </div>
                     <div className="user-info">
-                      <strong>State:</strong> {user.state}
+                      <strong>State:</strong> {user.state || "Not mentioned"}
                     </div>
                   </div>
                 </li>
