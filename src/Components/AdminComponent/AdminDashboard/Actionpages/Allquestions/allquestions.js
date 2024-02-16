@@ -120,13 +120,15 @@ const QuestionsPage = () => {
 
   const handleUpdateSubmit = () => {
     const dataToSend = {
-      ...updatedFormData,
-      categoryId: updatedFormData.selectedCategory,
-      topicId: updatedFormData.selectedTopic,
-      subtopicId: updatedFormData.selectedSubtopic,
-      quizId: updatedFormData.selectedQuiz,
-      mockId: updatedFormData.mockId,
+      ...formData,
+      categoryId: selectedCategory,
+      topicId: selectedTopic,
+      subtopicId: selectedSubtopic,
+      quizId: selectedQuiz,
     };
+    if (selectedMock !== "") {
+      dataToSend.mockId = selectedMock;
+    }
 
     // Set loading state to true
     setIsUpdatingQuestion(true);
@@ -428,15 +430,16 @@ const QuestionsPage = () => {
       setIsAddingQuestion(false);
       return;
     }
-
     const dataToSend = {
       ...formData,
       categoryId: selectedCategory,
       topicId: selectedTopic,
-      mockId: selectedMock,
       subtopicId: selectedSubtopic,
       quizId: selectedQuiz,
     };
+    if (selectedMock !== "") {
+      dataToSend.mockId = selectedMock;
+    }
 
     fetch("https://exam-back-end-2.vercel.app/admin/createQuestions", {
       method: "POST",
@@ -820,99 +823,107 @@ const QuestionsPage = () => {
           <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
         </div>
       ) : (
-        <ul className="QuestionsList">
-          {questionsData.map((question) => (
-            <li key={question._id} className="QuestionItem">
-              <div className="question-details">
-                <div id="detail">
-                  <strong>ID:</strong> &nbsp;{question._id}
-                </div>
-                <div id="detail">
-                  <strong>Type:</strong> &nbsp;
-                  {capitalizeFirstLetter(question.type)}
-                </div>
-                <div id="detail">
-                  <strong>Year:</strong> &nbsp;
-                  {question.selectedYear || "Not mentioned"}
-                </div>
-                <div id="detail">
-                  <strong> Category:</strong> &nbsp;
-                  {capitalizeFirstLetter(question.categoryId.name)}
-                </div>
-                <div id="detail">
-                  <strong> Topic :</strong> &nbsp;
-                  {capitalizeFirstLetter(question.topicId.name)}
-                </div>
-                <div id="detail">
-                  <strong>Subtopic : </strong>&nbsp;
-                  {capitalizeFirstLetter(question.subtopicId.name)}
-                </div>
-                <div id="detail">
-                  <strong> Quiz :</strong> &nbsp;
-                  {capitalizeFirstLetter(question.quizId.name)}
-                </div>
-                <div id="detail">
-                  <strong> Mock :</strong> &nbsp;
-                  {question.mockId
-                    ? capitalizeFirstLetter(question.mockId.testName)
-                    : "Not Available"}
-                </div>
-                <div id="detail">
-                  <strong> Created At:</strong> &nbsp;
-                  {new Date(question.createdAt).toLocaleString()}
-                </div>
-              </div>
-
-              <div className="rightsidedetails">
-                <div id="detail">
-                  <span className="QuestionName">
-                    <strong>Question:</strong>
-                  </span>
-                  &nbsp;
-                  {question.question}
-                </div>
-                <div className="question-answer">
-                  <strong>Difficulty Level :</strong> &nbsp;
-                  {capitalizeFirstLetter(question.difficultyLevel)}
-                </div>
-                <div className="question-options">
-                  <div id="option">Option 1: {question.option1}</div>
-                  <div id="option">Option 2: {question.option2}</div>
-                  <div id="option">Option 3: {question.option3}</div>
-                  <div id="option">Option 4: {question.option4}</div>
-                </div>
-                <div className="question-answer">
-                  <strong>Correct Answer:</strong> &nbsp;{question.answer}
-                </div>
-                {question.description && (
-                  <div className="question-description">
-                    <strong>Description:</strong> &nbsp;{question.description}
+        questionsData.length > 0 && (
+          <ul className="QuestionsList">
+            {questionsData.map((question) => (
+              <>
+                <li key={question._id} className="QuestionItem">
+                  <div className="question-details">
+                    <div id="detail">
+                      <strong>ID:</strong> &nbsp;{question._id}
+                    </div>
+                    <div id="detail">
+                      <strong>Type:</strong> &nbsp;
+                      {capitalizeFirstLetter(question.type) || "Not Available"}
+                    </div>
+                    <div id="detail">
+                      <strong>Year:</strong> &nbsp;
+                      {question.selectedYear || "Not mentioned"}
+                    </div>
+                    <div id="detail">
+                      <strong>Category:</strong> &nbsp;
+                      {capitalizeFirstLetter(question.categoryId?.name) ||
+                        "Not Available"}
+                    </div>
+                    <div id="detail">
+                      <strong>Topic :</strong> &nbsp;
+                      {capitalizeFirstLetter(question.topicId?.name) ||
+                        "Not Available"}
+                    </div>
+                    <div id="detail">
+                      <strong>Subtopic : </strong>&nbsp;
+                      {capitalizeFirstLetter(question.subtopicId?.name) ||
+                        "Not Available"}
+                    </div>
+                    <div id="detail">
+                      <strong>Quiz :</strong> &nbsp;
+                      {capitalizeFirstLetter(question.quizId?.name) ||
+                        "Not Available"}
+                    </div>
+                    <div id="detail">
+                      <strong> Mock :</strong> &nbsp;
+                      {question.mockId
+                        ? capitalizeFirstLetter(question.mockId.testName)
+                        : "Not Available"}
+                    </div>
+                    <div id="detail">
+                      <strong> Created At:</strong> &nbsp;
+                      {new Date(question.createdAt).toLocaleString()}
+                    </div>
                   </div>
-                )}
-              </div>
-              <div className="buttonsspace">
-                <button
-                  type="submit"
-                  className="delete-button"
-                  onClick={() => {
-                    handleUpdate(question);
-                  }}
-                >
-                  Update
-                </button>
-                <button
-                  type="submit"
-                  className="delete-button"
-                  onClick={() => {
-                    handleDelete(question);
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  <div className="rightsidedetails">
+                    <div id="detail">
+                      <span className="QuestionName">
+                        <strong>Question:</strong>
+                      </span>
+                      &nbsp;
+                      {question.question}
+                    </div>
+                    <div className="question-answer">
+                      <strong>Difficulty Level :</strong> &nbsp;
+                      {capitalizeFirstLetter(question.difficultyLevel)}
+                    </div>
+                    <div className="question-options">
+                      <div id="option">Option 1: {question.option1}</div>
+                      <div id="option">Option 2: {question.option2}</div>
+                      <div id="option">Option 3: {question.option3}</div>
+                      <div id="option">Option 4: {question.option4}</div>
+                    </div>
+                    <div className="question-answer">
+                      <strong>Correct Answer:</strong> &nbsp;{question.answer}
+                    </div>
+                    {question.description && (
+                      <div className="question-description">
+                        <strong>Description:</strong> &nbsp;
+                        {question.description}
+                      </div>
+                    )}
+                  </div>
+                  <div className="buttonsspace">
+                    <button
+                      type="submit"
+                      className="delete-button"
+                      onClick={() => {
+                        handleUpdate(question);
+                      }}
+                    >
+                      Update
+                    </button>
+                    <button
+                      type="submit"
+                      className="delete-button"
+                      onClick={() => {
+                        handleDelete(question);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              </>
+            ))}
+          </ul>
+        )
       )}
 
       {loading ? (
