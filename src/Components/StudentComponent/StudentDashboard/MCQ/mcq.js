@@ -293,7 +293,7 @@ const MCQ = () => {
                 setshowAns(true);
               }}
               className="leaderboard"
-              style={{ bottom: "22.5%", right: "0%" }}
+              style={{ bottom: "13%", right: "0%" }}
               type="button"
             >
               Check Answers
@@ -699,18 +699,19 @@ const MCQ = () => {
                     </button>
                   )}
 
-                  {currentQuestion === totalQuestions && (
-                    <button
-                      onClick={() => {
-                        setSubmitted("Are you sure to submit ?");
-                      }}
-                      className="next"
-                      type="button"
-                      style={{ bottom: "0.5%" }}
-                    >
-                      Submit Exam
-                    </button>
-                  )}
+                  {currentQuestion === totalQuestions &&
+                    allQuestion.length > 0 && (
+                      <button
+                        onClick={() => {
+                          setSubmitted("Are you sure to submit ?");
+                        }}
+                        className="next"
+                        type="button"
+                        style={{ bottom: "0.5%" }}
+                      >
+                        Submit Exam
+                      </button>
+                    )}
                 </div>
               ))}
             </div>

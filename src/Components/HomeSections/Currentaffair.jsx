@@ -248,6 +248,18 @@ const Currentaffair = () => {
         <h2 className="mock-head pb-4 text-center text-lg-start ">
           Weekly <span className="badge bg-secondary">Current Affairs</span>
         </h2>
+        <select
+          onChange={(e) => {
+            if (e.target.value === "monthly") {
+              localStorage.setItem("section", JSON.stringify(e.target.value));
+              window.location.href = "/";
+            }
+          }}
+          style={{ position: "absolute", right: "5%", top: "2%" }}
+        >
+          <option value="">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
         <div className="mockmain">
           {load ? (
             receivedMocks.map((each) => (

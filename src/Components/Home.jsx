@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 
 const sections = {
   currentaffairsweekly: "currentaffairsweekly",
-  currentaffairsmonthly: "currentaffairsmonthly",
   previousyearspapers: "previousyearspapers",
   customquiz: "customquiz",
   mocktest: "mocktest",
@@ -23,12 +22,24 @@ const Home = () => {
 
   const section = JSON.parse(localStorage.getItem("section"));
 
+  console.log(section);
+
+  const [handleSections, setSections] = useState(
+    section !== null
+      ? section === "weekly"
+        ? "weekly"
+        : section === "monthly"
+        ? "monthly"
+        : "weekly"
+      : "weekly"
+  );
+
   const [selectedSection, setSelectedSection] = useState(
     section !== null
       ? section === "weekly"
         ? sections.currentaffairsweekly
         : section === "monthly"
-        ? sections.currentaffairsmonthly
+        ? sections.currentaffairsweekly
         : section === "prev"
         ? sections.previousyearspapers
         : section === "custom"
@@ -54,20 +65,7 @@ const Home = () => {
                 : "unselectedComponent"
             }
           >
-            Weekly Current Affairs
-          </h5>
-          <h5
-            onClick={() => {
-              setSelectedSection(sections.currentaffairsmonthly);
-              setSidebar(!handleSidebar);
-            }}
-            className={
-              selectedSection === "currentaffairsmonthly"
-                ? "selectedComponent"
-                : "unselectedComponent"
-            }
-          >
-            Monthly Current Affairs
+            Current Affairs
           </h5>
           <h5
             onClick={() => {
@@ -106,9 +104,11 @@ const Home = () => {
             Mock Tests
           </h5>
         </div>
-        {selectedSection === "currentaffairsweekly" ? (
+        {selectedSection === "currentaffairsweekly" &&
+        handleSections === "weekly" ? (
           <Currentaffair />
-        ) : selectedSection === "currentaffairsmonthly" ? (
+        ) : selectedSection === "currentaffairsweekly" &&
+          handleSections === "monthly" ? (
           <CurrentAffairsMonthly />
         ) : selectedSection === "previousyearspapers" ? (
           <Previousyearpapers />

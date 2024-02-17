@@ -84,21 +84,7 @@ const LeaderBoard = () => {
           <div>
             <h1>Leaderboard</h1>
           </div>
-          {leaderboardResults.map(
-            (each) =>
-              each.userId._id === Cookies.get("jwt_userID") && (
-                <h5
-                  style={{
-                    position: "absolute",
-                    right: "8%",
-                    top: "15%",
-                    fontWeight: "bolder",
-                  }}
-                >
-                  Your Position - {each.position}
-                </h5>
-              )
-          )}
+
           <table>
             <thead>
               <tr className="table-head">
@@ -110,56 +96,116 @@ const LeaderBoard = () => {
               </tr>
             </thead>
             <tbody>
-              {leaderboardResults.map((data, index) => (
-                <tr
-                  key={data.position}
-                  style={{
-                    backgroundColor: `${
-                      backgroundColors[
-                        Math.ceil(Math.random() * backgroundColors.length)
-                      ]
-                    }`,
-                  }}
-                  className={
-                    index < 3
-                      ? index === 0
-                        ? "highlighted"
-                        : index === 1
-                        ? "highlighted2"
-                        : "highlighted3"
-                      : ""
-                  }
-                >
-                  <td>
-                    <CgProfile />
-                  </td>
-                  <td style={{ position: "relative" }}>
-                    {`${data.userId.firstName} ${data.userId.lastName}`}
-                    {data.position === 1 ||
-                    data.position === 2 ||
-                    data.position === 3 ? (
-                      <img
-                        className="medal"
-                        src={
-                          data.position === 1
-                            ? "/badge1.png"
-                            : data.position === 2
-                            ? "/badge2.png"
-                            : data.position === 3 && "/badge3.png"
-                        }
-                      />
-                    ) : (
-                      ""
-                    )}
-                  </td>
-                  <td>{data.position}</td>
-                  <td>{data.totalMark}</td>
-                  <td>
-                    {data.userId.email}
-                    {data.usr}
-                  </td>
-                </tr>
-              ))}
+              {leaderboardResults.map(
+                (data, index) =>
+                  data.position < 11 && (
+                    <tr
+                      key={data.position}
+                      style={{
+                        backgroundColor: `${
+                          backgroundColors[
+                            Math.ceil(Math.random() * backgroundColors.length)
+                          ]
+                        }`,
+                      }}
+                      className={
+                        index < 3
+                          ? index === 0
+                            ? "highlighted"
+                            : index === 1
+                            ? "highlighted2"
+                            : "highlighted3"
+                          : ""
+                      }
+                    >
+                      <td>
+                        <CgProfile />
+                      </td>
+                      <td style={{ position: "relative" }}>
+                        {`${data.userId.firstName} ${data.userId.lastName}`}
+                        {data.position === 1 ||
+                        data.position === 2 ||
+                        data.position === 3 ? (
+                          <img
+                            className="medal"
+                            src={
+                              data.position === 1
+                                ? "/badge1.png"
+                                : data.position === 2
+                                ? "/badge2.png"
+                                : data.position === 3 && "/badge3.png"
+                            }
+                          />
+                        ) : (
+                          ""
+                        )}
+                      </td>
+                      <td>{data.position}</td>
+                      <td>{data.totalMark}</td>
+                      <td>
+                        {data.userId.email}
+                        {data.usr}
+                      </td>
+                    </tr>
+                  )
+              )}
+            </tbody>
+          </table>
+          <table style={{ marginTop: "2%" }}>
+            <tbody>
+              {leaderboardResults.map(
+                (data, index) =>
+                  data.userId._id === Cookies.get("jwt_userID") && (
+                    <tr
+                      key={data.position}
+                      style={{
+                        backgroundColor: `${
+                          backgroundColors[
+                            Math.ceil(Math.random() * backgroundColors.length)
+                          ]
+                        }`,
+                      }}
+                      className={
+                        index < 3
+                          ? index === 0
+                            ? "highlighted"
+                            : index === 1
+                            ? "highlighted2"
+                            : "highlighted3"
+                          : ""
+                      }
+                    >
+                      <td>
+                        <CgProfile />
+                      </td>
+                      <td style={{ position: "relative" }}>
+                        {`${data.userId.firstName} ${data.userId.lastName}`}
+                        {data.position === 1 ||
+                        data.position === 2 ||
+                        data.position === 3 ? (
+                          <img
+                            className="medal"
+                            src={
+                              data.position === 1
+                                ? "/badge1.png"
+                                : data.position === 2
+                                ? "/badge2.png"
+                                : data.position === 3 && "/badge3.png"
+                            }
+                          />
+                        ) : (
+                          ""
+                        )}
+                      </td>
+                      <td>{data.position}</td>
+                      <td>{data.totalMark}</td>
+                      <td>
+                        {data.userId.email}
+                        {data.usr}
+                      </td>
+                    </tr>
+                  )
+              )}
             </tbody>
           </table>
         </>
