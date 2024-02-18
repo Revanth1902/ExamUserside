@@ -55,7 +55,6 @@ const QuestionsPage = () => {
     answer: "",
     description: "",
     type: "",
-    mockId: "",
   });
   const [categories, setCategories] = useState([]);
   const [topics, setTopics] = useState([]);
