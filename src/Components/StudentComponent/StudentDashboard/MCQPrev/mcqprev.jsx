@@ -232,7 +232,7 @@ const MCQPrev = () => {
             overflowX: "hidden",
           }}
         >
-          {mcqquestions.map((each) => (
+          {allQuestion.map((each) => (
             <div style={{ position: "relative" }}>
               <h3 style={{ marginBottom: "2%" }}>
                 Q{each.no}.&nbsp;{each.question} &nbsp;{" "}
