@@ -99,13 +99,21 @@ const MCQ = () => {
   useEffect(() => {
     getMockQuestions();
   }, [page]);
-
+  const getUserTokenFromCookie = () => {
+    const cookieName = "userToken"; // Update with the correct cookie name
+    return Cookies.get(cookieName) || null;
+  };
   const getMockQuestions = async () => {
     setLoad2(false);
+    const userToken = getUserTokenFromCookie();
     try {
       const url = `https://exam-back-end-2.vercel.app/admin/getQuestionsByMockId/${params.id}?page=${page}&limit=10`;
 
-      const res = await axios.get(url);
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
 
       if (res.status === 200) {
         let numbering = res.data.currentPage * 10 - 10;

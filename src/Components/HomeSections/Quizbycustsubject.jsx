@@ -59,7 +59,10 @@ const Quizbycustsubject = () => {
       console.error(error);
     }
   };
-
+  const getUserTokenFromCookie = () => {
+    const cookieName = "userToken"; // Update with the correct cookie name
+    return Cookies.get(cookieName) || null;
+  };
   const getAllQuizName = async () => {
     try {
       const res = await axios.get(
@@ -75,9 +78,15 @@ const Quizbycustsubject = () => {
   };
 
   const getTopicsById = async () => {
+    const userToken = getUserTokenFromCookie();
     try {
       const res = await axios.get(
-        `https://exam-back-end.vercel.app/admin/getTopicsByCategoryId/${selectedCategroy}`
+        `https://exam-back-end.vercel.app/admin/getTopicsByCategoryId/${selectedCategroy}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
       );
       if (res.status === 200) {
         setAllTopics(res.data.data);
@@ -87,9 +96,15 @@ const Quizbycustsubject = () => {
     }
   };
   const getSubTopicsById = async () => {
+    const userToken = getUserTokenFromCookie();
     try {
       const res = await axios.get(
-        `https://exam-back-end.vercel.app/admin/getSubTopicsByTopicId/${selectedTopic}`
+        `https://exam-back-end.vercel.app/admin/getSubTopicsByTopicId/${selectedTopic}`, 
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
       );
       if (res.status === 200) {
         setAllSubtopics(res.data.data);
@@ -98,6 +113,7 @@ const Quizbycustsubject = () => {
       console.error(error);
     }
   };
+  
 
   return (
     <>

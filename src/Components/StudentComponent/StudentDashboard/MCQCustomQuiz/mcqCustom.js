@@ -58,9 +58,14 @@ const MCQCustom = () => {
       getCustomQuestions(myObject);
     }
   }, [location.search, page]);
+  const getUserTokenFromCookie = () => {
+    const cookieName = "userToken";
+    return Cookies.get(cookieName) || null;
+  };
 
   const getCustomQuestions = async (myObject) => {
     setLoad2(false);
+    const userToken = getUserTokenFromCookie();
     try {
       const filterdObj = {};
 
@@ -82,7 +87,11 @@ const MCQCustom = () => {
         filterdObj.subtopicId !== undefined ? filterdObj.subtopicId : ""
       }`;
 
-      const res = await axios.get(url);
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
 
       if (res.status === 200) {
         let count = 0;
