@@ -55,7 +55,6 @@ const QuestionsPage = () => {
     answer: "",
     description: "",
     type: "",
-    mockId: "",
   });
   const [categories, setCategories] = useState([]);
   const [topics, setTopics] = useState([]);
@@ -97,7 +96,7 @@ const QuestionsPage = () => {
       selectedCategory: question.categoryId._id,
       selectedTopic: question.topicId._id,
       selectedSubtopic: question.subtopicId._id,
-      selectedQuiz: question.quizId.id,
+      selectedQuiz: question.quizId._id,
       selectedMock: question.mockId._id,
       question: question.question,
       option1: question.option1,
@@ -113,11 +112,42 @@ const QuestionsPage = () => {
   //     setUpdatedFormData(selectedQuestion);
   //   }
   // }, [selectedQuestion]);
+  const getAdminIdFromCookie = () => {
+    const cookieName = "jwt_AdminId";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the adminId value from the cookie
+        const adminId = cookie.substring(cookieName.length + 1);
+        return adminId;
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
+  const getAdminTokenFromCookie = () => {
+    const cookieName = "jwt_AdminToken";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the token value from the cookie
+        return cookie.substring(cookieName.length + 1);
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
   const handleCancelUpdate = () => {
     setShowUpdateContainer(false);
     setSelectedQuestion(null);
   };
-
+  console.log("thetestifformdata", selectedCategory);
   const handleUpdateSubmit = () => {
     const dataToSend = {
       ...updatedFormData,
@@ -125,18 +155,24 @@ const QuestionsPage = () => {
       topicId: updatedFormData.selectedTopic,
       subtopicId: updatedFormData.selectedSubtopic,
       quizId: updatedFormData.selectedQuiz,
-      mockId: updatedFormData.mockId,
     };
+
+    if (updatedFormData.mockId !== "") {
+      dataToSend.mockId = updatedFormData.mockId;
+    }
 
     // Set loading state to true
     setIsUpdatingQuestion(true);
+    const adminToken = getAdminTokenFromCookie();
+    const adminId = getAdminIdFromCookie();
 
     fetch(
-      `https://exam-back-end-2.vercel.app/admin/updateQuestions/${updatedFormData.questionid}`,
+      `https://exam-back-end-2.vercel.app/admin/updateQuestions/${updatedFormData.questionid}/${adminId}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
         },
         body: JSON.stringify(dataToSend),
       }
@@ -418,7 +454,6 @@ const QuestionsPage = () => {
     submitButton.setAttribute("disabled", "true");
 
     const errors = {};
-    // ... (your existing validation logic)
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
@@ -433,18 +468,27 @@ const QuestionsPage = () => {
       ...formData,
       categoryId: selectedCategory,
       topicId: selectedTopic,
-      mockId: selectedMock,
       subtopicId: selectedSubtopic,
       quizId: selectedQuiz,
     };
 
-    fetch("https://exam-back-end-2.vercel.app/admin/createQuestions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dataToSend),
-    })
+    if (selectedMock !== "") {
+      dataToSend.mockId = selectedMock;
+    }
+    const adminToken = getAdminTokenFromCookie();
+    const adminId = getAdminIdFromCookie();
+
+    fetch(
+      `https://exam-back-end-2.vercel.app/admin/createQuestions/${adminId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify(dataToSend),
+      }
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -478,13 +522,19 @@ const QuestionsPage = () => {
 
   const handleDelete = (question) => {
     const { _id } = question;
+    const adminToken = getAdminTokenFromCookie();
+    const adminId = getAdminIdFromCookie();
 
-    fetch(`https://exam-back-end-2.vercel.app/admin/deleteQuestion/${_id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    fetch(
+      `https://exam-back-end-2.vercel.app/admin/deleteQuestion/${_id}/${adminId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
+        },
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         console.log("Question deleted successfully:", data);
@@ -820,94 +870,109 @@ const QuestionsPage = () => {
           <TailSpin height={"10%"} width={"10%"} color={"#FFFFFF"} />
         </div>
       ) : (
-        <ul className="QuestionsList">
-          {questionsData.map((question) => (
-            <li key={question._id} className="QuestionItem">
-              <div className="question-details">
-                <div id="detail">
-                  <strong>ID:</strong> &nbsp;{question._id}
-                </div>
-                <div id="detail">
-                  <strong>Type:</strong> &nbsp;
-                  {capitalizeFirstLetter(question.type)}
-                </div>
-                <div id="detail">
-                  <strong>Year:</strong> &nbsp;
-                  {question.selectedYear || "Not mentioned"}
-                </div>
-                <div id="detail">
-                  <strong> Category:</strong> &nbsp;
-                  {capitalizeFirstLetter(question.categoryId.name)}
-                </div>
-                <div id="detail">
-                  <strong> Topic :</strong> &nbsp;
-                  {capitalizeFirstLetter(question.topicId.name)}
-                </div>
-                <div id="detail">
-                  <strong> Quiz :</strong> &nbsp;
-                  {capitalizeFirstLetter(question.quizId.name)}
-                </div>
+        questionsData.length > 0 && (
+          <ul className="QuestionsList">
+            {questionsData.map((question) => (
+              <>
+                <li key={question._id} className="QuestionItem">
+                  <div className="question-details">
+                    <div id="detail">
+                      <strong>ID:</strong> &nbsp;{question._id}
+                    </div>
+                    <div id="detail">
+                      <strong>Type:</strong> &nbsp;
+                      {capitalizeFirstLetter(question.type) || "Not Available"}
+                    </div>
+                    <div id="detail">
+                      <strong>Year:</strong> &nbsp;
+                      {question.selectedYear || "Not mentioned"}
+                    </div>
+                    <div id="detail">
+                      <strong>Category:</strong> &nbsp;
+                      {capitalizeFirstLetter(question.categoryId?.name) ||
+                        "Not Available"}
+                    </div>
+                    <div id="detail">
+                      <strong>Topic :</strong> &nbsp;
+                      {capitalizeFirstLetter(question.topicId?.name) ||
+                        "Not Available"}
+                    </div>
+                    <div id="detail">
+                      <strong>Subtopic : </strong>&nbsp;
+                      {capitalizeFirstLetter(question.subtopicId?.name) ||
+                        "Not Available"}
+                    </div>
+                    <div id="detail">
+                      <strong>Quiz :</strong> &nbsp;
+                      {capitalizeFirstLetter(question.quizId?.name) ||
+                        "Not Available"}
+                    </div>
+                    <div id="detail">
+                      <strong> Mock :</strong> &nbsp;
+                      {question.mockId
+                        ? capitalizeFirstLetter(question.mockId.testName)
+                        : "Not Available"}
+                    </div>
 
-                <div id="detail">
-                  <strong> Mock :</strong> &nbsp;
-                  {capitalizeFirstLetter(question.mockId.testName)}
-                </div>
-                <div id="detail">
-                  <strong> Created At:</strong> &nbsp;
-                  {new Date(question.createdAt).toLocaleString()}
-                </div>
-              </div>
-
-              <div className="rightsidedetails">
-                <div id="detail">
-                  <span className="QuestionName">
-                    <strong>Question:</strong>
-                  </span>
-                  &nbsp;
-                  {question.question}
-                </div>
-                <div className="question-answer">
-                  <strong>Difficulty Level :</strong> &nbsp;
-                  {capitalizeFirstLetter(question.difficultyLevel)}
-                </div>
-                <div className="question-options">
-                  <div id="option">Option 1: {question.option1}</div>
-                  <div id="option">Option 2: {question.option2}</div>
-                  <div id="option">Option 3: {question.option3}</div>
-                  <div id="option">Option 4: {question.option4}</div>
-                </div>
-                <div className="question-answer">
-                  <strong>Correct Answer:</strong> &nbsp;{question.answer}
-                </div>
-                {question.description && (
-                  <div className="question-description">
-                    <strong>Description:</strong> &nbsp;{question.description}
+                    <div id="detail">
+                      <strong> Created At:</strong> &nbsp;
+                      {new Date(question.createdAt).toLocaleString()}
+                    </div>
                   </div>
-                )}
-              </div>
-              <div className="buttonsspace">
-                <button
-                  type="submit"
-                  className="delete-button"
-                  onClick={() => {
-                    handleUpdate(question);
-                  }}
-                >
-                  Update
-                </button>
-                <button
-                  type="submit"
-                  className="delete-button"
-                  onClick={() => {
-                    handleDelete(question);
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+
+                  <div className="rightsidedetails">
+                    <div id="detail">
+                      <span className="QuestionName">
+                        <strong>Question:</strong>
+                      </span>
+                      &nbsp;
+                      {question.question}
+                    </div>
+                    <div className="question-answer">
+                      <strong>Difficulty Level :</strong> &nbsp;
+                      {capitalizeFirstLetter(question.difficultyLevel)}
+                    </div>
+                    <div className="question-options">
+                      <div id="option">Option 1: {question.option1}</div>
+                      <div id="option">Option 2: {question.option2}</div>
+                      <div id="option">Option 3: {question.option3}</div>
+                      <div id="option">Option 4: {question.option4}</div>
+                    </div>
+                    <div className="question-answer">
+                      <strong>Correct Answer:</strong> &nbsp;{question.answer}
+                    </div>
+                    {question.description && (
+                      <div className="question-description">
+                        <strong>Description:</strong> &nbsp;
+                        {question.description}
+                      </div>
+                    )}
+                  </div>
+                  <div className="buttonsspace">
+                    <button
+                      type="submit"
+                      className="delete-button"
+                      onClick={() => {
+                        handleUpdate(question);
+                      }}
+                    >
+                      Update
+                    </button>
+                    <button
+                      type="submit"
+                      className="delete-button"
+                      onClick={() => {
+                        handleDelete(question);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              </>
+            ))}
+          </ul>
+        )
       )}
 
       {loading ? (

@@ -54,6 +54,10 @@ const TopicsPage = () => {
 
   const handleAddComponent = () => {
     setShowContainer(true);
+    setFormData({
+      name: "",
+      description: "",
+    });
   };
 
   const handleContainerClose = () => {
@@ -69,6 +73,37 @@ const TopicsPage = () => {
     }));
     console.log(value);
   };
+  const getAdminIdFromCookie = () => {
+    const cookieName = "jwt_AdminId";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the adminId value from the cookie
+        const adminId = cookie.substring(cookieName.length + 1);
+        return adminId;
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
+  const getAdminTokenFromCookie = () => {
+    const cookieName = "jwt_AdminToken";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the token value from the cookie
+        return cookie.substring(cookieName.length + 1);
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -80,11 +115,14 @@ const TopicsPage = () => {
 
     // Disable the button to prevent multiple clicks
     setIsAddingCategory(true);
+    const adminId = getAdminIdFromCookie();
+    const adminToken = getAdminTokenFromCookie();
 
-    fetch("https://exam-back-end-2.vercel.app/admin/addTopic", {
+    fetch(`https://exam-back-end-2.vercel.app/admin/addTopic/${adminId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${adminToken}`,
       },
       body: JSON.stringify(formData),
     })
@@ -97,9 +135,11 @@ const TopicsPage = () => {
       .then((data) => {
         console.log("Topic added successfully:", data);
 
+        
+        handleContainerClose();
+        getAllTopics();
         toast.success("Topic added successfully");
 
-        handleContainerClose();
       })
       .catch((error) => {
         console.error("Error adding topic:", error);
@@ -140,6 +180,8 @@ const TopicsPage = () => {
 
     // Disable the button to prevent multiple clicks
     setIsUpdatingTopic(true);
+    const adminId = getAdminIdFromCookie();
+    const adminToken = getAdminTokenFromCookie();
 
     const updateData = {
       name: formData.name,
@@ -147,11 +189,12 @@ const TopicsPage = () => {
     };
 
     fetch(
-      `https://exam-back-end-2.vercel.app/admin/updateTopic/${selectedTopic._id}`,
+      `https://exam-back-end-2.vercel.app/admin/updateTopic/${selectedTopic._id}/${adminId}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
         },
         body: JSON.stringify(updateData),
       }
@@ -165,9 +208,11 @@ const TopicsPage = () => {
       .then((data) => {
         console.log("Topic updated successfully:", data);
 
-        toast.success("Topic updated successfully");
+        
 
         handleUpdateContainerClose();
+        getAllTopics();
+        toast.success("Topic updated successfully");
       })
       .catch((error) => {
         console.error("Error updating topic:", error);
@@ -198,6 +243,18 @@ const TopicsPage = () => {
             </button>
           </div>
         )}
+        <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
         {showContainer && (
           <>
             <div
@@ -210,18 +267,7 @@ const TopicsPage = () => {
                 background: "#22222250",
               }}
             ></div>
-            <ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
+            
             <div className="overlay" onClick={handleContainerClose}>
               <div
                 className="containering"
@@ -272,14 +318,7 @@ const TopicsPage = () => {
                     className="submitbutton"
                     disabled={isAddingCategory}
                   >
-                    {isAddingCategory ? (
-                      <span>
-                        Adding...
-                       
-                      </span>
-                    ) : (
-                      "Add Topic"
-                    )}
+                    {isAddingCategory ? <span>Adding...</span> : "Add Topic"}
                   </button>
 
                   <button
@@ -306,18 +345,7 @@ const TopicsPage = () => {
                 background: "#22222250",
               }}
             ></div>
-            <ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
+            
             <div className="overlay" onClick={handleUpdateContainerClose}>
               <div
                 className="containering"
@@ -350,10 +378,7 @@ const TopicsPage = () => {
                     disabled={isUpdatingTopic}
                   >
                     {isUpdatingTopic ? (
-                      <span>
-                        Updating...
-                       
-                      </span>
+                      <span>Updating...</span>
                     ) : (
                       "Update Topic"
                     )}

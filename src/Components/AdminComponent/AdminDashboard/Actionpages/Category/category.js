@@ -41,6 +41,10 @@ const CategoryPage = () => {
 
   const handleAddComponent = () => {
     setShowContainer(true);
+    setFormData({
+      name: "",
+      description: "",
+    });
   };
 
   const handleContainerClose = () => {
@@ -67,10 +71,15 @@ const CategoryPage = () => {
     // Disable the button to prevent multiple clicks
     setIsAddingCategory(true);
 
-    fetch("https://exam-back-end-2.vercel.app/admin/addCategory", {
+    // Get adminId from cookie
+    const adminToken = getAdminTokenFromCookie();
+    const adminId = getAdminIdFromCookie(); // Replace this with your actual function to get the adminId from the cookie
+
+    fetch(`https://exam-back-end-2.vercel.app/admin/addCategory/${adminId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${adminToken}`,
       },
       body: JSON.stringify(formData),
     })
@@ -83,9 +92,8 @@ const CategoryPage = () => {
       .then((data) => {
         console.log("Category added successfully:", data);
 
-        toast.success("Category added successfully");
-
         handleContainerClose();
+        toast.success("Category added successfully");
       })
       .catch((error) => {
         console.error("Error adding category:", error);
@@ -97,6 +105,7 @@ const CategoryPage = () => {
         setIsAddingCategory(false);
       });
   };
+
   const handleUpdateCategory = (category) => {
     setSelectedCategory(category);
     setFormData({
@@ -105,10 +114,42 @@ const CategoryPage = () => {
     });
     setShowUpdateContainer(true);
   };
+  const getAdminIdFromCookie = () => {
+    const cookieName = "jwt_AdminId";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the adminId value from the cookie
+        const adminId = cookie.substring(cookieName.length + 1);
+        return adminId;
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
+  const getAdminTokenFromCookie = () => {
+    const cookieName = "jwt_AdminToken";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the token value from the cookie
+        return cookie.substring(cookieName.length + 1);
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
 
   const handleUpdateContainerClose = () => {
     setShowUpdateContainer(false);
     setSelectedCategory(null);
+    getAllCategories();
   };
 
   const handleUpdateSubmit = (e) => {
@@ -122,12 +163,16 @@ const CategoryPage = () => {
     // Disable the button to prevent multiple clicks
     setIsUpdatingCategory(true);
 
+    const adminToken = getAdminTokenFromCookie();
+    const adminId = getAdminIdFromCookie();
+
     fetch(
-      `https://exam-back-end-2.vercel.app/admin/updateCategory/${selectedCategory._id}`,
+      `https://exam-back-end-2.vercel.app/admin/updateCategory/${selectedCategory._id}/${adminId}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
         },
         body: JSON.stringify(formData),
       }
@@ -141,15 +186,11 @@ const CategoryPage = () => {
       .then((data) => {
         console.log("Category updated successfully:", data);
 
-        toast.success("Category updated successfully");
-
-        // Re-enable the button after a successful operation
         setIsUpdatingCategory(false);
 
-        setTimeout(() => {
-          handleUpdateContainerClose();
-          getAllCategories();
-        }, 300);
+        handleUpdateContainerClose();
+        getAllCategories();
+        toast.success("Category updated successfully");
       })
       .catch((error) => {
         console.error("Error updating category:", error);
@@ -160,6 +201,9 @@ const CategoryPage = () => {
         setIsUpdatingCategory(false);
       });
   };
+
+  // Rest of your code for getAdminIdFromCookie and getAdminTokenFromCookie
+
   return (
     <div className="themain">
       <div className="CategoryPage">
@@ -179,6 +223,18 @@ const CategoryPage = () => {
             </button>
           </div>
         )}
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         {showContainer && (
           <>
             <div
@@ -191,18 +247,7 @@ const CategoryPage = () => {
                 background: "#22222250",
               }}
             ></div>
-            <ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
+
             <div className="overlay" onClick={handleContainerClose}>
               <div
                 className="containering"
@@ -234,14 +279,7 @@ const CategoryPage = () => {
                     className="submitbutton"
                     disabled={isAddingCategory} // Disable the button when adding category
                   >
-                    {isAddingCategory ? (
-                      <span>
-                        Adding...
-                       
-                      </span>
-                    ) : (
-                      "Add Category"
-                    )}
+                    {isAddingCategory ? <span>Adding...</span> : "Add Category"}
                   </button>
 
                   <button
@@ -268,18 +306,7 @@ const CategoryPage = () => {
                 background: "#22222250",
               }}
             ></div>
-            <ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
+
             <div className="overlay" onClick={handleUpdateContainerClose}>
               <div
                 className="containering"
@@ -312,10 +339,7 @@ const CategoryPage = () => {
                     disabled={isUpdatingCategory}
                   >
                     {isUpdatingCategory ? (
-                      <span>
-                        Updating...
-                       
-                      </span>
+                      <span>Updating...</span>
                     ) : (
                       "Update Category"
                     )}

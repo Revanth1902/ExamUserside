@@ -42,6 +42,10 @@ const MockPage = () => {
 
   const handleAddComponent = () => {
     setShowContainer(true);
+    setFormData({
+      name: "",
+      description: "",
+    });
   };
 
   const handleContainerClose = () => {
@@ -113,11 +117,13 @@ const MockPage = () => {
       totalMarks: formData.totalMarks || 100,
       examTiming: formData.examTiming,
     };
-
-    fetch("https://exam-back-end-2.vercel.app/admin/createMocks", {
+    const adminId = getAdminIdFromCookie();
+    const adminToken = getAdminTokenFromCookie();
+    fetch(`https://exam-back-end-2.vercel.app/admin/createMocks/${adminId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${adminToken}`,
       },
       body: JSON.stringify(dataToSend),
     })
@@ -130,13 +136,11 @@ const MockPage = () => {
       .then((data) => {
         console.log("Mock added successfully:", data);
 
-        toast.success("Mock added successfully");
-
         setIsAddingMock(false);
 
-        setTimeout(() => {
-          handleContainerClose();
-        }, 300);
+        handleContainerClose();
+        fetchMockData();
+        toast.success("Mock added successfully");
       })
       .catch((error) => {
         console.error("Error adding mock:", error);
@@ -158,7 +162,37 @@ const MockPage = () => {
 
     return Object.keys(errors).length === 0;
   };
+  const getAdminIdFromCookie = () => {
+    const cookieName = "jwt_AdminId";
+    const cookies = document.cookie.split(";");
 
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the adminId value from the cookie
+        const adminId = cookie.substring(cookieName.length + 1);
+        return adminId;
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
+  const getAdminTokenFromCookie = () => {
+    const cookieName = "jwt_AdminToken";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the token value from the cookie
+        return cookie.substring(cookieName.length + 1);
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
   const handleUpdateSubmit = (e) => {
     e.preventDefault();
 
@@ -175,13 +209,15 @@ const MockPage = () => {
       totalMarks: formData.totalMarks || 100,
       examTiming: formData.examTiming,
     };
-
+    const adminToken = getAdminTokenFromCookie();
+    const adminId = getAdminIdFromCookie();
     fetch(
-      `https://exam-back-end-2.vercel.app/admin/updateMock/${selectedMock._id}`,
+      `https://exam-back-end-2.vercel.app/admin/updateMock/${selectedMock._id}/${adminId}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
         },
         body: JSON.stringify(dataToSend),
       }
@@ -195,13 +231,15 @@ const MockPage = () => {
       .then((data) => {
         console.log("Mock updated successfully:", data);
 
-        toast.success("Mock updated successfully");
+      
 
         setIsUpdatingMock(false);
 
-        setTimeout(() => {
+        
           handleUpdateContainerClose();
-        }, 300);
+          fetchMockData();
+          toast.success("Mock updated successfully");
+   
       })
       .catch((error) => {
         console.error("Error updating mock:", error);
@@ -238,6 +276,18 @@ const MockPage = () => {
           </button>
         </div>
       )}
+       <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
       {showContainer && (
         <>
           <div
@@ -250,18 +300,7 @@ const MockPage = () => {
               background: "#22222250",
             }}
           ></div>
-          <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
+         
           <div className="overlay" onClick={handleContainerClose}>
             <div className="containering" onClick={(e) => e.stopPropagation()}>
               <form className="form" onSubmit={handleSubmit}>
@@ -326,14 +365,7 @@ const MockPage = () => {
                   className="submitbutton"
                   disabled={isAddingMock}
                 >
-                  {isAddingMock ? (
-                    <span>
-                      Adding...
-                    
-                    </span>
-                  ) : (
-                    "Add Mock Test"
-                  )}
+                  {isAddingMock ? <span>Adding...</span> : "Add Mock Test"}
                 </button>
                 <button
                   type="button"
@@ -359,18 +391,7 @@ const MockPage = () => {
               background: "#22222250",
             }}
           ></div>
-          <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
+         
           <div className="overlay" onClick={handleUpdateContainerClose}>
             <div className="containering" onClick={(e) => e.stopPropagation()}>
               <form className="form" onSubmit={handleUpdateSubmit}>
@@ -436,10 +457,7 @@ const MockPage = () => {
                   disabled={isUpdatingMock}
                 >
                   {isUpdatingMock ? (
-                    <span>
-                      Updating...
-                    
-                    </span>
+                    <span>Updating...</span>
                   ) : (
                     "Update Mock Test"
                   )}

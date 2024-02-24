@@ -63,14 +63,22 @@ const Profile = () => {
   useEffect(() => {
     getUserDetails();
   }, []);
-
+  const getUserTokenFromCookie = () => {
+    const cookieName = "userToken"; // Update with the correct cookie name
+    return Cookies.get(cookieName) || null;
+  };
   const getUserDetails = async () => {
+    const userToken = getUserTokenFromCookie();
     try {
       const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${Cookies.get(
         "jwt_userID"
       )}`;
 
-      const res = await axios.get(url);
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
 
       if (res.status === 200) {
         setDetails({
@@ -130,6 +138,7 @@ const Profile = () => {
         toast("Enter Valid Mobile Numer");
       } else {
         setLoad(true);
+        const userToken = getUserTokenFromCookie();
         try {
           const url = `https://exam-back-end-2.vercel.app/user/updateDetails/${Cookies.get(
             "jwt_userID"
@@ -151,7 +160,11 @@ const Profile = () => {
             updatedData.email = userDetails.email;
           }
 
-          const res = await axios.put(url, updatedData);
+          const res = await axios.put(url, {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          });
 
           if (res.status === 201) {
             setLoad(false);
@@ -229,15 +242,23 @@ const Profile = () => {
               <label htmlFor="mobileNumber">Mobile Number : </label>
               <span>{userDetails.mobileNumber}</span>
             </div>
+            <button
+              onClick={() => {
+                setProfile(!editProfile);
+              }}
+              type="button"
+              style={{
+                backgroundColor: "var(--color-default)",
+                border: "1px solid transparent",
+                color: "#ffffff",
+                padding: "0.5% 2%",
+                borderRadius: "0.5rem",
+                margin: "1.2%",
+              }}
+            >
+              Edit Profile
+            </button>
           </form>
-          <button
-            onClick={() => {
-              setProfile(!editProfile);
-            }}
-            type="button"
-          >
-            Edit Profile
-          </button>
         </div>
       ) : (
         <div className="profile-section">

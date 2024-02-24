@@ -19,7 +19,13 @@ const Changepassword = () => {
 
   const [load, setLoad] = useState(false);
 
+  const getUserTokenFromCookie = () => {
+    const cookieName = "userToken"; // Update with the correct cookie name
+    return Cookies.get(cookieName) || null;
+  };
+
   const updateUserDetails = async () => {
+    const userToken = getUserTokenFromCookie();
     if (password.oldPassword === "") {
       toast("Enter Old Password");
     } else if (password.newPassword === "") {
@@ -40,7 +46,11 @@ const Changepassword = () => {
           newPassword: password.newPassword,
         };
 
-        const res = await axios.put(url, updatedData);
+        const res = await axios.put(url, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
 
         if (res.status === 201) {
           toast("Updated Password");

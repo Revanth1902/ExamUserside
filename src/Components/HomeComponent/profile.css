@@ -129,6 +129,7 @@
   color: white;
   border-radius: 0.3rem;
   margin-top: 15%;
+  font-size: 1rem;
 }
 
 .modal-logout {
@@ -136,13 +137,13 @@
   background-color: #ffffff;
   border-radius: 0.5rem;
   top: 40%;
-  left: 45%;
+  left: 40%;
   padding: 2%;
 }
 
 .modal-logout > div > button:first-child {
   margin-top: 5%;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   padding: 1% 5%;
   border: 0;
   background-color: var(--color-default);
@@ -153,7 +154,7 @@
 
 .modal-logout > div > button:last-child {
   margin-top: 5%;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   padding: 1% 5%;
   border: 0;
   background-color: var(--color-red);
@@ -163,6 +164,35 @@
   margin-left: 50%;
 }
 
+.modal-delete {
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  top: 40%;
+  left: 30%;
+  padding: 2%;
+}
+.modal-delete > div > button:first-child {
+  margin-top: 5%;
+  font-size: 0.8rem;
+  padding: 1% 5%;
+  border: 0;
+  background-color: var(--color-default);
+  color: white;
+  cursor: pointer;
+  border-radius: 0.2rem;
+}
+.modal-delete > div > button:last-child {
+  margin-top: 5%;
+  font-size: 0.8rem;
+  padding: 1% 5%;
+  border: 0;
+  background-color: var(--color-red);
+  color: white;
+  border-radius: 0.2rem;
+  cursor: pointer;
+  margin-left: 50%;
+}
 .select-profile-section {
   background-color: var(--color-default);
   color: #ffffff;

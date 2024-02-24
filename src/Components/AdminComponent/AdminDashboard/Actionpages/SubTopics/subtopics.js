@@ -54,6 +54,10 @@ const SubtopicsPage = () => {
 
   const handleAddComponent = () => {
     setShowContainer(true);
+    setFormData({
+      name: "",
+      description: "",
+    });
   };
 
   const handleContainerClose = () => {
@@ -68,6 +72,37 @@ const SubtopicsPage = () => {
       [name]: value,
     }));
   };
+  const getAdminIdFromCookie = () => {
+    const cookieName = "jwt_AdminId";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the adminId value from the cookie
+        const adminId = cookie.substring(cookieName.length + 1);
+        return adminId;
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
+  const getAdminTokenFromCookie = () => {
+    const cookieName = "jwt_AdminToken";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the token value from the cookie
+        return cookie.substring(cookieName.length + 1);
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -79,11 +114,14 @@ const SubtopicsPage = () => {
 
     // Disable the button to prevent multiple clicks
     setIsAddingSubtopic(true);
+    const adminId = getAdminIdFromCookie();
+    const adminToken = getAdminTokenFromCookie();
 
-    fetch("https://exam-back-end-2.vercel.app/admin/addSubtopic", {
+    fetch(`https://exam-back-end-2.vercel.app/admin/addSubtopic/${adminId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${adminToken}`,
       },
       body: JSON.stringify(formData),
     })
@@ -96,15 +134,15 @@ const SubtopicsPage = () => {
       .then((data) => {
         console.log("Subtopic added successfully:", data);
 
-        toast.success("Subtopic added successfully");
+        
 
         // Re-enable the button after a successful operation
         setIsAddingSubtopic(false);
 
-        setTimeout(() => {
+   
           handleContainerClose();
           getAllSubtopics();
-        }, 300);
+          toast.success("Subtopic added successfully");
       })
       .catch((error) => {
         console.error("Error adding subtopic:", error);
@@ -140,13 +178,16 @@ const SubtopicsPage = () => {
 
     // Disable the button to prevent multiple clicks
     setIsUpdatingSubtopic(true);
+    const adminId = getAdminIdFromCookie();
+    const adminToken = getAdminTokenFromCookie();
 
     fetch(
-      `https://exam-back-end-2.vercel.app/admin/updateSubTopic/${selectedSubtopic._id}`,
+      `https://exam-back-end-2.vercel.app/admin/updateSubTopic/${selectedSubtopic._id}/${adminId}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${adminToken}`
         },
         body: JSON.stringify(formData),
       }
@@ -160,15 +201,15 @@ const SubtopicsPage = () => {
       .then((data) => {
         console.log("Subtopic updated successfully:", data);
 
-        toast.success("Subtopic updated successfully");
+       
 
         // Re-enable the button after a successful operation
         setIsUpdatingSubtopic(false);
 
-        setTimeout(() => {
+        
           handleUpdateContainerClose();
           getAllSubtopics();
-        }, 300);
+          toast.success("Subtopic updated successfully");
       })
       .catch((error) => {
         console.error("Error updating subtopic:", error);
@@ -199,6 +240,18 @@ const SubtopicsPage = () => {
             </button>
           </div>
         )}
+         <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
         {showContainer && (
           <>
             <div
@@ -211,18 +264,7 @@ const SubtopicsPage = () => {
                 background: "#22222250",
               }}
             ></div>
-            <ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
+           
             <div className="overlay" onClick={handleContainerClose}>
               <div
                 className="containering"
@@ -269,14 +311,7 @@ const SubtopicsPage = () => {
                     className="submitbutton"
                     disabled={isAddingSubtopic}
                   >
-                    {isAddingSubtopic ? (
-                      <span>
-                        Adding...
-                       
-                      </span>
-                    ) : (
-                      "Add Subtopic"
-                    )}
+                    {isAddingSubtopic ? <span>Adding...</span> : "Add Subtopic"}
                   </button>
                   <button
                     type="button"
@@ -302,18 +337,7 @@ const SubtopicsPage = () => {
                 background: "#22222250",
               }}
             ></div>
-            <ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
+            
             <div className="overlay" onClick={handleUpdateContainerClose}>
               <div
                 className="containering"
@@ -347,10 +371,7 @@ const SubtopicsPage = () => {
                     onClick={handleUpdateSubmit}
                   >
                     {isUpdatingSubtopic ? (
-                      <span>
-                        Updating...
-                       
-                      </span>
+                      <span>Updating...</span>
                     ) : (
                       "Update Subtopic"
                     )}

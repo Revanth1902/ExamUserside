@@ -71,6 +71,38 @@ const QuizPage = () => {
     }));
   };
 
+  const getAdminIdFromCookie = () => {
+    const cookieName = "jwt_AdminId";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the adminId value from the cookie
+        const adminId = cookie.substring(cookieName.length + 1);
+        return adminId;
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
+  const getAdminTokenFromCookie = () => {
+    const cookieName = "jwt_AdminToken";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the token value from the cookie
+        return cookie.substring(cookieName.length + 1);
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
+
   const handleUpdateSubmit = (e) => {
     e.preventDefault();
 
@@ -85,13 +117,16 @@ const QuizPage = () => {
 
     // Disable the button to prevent multiple clicks
     setIsUpdatingQuiz(true);
+    const adminId = getAdminIdFromCookie();
+    const adminToken = getAdminTokenFromCookie();
 
     fetch(
-      `https://exam-back-end-2.vercel.app/admin/updateQuiz/${selectedQuiz._id}`,
+      `https://exam-back-end-2.vercel.app/admin/updateQuiz/${selectedQuiz._id}/${adminId}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
         },
         body: JSON.stringify(updateFormData),
       }
@@ -105,15 +140,16 @@ const QuizPage = () => {
       .then((data) => {
         console.log("Quiz updated successfully:", data);
 
-        toast.success("Quiz updated successfully");
-
+       
         // Re-enable the button after a successful operation
         setIsUpdatingQuiz(false);
 
-        setTimeout(() => {
+        
           handleUpdateContainerClose();
           getAllQuiz();
-        }, 300);
+          toast.success("Quiz updated successfully");
+
+        
       })
       .catch((error) => {
         console.error("Error updating Quiz:", error);
@@ -138,6 +174,10 @@ const QuizPage = () => {
 
   const handleAddComponent = () => {
     setShowContainer(true);
+    setFormData({
+      name: "",
+      description: "",
+    });
   };
 
   const handleContainerClose = () => {
@@ -163,11 +203,14 @@ const QuizPage = () => {
 
     // Disable the button to prevent multiple clicks
     setIsAddingQuiz(true);
+    const adminId = getAdminIdFromCookie();
+    const adminToken = getAdminTokenFromCookie();
 
-    fetch("https://exam-back-end-2.vercel.app/admin/addQuiz", {
+    fetch(`https://exam-back-end-2.vercel.app/admin/addQuiz/${adminId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${adminToken}`,
       },
       body: JSON.stringify(formData),
     })
@@ -180,13 +223,14 @@ const QuizPage = () => {
       .then((data) => {
         console.log("Quiz added successfully:", data);
 
-        toast.success("Quiz added successfully");
+      
 
         // Re-enable the button after a successful operation
         setIsAddingQuiz(false);
 
         handleContainerClose();
         getAllQuiz();
+        toast.success("Quiz added successfully");
       })
       .catch((error) => {
         console.error("Error adding Quiz:", error);
@@ -227,18 +271,7 @@ const QuizPage = () => {
 
   return (
     <div className="themain">
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      
       <div className="QuizPage">
         {loading ? (
           <div className="loading-container">
@@ -268,20 +301,21 @@ const QuizPage = () => {
             </button>
           </div>
         )}
+        <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
         {showContainer && (
           <>
-            <ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
+           
             <div
               style={{
                 position: "absolute",
@@ -345,14 +379,7 @@ const QuizPage = () => {
                     className="submitbutton"
                     disabled={isAddingQuiz}
                   >
-                    {isAddingQuiz ? (
-                      <span>
-                        Adding...
-                     
-                      </span>
-                    ) : (
-                      "Add Quiz"
-                    )}
+                    {isAddingQuiz ? <span>Adding...</span> : "Add Quiz"}
                   </button>
                   <button
                     type="button"
@@ -378,41 +405,28 @@ const QuizPage = () => {
                 background: "#22222250",
               }}
             ></div>
-            <ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
+            
             <div className="overlay" onClick={handleUpdateContainerClose}>
               <div
                 className="containering"
                 onClick={(e) => e.stopPropagation()}
               >
                 <form className="form" onSubmit={handleUpdateSubmit}>
-                  <label htmlFor="updateName">Updated Quiz Name:</label>
+                  <label htmlFor="updateName">Quiz Name:</label>
                   <input
                     type="text"
                     id="updateName"
-                    name="updateName"
+                    name="name"
                     value={updateFormData.name}
                     onChange={handleUpdateChange}
                     required
                   />
 
-                  <label htmlFor="updateDescription">
-                    Updated Description:
-                  </label>
+                  <label htmlFor="updateDescription">Description:</label>
                   <textarea
                     rows={5}
                     id="updateDescription"
-                    name="updateDescription"
+                    name="description"
                     value={updateFormData.description}
                     onChange={handleUpdateChange}
                     required
@@ -422,7 +436,7 @@ const QuizPage = () => {
                   <input
                     type="text"
                     id="updateKey"
-                    name="updateKey"
+                    name="key"
                     value={updateFormData.key}
                     onChange={handleUpdateChange}
                     required
@@ -433,14 +447,7 @@ const QuizPage = () => {
                     className="submitbutton"
                     disabled={isUpdatingQuiz}
                   >
-                    {isUpdatingQuiz ? (
-                      <span>
-                        Updating...
-                       
-                      </span>
-                    ) : (
-                      "Update Quiz"
-                    )}
+                    {isUpdatingQuiz ? <span>Updating...</span> : "Update Quiz"}
                   </button>
 
                   <button

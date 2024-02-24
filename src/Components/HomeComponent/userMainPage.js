@@ -42,6 +42,8 @@ const MyProflie = () => {
   const history = useHistory();
 
   const [showLogOutModalBox, setShowLogOutModalBox] = useState(false);
+  const [showDeleteModalBox, setShowDeleteModalBox] = useState(false);
+
   const [selectedSection, setSelectedSection] = useState(
     params.name === "myprofile"
       ? userProfileTabs[0].myprofile
@@ -65,15 +67,23 @@ const MyProflie = () => {
       getUser();
     }
   }, []);
-
+  const getUserTokenFromCookie = () => {
+    const cookieName = "userToken"; // Update with the correct cookie name
+    return Cookies.get(cookieName) || null;
+  };
   const getUser = async () => {
     setLoad(false);
+    const userToken = getUserTokenFromCookie();
     try {
       const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${Cookies.get(
         "jwt_userID"
       )}`;
 
-      const res = await axios.get(url);
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
       console.log(res.data.data);
       if (res.status === 200) {
         setUser({
@@ -127,10 +137,78 @@ const MyProflie = () => {
       </>
     );
   };
+  const DeleteAccountModalBox = ({ onDelete, onCancel }) => {
+    return (
+      <>
+        <div
+          style={{
+            backgroundColor: "#22222270",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+        ></div>
+        <div className="modal-delete">
+          <h4>Are you sure you want to delete your account?</h4>
+          <div>
+            <button onClick={onCancel} type="button">
+              Cancel
+            </button>
+            <button onClick={handleDeleteAccount} type="button">
+              Delete Account
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  };
+  const handleDeleteAccount = async () => {
+    try {
+      const userID = Cookies.get("jwt_userID");
 
+      const userToken = getUserTokenFromCookie();
+      const url = `https://exam-back-end-2.vercel.app/user/deleteUser/${userID}`;
+
+      const res = await axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      if (res.status === 200) {
+        console.log("Account deleted!");
+
+        // Remove cookies after successful account deletion
+        Cookies.remove("jwt_userID");
+        Cookies.remove("userToken");
+        Cookies.remove("jwt_firstName");
+        Cookies.remove("jwt_lastName");
+
+        setShowDeleteModalBox(false);
+
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.error("Error deleting account", error);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModalBox(false);
+  };
   return load ? (
     <>
-      {showLogOutModalBox && <LogOutModalBox />}
+      {showLogOutModalBox && (
+        <LogOutModalBox onClose={() => setShowLogOutModalBox(false)} />
+      )}
+      {showDeleteModalBox && (
+        <DeleteAccountModalBox
+          onDelete={handleDeleteAccount}
+          onCancel={handleCancelDelete}
+        />
+      )}
       <div className="myprofile">
         <div className="side-bar-userProfile">
           <button
@@ -139,7 +217,7 @@ const MyProflie = () => {
             }}
             type="button"
             style={{
-              fontSize: "2rem",
+              fontSize: "1.2rem",
               border: 0,
               background: "transparent",
               marginBottom: "1rem",
@@ -217,6 +295,14 @@ const MyProflie = () => {
               type="button"
             >
               Log Out
+            </button>
+            <button
+              onClick={() => {
+                setShowDeleteModalBox(true);
+              }}
+              type="button"
+            >
+              Delete Account
             </button>
           </div>
         </div>
