@@ -96,7 +96,7 @@ const QuestionsPage = () => {
       selectedCategory: question.categoryId._id,
       selectedTopic: question.topicId._id,
       selectedSubtopic: question.subtopicId._id,
-      selectedQuiz: question.quizId.id,
+      selectedQuiz: question.quizId._id,
       selectedMock: question.mockId._id,
       question: question.question,
       option1: question.option1,
@@ -112,32 +112,70 @@ const QuestionsPage = () => {
   //     setUpdatedFormData(selectedQuestion);
   //   }
   // }, [selectedQuestion]);
+  const getAdminIdFromCookie = () => {
+    const cookieName = "jwt_AdminId";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the adminId value from the cookie
+        const adminId = cookie.substring(cookieName.length + 1);
+        return adminId;
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
+  const getAdminTokenFromCookie = () => {
+    const cookieName = "jwt_AdminToken";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the token value from the cookie
+        return cookie.substring(cookieName.length + 1);
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
   const handleCancelUpdate = () => {
     setShowUpdateContainer(false);
     setSelectedQuestion(null);
   };
-
+  console.log("thetestifformdata", selectedCategory);
   const handleUpdateSubmit = () => {
     const dataToSend = {
-      ...formData,
-      categoryId: selectedCategory,
-      topicId: selectedTopic,
-      subtopicId: selectedSubtopic,
-      quizId: selectedQuiz,
+      ...updatedFormData,
+      categoryId: updatedFormData.selectedCategory,
+      topicId: updatedFormData.selectedTopic,
+      subtopicId: updatedFormData.selectedSubtopic,
+      quizId: updatedFormData.selectedQuiz,
     };
     if (selectedMock !== "") {
       dataToSend.mockId = selectedMock;
     }
 
+    if (updatedFormData.mockId !== "") {
+      dataToSend.mockId = updatedFormData.mockId;
+    }
+
     // Set loading state to true
     setIsUpdatingQuestion(true);
+    const adminToken = getAdminTokenFromCookie();
+    const adminId = getAdminIdFromCookie();
 
     fetch(
-      `https://exam-back-end-2.vercel.app/admin/updateQuestions/${updatedFormData.questionid}`,
+      `https://exam-back-end-2.vercel.app/admin/updateQuestions/${updatedFormData.questionid}/${adminId}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
         },
         body: JSON.stringify(dataToSend),
       }
@@ -419,7 +457,6 @@ const QuestionsPage = () => {
     submitButton.setAttribute("disabled", "true");
 
     const errors = {};
-    // ... (your existing validation logic)
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
@@ -440,13 +477,23 @@ const QuestionsPage = () => {
       dataToSend.mockId = selectedMock;
     }
 
-    fetch("https://exam-back-end-2.vercel.app/admin/createQuestions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dataToSend),
-    })
+    if (selectedMock !== "") {
+      dataToSend.mockId = selectedMock;
+    }
+    const adminToken = getAdminTokenFromCookie();
+    const adminId = getAdminIdFromCookie();
+
+    fetch(
+      `https://exam-back-end-2.vercel.app/admin/createQuestions/${adminId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify(dataToSend),
+      }
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -480,13 +527,19 @@ const QuestionsPage = () => {
 
   const handleDelete = (question) => {
     const { _id } = question;
+    const adminToken = getAdminTokenFromCookie();
+    const adminId = getAdminIdFromCookie();
 
-    fetch(`https://exam-back-end-2.vercel.app/admin/deleteQuestion/${_id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    fetch(
+      `https://exam-back-end-2.vercel.app/admin/deleteQuestion/${_id}/${adminId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
+        },
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         console.log("Question deleted successfully:", data);
@@ -865,11 +918,13 @@ const QuestionsPage = () => {
                         ? capitalizeFirstLetter(question.mockId.testName)
                         : "Not Available"}
                     </div>
+
                     <div id="detail">
                       <strong> Created At:</strong> &nbsp;
                       {new Date(question.createdAt).toLocaleString()}
                     </div>
                   </div>
+
                   <div className="rightsidedetails">
                     <div id="detail">
                       <span className="QuestionName">
