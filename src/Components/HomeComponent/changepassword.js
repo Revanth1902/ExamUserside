@@ -26,6 +26,7 @@ const Changepassword = () => {
 
   const updateUserDetails = async () => {
     const userToken = getUserTokenFromCookie();
+
     if (password.oldPassword === "") {
       toast("Enter Old Password");
     } else if (password.newPassword === "") {
@@ -34,7 +35,7 @@ const Changepassword = () => {
       toast("Enter Confirm Password");
     } else if (password.newPassword !== password.confirmPassword) {
       toast("Password Don't Match");
-    } else if (password.newPassword === password.confirmPassword) {
+    } else {
       try {
         setLoad(true);
         const url = `https://exam-back-end-2.vercel.app/user/updateUserPassword/${Cookies.get(
@@ -46,7 +47,7 @@ const Changepassword = () => {
           newPassword: password.newPassword,
         };
 
-        const res = await axios.put(url, {
+        const res = await axios.put(url, updatedData, {
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
@@ -65,6 +66,7 @@ const Changepassword = () => {
         }
       } catch (error) {
         toast(error.response.data.message);
+      } finally {
         setLoad(false);
       }
     }

@@ -15,6 +15,7 @@ const MockPage = () => {
     description: "",
     totalMarks: "",
     examTiming: "",
+    totalQuestions: "",
   });
   const [validationErrors, setValidationErrors] = useState({});
   const [isAddingMock, setIsAddingMock] = useState(false);
@@ -61,6 +62,7 @@ const MockPage = () => {
       description: mock.description,
       totalMarks: mock.totalMarks,
       examTiming: mock.examTiming,
+      totalQuestions: mock.totalQuestions,
     });
     setShowUpdateContainer(true);
   };
@@ -95,6 +97,11 @@ const MockPage = () => {
     } else if (parseInt(formData.examTiming) <= 0) {
       errors.examTiming = "Exam Timing must be greater than 0";
     }
+    if (!formData.totalQuestions.trim() || isNaN(formData.totalQuestions)) {
+      errors.totalQuestions = "Number of Questions must be a number";
+    } else if (parseInt(formData.totalQuestions) <= 0) {
+      errors.totalQuestions = "Number of Questions must be greater than 0";
+    }
 
     setValidationErrors(errors);
 
@@ -116,6 +123,7 @@ const MockPage = () => {
       description: formData.description,
       totalMarks: formData.totalMarks || 100,
       examTiming: formData.examTiming,
+      totalQuestions: formData.totalQuestions,
     };
     const adminId = getAdminIdFromCookie();
     const adminToken = getAdminTokenFromCookie();
@@ -153,10 +161,6 @@ const MockPage = () => {
 
   const validateUpdateForm = () => {
     const errors = {};
-
-    // Add validation for update form fields if needed
-    // Similar to validateForm function
-    // Set errors for each field if validation fails
 
     setValidationErrors(errors);
 
@@ -208,6 +212,7 @@ const MockPage = () => {
       description: formData.description,
       totalMarks: formData.totalMarks || 100,
       examTiming: formData.examTiming,
+      totalQuestions: formData.totalQuestions,
     };
     const adminToken = getAdminTokenFromCookie();
     const adminId = getAdminIdFromCookie();
@@ -231,15 +236,11 @@ const MockPage = () => {
       .then((data) => {
         console.log("Mock updated successfully:", data);
 
-      
-
         setIsUpdatingMock(false);
 
-        
-          handleUpdateContainerClose();
-          fetchMockData();
-          toast.success("Mock updated successfully");
-   
+        handleUpdateContainerClose();
+        fetchMockData();
+        toast.success("Mock updated successfully");
       })
       .catch((error) => {
         console.error("Error updating mock:", error);
@@ -276,18 +277,18 @@ const MockPage = () => {
           </button>
         </div>
       )}
-       <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       {showContainer && (
         <>
           <div
@@ -300,7 +301,7 @@ const MockPage = () => {
               background: "#22222250",
             }}
           ></div>
-         
+
           <div className="overlay" onClick={handleContainerClose}>
             <div className="containering" onClick={(e) => e.stopPropagation()}>
               <form className="form" onSubmit={handleSubmit}>
@@ -340,6 +341,26 @@ const MockPage = () => {
                   required
                   disabled
                 />
+                <label htmlFor="totalQuestions">Number of Questions:</label>
+                <select
+                  id="totalQuestions"
+                  name="totalQuestions"
+                  value={formData.totalQuestions}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Number of Questions</option>
+                  {[...Array(10).keys()].map((number) => (
+                    <option key={number + 1} value={(number + 1) * 10}>
+                      {(number + 1) * 10}
+                    </option>
+                  ))}
+                </select>
+                {validationErrors.totalQuestions && (
+                  <span className="error">
+                    {validationErrors.totalQuestions}
+                  </span>
+                )}
 
                 <label htmlFor="examTiming">Exam Timing (minutes):</label>
                 <select
@@ -391,7 +412,7 @@ const MockPage = () => {
               background: "#22222250",
             }}
           ></div>
-         
+
           <div className="overlay" onClick={handleUpdateContainerClose}>
             <div className="containering" onClick={(e) => e.stopPropagation()}>
               <form className="form" onSubmit={handleUpdateSubmit}>
@@ -431,6 +452,26 @@ const MockPage = () => {
                   required
                   disabled
                 />
+                <label htmlFor="totalQuestions">Number of Questions:</label>
+                <select
+                  id="totalQuestions"
+                  name="totalQuestions"
+                  value={formData.totalQuestions}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Number of Questions</option>
+                  {[...Array(10).keys()].map((number) => (
+                    <option key={number + 1} value={(number + 1) * 10}>
+                      {(number + 1) * 10}
+                    </option>
+                  ))}
+                </select>
+                {validationErrors.totalQuestions && (
+                  <span className="error">
+                    {validationErrors.totalQuestions}
+                  </span>
+                )}
 
                 <label htmlFor="examTiming">Exam Timing (minutes):</label>
                 <select
@@ -504,6 +545,13 @@ const MockPage = () => {
                 <div id="detail">
                   <strong>Total Marks:</strong> &nbsp;{mock.totalMarks}
                 </div>
+                <div id="detail">
+                  <strong>Total Questions:</strong> &nbsp;
+                  {mock.totalQuestions > 0
+                    ? `${mock.totalQuestions} questions`
+                    : "No questions"}
+                </div>
+
                 <div id="detail">
                   <strong> Exam Timing:</strong> &nbsp;{mock.examTiming} minutes
                 </div>

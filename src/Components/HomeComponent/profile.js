@@ -112,7 +112,7 @@ const Profile = () => {
       userDetails.firstName === editDetails.firstName &&
       userDetails.lastName === editDetails.lastName &&
       userDetails.gender === editDetails.gender &&
-      userDetails.dob === editDetails.data &&
+      userDetails.dob === editDetails.dob &&
       userDetails.state === editDetails.state &&
       userDetails.email === editDetails.email &&
       userDetails.mobileNumber === editDetails.mobileNumber
@@ -135,7 +135,7 @@ const Profile = () => {
         userDetails.mobileNumber === "" ||
         `${userDetails.mobileNumber}`.length !== 10
       ) {
-        toast("Enter Valid Mobile Numer");
+        toast("Enter Valid Mobile Number");
       } else {
         setLoad(true);
         const userToken = getUserTokenFromCookie();
@@ -160,7 +160,7 @@ const Profile = () => {
             updatedData.email = userDetails.email;
           }
 
-          const res = await axios.put(url, {
+          const res = await axios.put(url, updatedData, {
             headers: {
               Authorization: `Bearer ${userToken}`,
             },
@@ -172,11 +172,15 @@ const Profile = () => {
             toast("Updated Details");
           }
         } catch (error) {
-          console.error("Get User By Id", error);
+          console.error("Update User Details Error", error);
+          // Handle the error appropriately, e.g., show a toast or display an error message
+          toast("Error updating details. Please try again.");
+          setLoad(false);
         }
       }
     }
   };
+
   const changeUserDetails = (e) => {
     if (e.target.name === "image") {
       setDetails({ ...userDetails, [e.target.name]: e.target.files[0] });
@@ -186,9 +190,6 @@ const Profile = () => {
       setDetails({ ...userDetails, [e.target.name]: e.target.value });
     }
   };
-
-  // console.log(editDetails);
-  // console.log(userDetails);
 
   return (
     <>

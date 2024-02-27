@@ -19,8 +19,8 @@ const QuestionsPage = () => {
   };
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [questionsPerPage] = useState(10);
-  const [currentQuestions, setCurrentQuestions] = useState([]);
+  const [count, setCount] = useState(null);
+
   const [showUpdateContainer, setShowUpdateContainer] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -67,6 +67,11 @@ const QuestionsPage = () => {
 
   const [isAddingQuestion, setIsAddingQuestion] = useState(false);
   const [isUpdatingQuestion, setIsUpdatingQuestion] = useState(false);
+  const [mockQuestionsCounts, setMockQuestionsCounts] = useState({});
+  const [theCountOfMock, setTheCountOfMock] = useState(0);
+
+  const [selectedMockTotalQuestions, setSelectedMockTotalQuestions] =
+    useState(100);
 
   useEffect(() => {
     fetchQuestionsData(currentPage);
@@ -80,9 +85,38 @@ const QuestionsPage = () => {
   }, [updateFormData]);
 
   useEffect(() => {
-    fetchQuestionsData(currentPage); // Call fetchQuestionsData with the initial currentPage value
-  }, []); // Empty dependency array to ensure it runs only once on mount
+    fetchQuestionsData(currentPage);
+  }, []);
 
+  const fetchCount = async () => {
+    const adminToken = getAdminTokenFromCookie();
+    try {
+      const response = await fetch(
+        `https://exam-back-end-2.vercel.app/admin/getQuestionsByMockId/${selectedMock}`,
+        {
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+
+      // Assuming your API response has a property named 'count'
+      setCount(data.count);
+    } catch (error) {
+      console.error("Error fetching count:", error);
+      // Handle error, show a message, etc.
+    }
+  };
+
+  useEffect(() => {
+    // Check if a mock is selected before making the API request
+    if (selectedMock) {
+      fetchCount();
+    }
+  }, [selectedMock]);
+  console.log("selectedmockidea", selectedMock.count);
   const handleUpdate = (question) => {
     setShowUpdateContainer(true);
     setSelectedQuestion(question);
@@ -107,11 +141,7 @@ const QuestionsPage = () => {
       difficultyLevel: question.difficultyLevel,
     });
   };
-  // useEffect(() => {
-  //   if (selectedQuestion) {
-  //     setUpdatedFormData(selectedQuestion);
-  //   }
-  // }, [selectedQuestion]);
+
   const getAdminIdFromCookie = () => {
     const cookieName = "jwt_AdminId";
     const cookies = document.cookie.split(";");
@@ -219,6 +249,7 @@ const QuestionsPage = () => {
     setSelectedSubtopic("");
     setSelectedQuiz("");
   };
+  console.log("hello", selectedMock._id);
 
   const handleTopicChange = (e) => {
     const { value } = e.target;
@@ -268,54 +299,24 @@ const QuestionsPage = () => {
   const fetchDropdownData = () => {
     const baseApi = "https://exam-back-end-2.vercel.app/admin/";
 
-    // Fetch categories
-    fetch(`${baseApi}getAllCategory`)
-      .then((response) => response.json())
-      .then((data) => {
-        setCategories(data.data);
+    // Fetch categories, topics, subtopics, quizzes, and mocks
+    // (Assuming setCategories, setTopics, setSubtopics, setQuizzes, and setMocks are state setters)
+    Promise.all([
+      fetch(`${baseApi}getAllCategory`).then((response) => response.json()),
+      fetch(`${baseApi}getAllTopics`).then((response) => response.json()),
+      fetch(`${baseApi}getAllSubTopics`).then((response) => response.json()),
+      fetch(`${baseApi}getAllQuizName`).then((response) => response.json()),
+      fetch(`${baseApi}getAllMocks`).then((response) => response.json()),
+    ])
+      .then(([categories, topics, subtopics, quizzes, mocks]) => {
+        setCategories(categories.data);
+        setTopics(topics.data);
+        setSubtopics(subtopics.data);
+        setQuizzes(quizzes.data);
+        setMocks(mocks.data);
       })
       .catch((error) => {
-        console.error("Error fetching categories:", error);
-      });
-
-    // Fetch topics
-    fetch(`${baseApi}getAllTopics`)
-      .then((response) => response.json())
-      .then((data) => {
-        setTopics(data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching topics:", error);
-      });
-
-    // Fetch subtopics
-    fetch(`${baseApi}getAllSubTopics`)
-      .then((response) => response.json())
-      .then((data) => {
-        setSubtopics(data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching subtopics:", error);
-      });
-
-    // Fetch quizzes
-    fetch(`${baseApi}getAllQuizName`)
-      .then((response) => response.json())
-      .then((data) => {
-        setQuizzes(data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching quizzes:", error);
-      });
-
-    fetch(`${baseApi}getAllMocks`)
-      .then((response) => response.json())
-      .then((data) => {
-        // Assuming data.data is an array of mocks
-        setMocks(data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching mocks:", error);
+        console.error("Error fetching data:", error);
       });
   };
 
@@ -326,25 +327,7 @@ const QuestionsPage = () => {
   const handleContainerClose = () => {
     setShowContainer(false);
   };
-  // useEffect(() => {
-  //   if (selectedQuestion) {
-  //     setUpdatedFormData({
-  //       type: selectedQuestion.type,
-  //       description: selectedQuestion.description || "",
-  //       selectedCategory: selectedQuestion.categoryId || "",
-  //       selectedTopic: selectedQuestion.topicId || "",
-  //       selectedSubtopic: selectedQuestion.subtopicId || "",
-  //       selectedQuiz: selectedQuestion.quizId || "",
-  //       question: selectedQuestion.question || "",
-  //       option1: selectedQuestion.option1 || "",
-  //       option2: selectedQuestion.option2 || "",
-  //       option3: selectedQuestion.option3 || "",
-  //       option4: selectedQuestion.option4 || "",
-  //       answer: selectedQuestion.answer || "",
-  //       difficultyLevel: selectedQuestion.difficultyLevel || "",
-  //     });
-  //   }
-  // }, [selectedQuestion]);
+
   const handleChange = (e, isUpdated = false) => {
     const { name, value } = e.target;
 
@@ -360,7 +343,6 @@ const QuestionsPage = () => {
       }));
     }
 
-    // Validate selectedYear for previousYear option
     if (name === "type" || name === "selectedYear") {
       setValidationErrors((prevErrors) => ({
         ...prevErrors,
@@ -374,39 +356,22 @@ const QuestionsPage = () => {
   const handleUpdateChange = (e) => {
     const { name, value } = e.target;
 
-    //   setUpdatedFormData((prevData) => {if(name==="categoryId"){
-    //     return(
-    //       {
-
-    //         ...prevData,
-    //         selectedCategory: value,
-    //       }
-    //     )
-    //   }
-    //   else if{
-
-    //   }
-    // }
-
-    //   );
-
-    // Update selectedCategory, selectedTopic, and selectedSubtopic based on dropdown changes
     if (name === "categoryId") {
       setUpdatedFormData((prevData) => ({
         ...prevData,
         selectedCategory: value,
-        selectedTopic: "", // Reset selectedTopic when category changes
-        selectedSubtopic: "", // Reset selectedSubtopic when category changes
-        selectedQuiz: "", // Reset selectedQuiz when category changes
-        selectedMock: "", // Reset selectedMock when category changes
+        selectedTopic: "",
+        selectedSubtopic: "",
+        selectedQuiz: "",
+        selectedMock: "",
       }));
     } else if (name === "topicId") {
       setUpdatedFormData((prevData) => ({
         ...prevData,
         selectedTopic: value,
-        selectedSubtopic: "", // Reset selectedSubtopic when topic changes
-        selectedQuiz: "", // Reset selectedQuiz when topic changes
-        selectedMock: "", // Reset selectedMock when topic changes
+        selectedSubtopic: "",
+        selectedQuiz: "",
+        selectedMock: "",
       }));
     } else if (name === "subtopicId") {
       setUpdatedFormData((prevData) => ({
@@ -419,7 +384,7 @@ const QuestionsPage = () => {
       setUpdatedFormData((prevData) => ({
         ...prevData,
         selectedQuiz: value,
-        selectedMock: "", // Reset selectedMock when quiz changes
+        selectedMock: "",
       }));
     } else if (name === "mockId") {
       setUpdatedFormData((prevData) => ({
@@ -435,94 +400,93 @@ const QuestionsPage = () => {
 
     setValidationErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: "", // Clear validation error when the field is updated
+      [name]: "",
     }));
   };
   const capitalizeFirstLetter = (string) => {
     if (string === undefined || string === null) {
-      // Handle the case when string is undefined or null
       return "";
     }
 
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+      setIsAddingQuestion(true);
 
-    // Set loading state to true
-    setIsAddingQuestion(true);
+      const submitButton = document.querySelector(".submitbutton");
+      submitButton.setAttribute("disabled", "true");
 
-    const submitButton = document.querySelector(".submitbutton");
-    submitButton.setAttribute("disabled", "true");
+      const dataToSend = {
+        ...formData,
+        categoryId: selectedCategory,
+        topicId: selectedTopic,
+        subtopicId: selectedSubtopic,
+        quizId: selectedQuiz,
+        mockId: selectedMock,
+      };
 
-    const errors = {};
+      const adminToken = getAdminTokenFromCookie();
+      const adminId = getAdminIdFromCookie();
 
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors);
-      submitButton.removeAttribute("disabled");
+      const totalQuestionsCount = theCountOfMock;
+      const actualTotalAllowedQuestions = selectedMockTotalQuestions;
 
-      // Set loading state to false on validation errors
-      setIsAddingQuestion(false);
-      return;
-    }
-    const dataToSend = {
-      ...formData,
-      categoryId: selectedCategory,
-      topicId: selectedTopic,
-      subtopicId: selectedSubtopic,
-      quizId: selectedQuiz,
-    };
-    if (selectedMock !== "") {
-      dataToSend.mockId = selectedMock;
-    }
+      const errors = {};
 
-    if (selectedMock !== "") {
-      dataToSend.mockId = selectedMock;
-    }
-    const adminToken = getAdminTokenFromCookie();
-    const adminId = getAdminIdFromCookie();
+      // Check if the total questions count exceeds the allowed limit
+      if (totalQuestionsCount >= actualTotalAllowedQuestions) {
+        errors.mockFilled =
+          "Mock is filled. Please choose another mock or delete some questions.";
 
-    fetch(
-      `https://exam-back-end-2.vercel.app/admin/createQuestions/${adminId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${adminToken}`,
-        },
-        body: JSON.stringify(dataToSend),
-      }
-    )
-      .then((response) => {
+        setValidationErrors(errors);
+        submitButton.removeAttribute("disabled");
+
+        // Set loading state to false on validation errors
+        setIsAddingQuestion(false);
+      } else {
+        // If count is within the allowed limit, proceed to add the question
+        const response = await fetch(
+          `https://exam-back-end-2.vercel.app/admin/createQuestions/${adminId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${adminToken}`,
+            },
+            body: JSON.stringify(dataToSend),
+          }
+        );
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Question added successfully:", data);
+
+        const responseData = await response.json();
+        console.log("Question added successfully:", responseData);
         toast.success("Question added successfully");
 
         // Re-enable the button after successful submission
         submitButton.removeAttribute("disabled");
+
+        // Clear validation errors
+        setValidationErrors({});
 
         setTimeout(() => {
           setIsAddingQuestion(false);
           handleContainerClose();
           fetchQuestionsData(currentPage);
         }, 300);
-      })
-      .catch((error) => {
-        console.error("Error adding question:", error);
+      }
+    } catch (error) {
+      console.error("Error adding question:", error);
 
-        // Re-enable the button on error
-        submitButton.removeAttribute("disabled");
-        toast.error("Error adding question. Please try again.");
+      toast.error("Error adding question. Please try again.");
 
-        // Set loading state to false on error
-        setIsAddingQuestion(false);
-      });
+      setIsAddingQuestion(false);
+    }
   };
 
   const handleDelete = (question) => {
@@ -545,8 +509,6 @@ const QuestionsPage = () => {
         console.log("Question deleted successfully:", data);
         toast.success("Question deleted successfully");
         fetchQuestionsData(currentPage);
-
-        // After successful deletion, update your questions data
       })
       .catch((error) => {
         console.error("Error deleting question:", error);
@@ -598,18 +560,7 @@ const QuestionsPage = () => {
               background: "#22222250",
             }}
           ></div>
-          <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
+
           <div className="overlay" onClick={handleContainerClose}>
             <div className="containering" onClick={(e) => e.stopPropagation()}>
               <form className="form" onSubmit={handleSubmit}>
@@ -740,124 +691,172 @@ const QuestionsPage = () => {
                     </option>
                   ))}
                 </select>
+                {validationErrors.mockFilled && (
+                  <span className="mockFilledErrorMessage">
+                    {validationErrors.mockFilled}
+                  </span>
+                )}
+                <div>
+                  <p>
+                    {count !== null
+                      ? `Present Questions in Mock: ${count}`
+                      : "Loading..."}
+                  </p>
+                  <p>
+                    Selected Mock:{" "}
+                    {selectedMock
+                      ? mocks.find((mock) => mock._id === selectedMock)
+                          ?.totalQuestions || "Not mentioned"
+                      : "Not mentioned"}
+                  </p>
+                </div>
 
-                <label htmlFor="question">Question:</label>
-                <textarea
-                  rows={5}
-                  id="question"
-                  name="question"
-                  value={formData.question}
-                  onChange={handleChange}
-                  required
-                ></textarea>
-                {validationErrors.question && (
-                  <span className="error">{validationErrors.question}</span>
-                )}
-                <label htmlFor="option1">Option 1:</label>
-                <input
-                  type="text"
-                  id="option1"
-                  name="option1"
-                  value={formData.option1}
-                  onChange={handleChange}
-                  required
-                />
-                {validationErrors.option1 && (
-                  <span className="error">{validationErrors.option1}</span>
-                )}
-                <label htmlFor="option2">Option 2:</label>
-                <input
-                  type="text"
-                  id="option2"
-                  name="option2"
-                  value={formData.option2}
-                  onChange={handleChange}
-                  required
-                />
-                {validationErrors.option2 && (
-                  <span className="error">{validationErrors.option2}</span>
-                )}
-                <label htmlFor="option3">Option 3:</label>
-                <input
-                  type="text"
-                  id="option3"
-                  name="option3"
-                  value={formData.option3}
-                  onChange={handleChange}
-                  required
-                />
-                {validationErrors.option3 && (
-                  <span className="error">{validationErrors.option3}</span>
-                )}
-                <label htmlFor="option4">Option 4:</label>
-                <input
-                  type="text"
-                  id="option4"
-                  name="option4"
-                  value={formData.option4}
-                  onChange={handleChange}
-                  required
-                />
-                {validationErrors.option4 && (
-                  <span className="error">{validationErrors.option4}</span>
-                )}
-                <label htmlFor="answer">Correct Answer:</label>
-                <select
-                  id="answer"
-                  name="answer"
-                  value={formData.answer}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select correct answer</option>
-                  <option value="option1">Option 1</option>
-                  <option value="option2">Option 2</option>
-                  <option value="option3">Option 3</option>
-                  <option value="option4">Option 4</option>
-                </select>
-                {validationErrors.correctAnswer && (
-                  <span className="error">
-                    {validationErrors.correctAnswer}
+                {count !== null &&
+                selectedMock &&
+                count >=
+                  mocks.find((mock) => mock._id === selectedMock)
+                    ?.totalQuestions ? (
+                  <span style={{ color: "red" }}>
+                    The Selected Mock Is full{" "}
                   </span>
+                ) : (
+                  <>
+                    <div>
+                      {count !== null &&
+                      selectedMock &&
+                      count >=
+                        mocks.find((mock) => mock._id === selectedMock)
+                          ?.totalQuestions ? (
+                        <span style={{ color: "red" }}>Mock is full</span>
+                      ) : (
+                        <span style={{ color: "green" }}>
+                          You can add a question
+                        </span>
+                      )}
+                    </div>
+
+                    <label htmlFor="question">Question:</label>
+                    <textarea
+                      rows={5}
+                      id="question"
+                      name="question"
+                      value={formData.question}
+                      onChange={handleChange}
+                      required
+                    ></textarea>
+                    {validationErrors.question && (
+                      <span className="error">{validationErrors.question}</span>
+                    )}
+                    <label htmlFor="option1">Option 1:</label>
+                    <input
+                      type="text"
+                      id="option1"
+                      name="option1"
+                      value={formData.option1}
+                      onChange={handleChange}
+                      required
+                    />
+                    {validationErrors.option1 && (
+                      <span className="error">{validationErrors.option1}</span>
+                    )}
+                    <label htmlFor="option2">Option 2:</label>
+                    <input
+                      type="text"
+                      id="option2"
+                      name="option2"
+                      value={formData.option2}
+                      onChange={handleChange}
+                      required
+                    />
+                    {validationErrors.option2 && (
+                      <span className="error">{validationErrors.option2}</span>
+                    )}
+                    <label htmlFor="option3">Option 3:</label>
+                    <input
+                      type="text"
+                      id="option3"
+                      name="option3"
+                      value={formData.option3}
+                      onChange={handleChange}
+                      required
+                    />
+                    {validationErrors.option3 && (
+                      <span className="error">{validationErrors.option3}</span>
+                    )}
+                    <label htmlFor="option4">Option 4:</label>
+                    <input
+                      type="text"
+                      id="option4"
+                      name="option4"
+                      value={formData.option4}
+                      onChange={handleChange}
+                      required
+                    />
+                    {validationErrors.option4 && (
+                      <span className="error">{validationErrors.option4}</span>
+                    )}
+                    <label htmlFor="answer">Correct Answer:</label>
+                    <select
+                      id="answer"
+                      name="answer"
+                      value={formData.answer}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Select correct answer</option>
+                      <option value="option1">Option 1</option>
+                      <option value="option2">Option 2</option>
+                      <option value="option3">Option 3</option>
+                      <option value="option4">Option 4</option>
+                    </select>
+                    {validationErrors.correctAnswer && (
+                      <span className="error">
+                        {validationErrors.correctAnswer}
+                      </span>
+                    )}
+                    <label htmlFor="description">Description:</label>
+                    <textarea
+                      rows={3}
+                      id="description"
+                      name="description"
+                      value={formData.description}
+                      onChange={handleChange}
+                    />
+                    {validationErrors.description && (
+                      <span className="error">
+                        {validationErrors.description}
+                      </span>
+                    )}
+                    <label htmlFor="difficultyLevel">Difficulty Level:</label>
+                    <select
+                      id="difficultyLevel"
+                      name="difficultyLevel"
+                      value={formData.difficultyLevel}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Select difficulty level</option>
+                      <option value="easy">Easy</option>
+                      <option value="medium">Medium</option>
+                      <option value="hard">Hard</option>
+                      <option value="veryHard">Very Hard</option>
+                    </select>
+                    {validationErrors.difficultyLevel && (
+                      <span className="error">
+                        {validationErrors.difficultyLevel}
+                      </span>
+                    )}
+                    <button
+                      type="submit"
+                      className="submitbutton"
+                      disabled={isAddingQuestion}
+                      onClick={handleSubmit}
+                    >
+                      {isAddingQuestion ? "Adding ....." : "Add Question"}
+                    </button>
+                  </>
                 )}
-                <label htmlFor="description">Description:</label>
-                <textarea
-                  rows={3}
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                />
-                {validationErrors.description && (
-                  <span className="error">{validationErrors.description}</span>
-                )}
-                <label htmlFor="difficultyLevel">Difficulty Level:</label>
-                <select
-                  id="difficultyLevel"
-                  name="difficultyLevel"
-                  value={formData.difficultyLevel}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select difficulty level</option>
-                  <option value="easy">Easy</option>
-                  <option value="medium">Medium</option>
-                  <option value="hard">Hard</option>
-                  <option value="veryHard">Very Hard</option>
-                </select>
-                {validationErrors.difficultyLevel && (
-                  <span className="error">
-                    {validationErrors.difficultyLevel}
-                  </span>
-                )}
-                <button
-                  type="submit"
-                  className="submitbutton"
-                  disabled={isAddingQuestion}
-                  onClick={handleSubmit}
-                >
-                  {isAddingQuestion ? "Adding ....." : "Add Question"}
-                </button>
+
                 <button
                   type="button"
                   onClick={handleContainerClose}
@@ -1133,130 +1132,168 @@ const QuestionsPage = () => {
                   </option>
                 ))}
               </select>
-
-              <label htmlFor="question">Question:</label>
-              <textarea
-                rows={5}
-                id="question"
-                name="question"
-                value={updatedFormData.question}
-                onChange={handleUpdateChange}
-                required
-              ></textarea>
-              {validationErrors.question && (
-                <span className="error">{validationErrors.question}</span>
+              {validationErrors.mockFilled && (
+                <span className="error">{validationErrors.mockFilled}</span>
               )}
 
-              <label htmlFor="option1">Option 1:</label>
-              <input
-                type="text"
-                id="option1"
-                name="option1"
-                value={updatedFormData.option1}
-                onChange={handleUpdateChange}
-                required
-              />
-              {validationErrors.option1 && (
-                <span className="error">{validationErrors.option1}</span>
-              )}
+              <div>
+                <p>
+                  {count !== null
+                    ? `Present Questions in Mock: ${count}`
+                    : "Loading..."}
+                </p>
+                <p>
+                  Selected Mock:{" "}
+                  {selectedMock
+                    ? mocks.find((mock) => mock._id === selectedMock)
+                        ?.totalQuestions || "Not mentioned"
+                    : "Not mentioned"}
+                </p>
+              </div>
 
-              <label htmlFor="option2">Option 2:</label>
-              <input
-                type="text"
-                id="option2"
-                name="option2"
-                value={updatedFormData.option2}
-                onChange={handleUpdateChange}
-                required
-              />
-              {validationErrors.option2 && (
-                <span className="error">{validationErrors.option2}</span>
-              )}
+              {count !== null &&
+              selectedMock &&
+              count >=
+                mocks.find((mock) => mock._id === selectedMock)
+                  ?.totalQuestions ? (
+                <span style={{ color: "red" }}>The Selected Mock Is full </span>
+              ) : (
+                <>
+                  <div>
+                    {count !== null &&
+                    selectedMock &&
+                    count >=
+                      mocks.find((mock) => mock._id === selectedMock)
+                        ?.totalQuestions ? (
+                      <span style={{ color: "red" }}>Mock is full</span>
+                    ) : (
+                      <span style={{ color: "green" }}>
+                        You can add a question
+                      </span>
+                    )}
+                  </div>
 
-              <label htmlFor="option3">Option 3:</label>
-              <input
-                type="text"
-                id="option3"
-                name="option3"
-                value={updatedFormData.option3}
-                onChange={handleUpdateChange}
-                required
-              />
-              {validationErrors.option3 && (
-                <span className="error">{validationErrors.option3}</span>
+                  <label htmlFor="question">Question:</label>
+                  <textarea
+                    rows={5}
+                    id="question"
+                    name="question"
+                    value={formData.question}
+                    onChange={handleChange}
+                    required
+                  ></textarea>
+                  {validationErrors.question && (
+                    <span className="error">{validationErrors.question}</span>
+                  )}
+                  <label htmlFor="option1">Option 1:</label>
+                  <input
+                    type="text"
+                    id="option1"
+                    name="option1"
+                    value={formData.option1}
+                    onChange={handleChange}
+                    required
+                  />
+                  {validationErrors.option1 && (
+                    <span className="error">{validationErrors.option1}</span>
+                  )}
+                  <label htmlFor="option2">Option 2:</label>
+                  <input
+                    type="text"
+                    id="option2"
+                    name="option2"
+                    value={formData.option2}
+                    onChange={handleChange}
+                    required
+                  />
+                  {validationErrors.option2 && (
+                    <span className="error">{validationErrors.option2}</span>
+                  )}
+                  <label htmlFor="option3">Option 3:</label>
+                  <input
+                    type="text"
+                    id="option3"
+                    name="option3"
+                    value={formData.option3}
+                    onChange={handleChange}
+                    required
+                  />
+                  {validationErrors.option3 && (
+                    <span className="error">{validationErrors.option3}</span>
+                  )}
+                  <label htmlFor="option4">Option 4:</label>
+                  <input
+                    type="text"
+                    id="option4"
+                    name="option4"
+                    value={formData.option4}
+                    onChange={handleChange}
+                    required
+                  />
+                  {validationErrors.option4 && (
+                    <span className="error">{validationErrors.option4}</span>
+                  )}
+                  <label htmlFor="answer">Correct Answer:</label>
+                  <select
+                    id="answer"
+                    name="answer"
+                    value={formData.answer}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select correct answer</option>
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                    <option value="option3">Option 3</option>
+                    <option value="option4">Option 4</option>
+                  </select>
+                  {validationErrors.correctAnswer && (
+                    <span className="error">
+                      {validationErrors.correctAnswer}
+                    </span>
+                  )}
+                  <label htmlFor="description">Description:</label>
+                  <textarea
+                    rows={3}
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                  />
+                  {validationErrors.description && (
+                    <span className="error">
+                      {validationErrors.description}
+                    </span>
+                  )}
+                  <label htmlFor="difficultyLevel">Difficulty Level:</label>
+                  <select
+                    id="difficultyLevel"
+                    name="difficultyLevel"
+                    value={formData.difficultyLevel}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select difficulty level</option>
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                    <option value="veryHard">Very Hard</option>
+                  </select>
+                  {validationErrors.difficultyLevel && (
+                    <span className="error">
+                      {validationErrors.difficultyLevel}
+                    </span>
+                  )}
+                  <button
+                    type="submit"
+                    className="submitbutton"
+                    disabled={isAddingQuestion}
+                    onClick={handleSubmit}
+                  >
+                    {isAddingQuestion ? "Adding ....." : "Add Question"}
+                  </button>
+                </>
               )}
-
-              <label htmlFor="option4">Option 4:</label>
-              <input
-                type="text"
-                id="option4"
-                name="option4"
-                value={updatedFormData.option4}
-                onChange={handleUpdateChange}
-                required
-              />
-              {validationErrors.option4 && (
-                <span className="error">{validationErrors.option4}</span>
-              )}
-
-              <label htmlFor="answer">Correct Answer:</label>
-              <select
-                id="answer"
-                name="answer"
-                value={updatedFormData.answer}
-                onChange={handleUpdateChange}
-                required
-              >
-                <option value="">Select correct answer</option>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-                <option value="option4">Option 4</option>
-              </select>
-              {validationErrors.correctAnswer && (
-                <span className="error">{validationErrors.correctAnswer}</span>
-              )}
-              <label htmlFor="description">Description:</label>
-              <textarea
-                rows={3}
-                id="description"
-                name="description"
-                value={updatedFormData.description}
-                onChange={handleUpdateChange}
-              />
-              {validationErrors.description && (
-                <span className="error">{validationErrors.description}</span>
-              )}
-              <label htmlFor="difficultyLevel">Difficulty Level:</label>
-              <select
-                id="difficultyLevel"
-                name="difficultyLevel"
-                value={updatedFormData.difficultyLevel}
-                onChange={handleUpdateChange}
-                required
-              >
-                <option value="">Select difficulty level</option>
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-                <option value="veryHard">Very Hard</option>
-              </select>
-              {validationErrors.difficultyLevel && (
-                <span className="error">
-                  {validationErrors.difficultyLevel}
-                </span>
-              )}
-
-              <button
-                type="submit"
-                className="update-submit-button"
-                disabled={isUpdatingQuestion}
-                onClick={() => {
-                  handleUpdateSubmit();
-                }}
-              >
-                {isUpdatingQuestion ? "Updating...." : "Update Question"}
-              </button>
 
               <button
                 type="button"
