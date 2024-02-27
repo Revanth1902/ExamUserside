@@ -1137,11 +1137,9 @@ const QuestionsPage = () => {
               )}
 
               <div>
-                <p>
-                  {count !== null
-                    ? `Present Questions in Mock: ${count}`
-                    : "Loading..."}
-                </p>
+                {count !== null && (
+                  <p>Present Questions in Mock: {count} || Not Mentioned</p>
+                )}
                 <p>
                   Selected Mock:{" "}
                   {selectedMock
@@ -1178,67 +1176,72 @@ const QuestionsPage = () => {
                     rows={5}
                     id="question"
                     name="question"
-                    value={formData.question}
-                    onChange={handleChange}
+                    value={updatedFormData.question}
+                    onChange={handleUpdateChange}
                     required
                   ></textarea>
                   {validationErrors.question && (
                     <span className="error">{validationErrors.question}</span>
                   )}
+
                   <label htmlFor="option1">Option 1:</label>
                   <input
                     type="text"
                     id="option1"
                     name="option1"
-                    value={formData.option1}
-                    onChange={handleChange}
+                    value={updatedFormData.option1}
+                    onChange={handleUpdateChange}
                     required
                   />
                   {validationErrors.option1 && (
                     <span className="error">{validationErrors.option1}</span>
                   )}
+
                   <label htmlFor="option2">Option 2:</label>
                   <input
                     type="text"
                     id="option2"
                     name="option2"
-                    value={formData.option2}
-                    onChange={handleChange}
+                    value={updatedFormData.option2}
+                    onChange={handleUpdateChange}
                     required
                   />
                   {validationErrors.option2 && (
                     <span className="error">{validationErrors.option2}</span>
                   )}
+
                   <label htmlFor="option3">Option 3:</label>
                   <input
                     type="text"
                     id="option3"
                     name="option3"
-                    value={formData.option3}
-                    onChange={handleChange}
+                    value={updatedFormData.option3}
+                    onChange={handleUpdateChange}
                     required
                   />
                   {validationErrors.option3 && (
                     <span className="error">{validationErrors.option3}</span>
                   )}
+
                   <label htmlFor="option4">Option 4:</label>
                   <input
                     type="text"
                     id="option4"
                     name="option4"
-                    value={formData.option4}
-                    onChange={handleChange}
+                    value={updatedFormData.option4}
+                    onChange={handleUpdateChange}
                     required
                   />
                   {validationErrors.option4 && (
                     <span className="error">{validationErrors.option4}</span>
                   )}
+
                   <label htmlFor="answer">Correct Answer:</label>
                   <select
                     id="answer"
                     name="answer"
-                    value={formData.answer}
-                    onChange={handleChange}
+                    value={updatedFormData.answer}
+                    onChange={handleUpdateChange}
                     required
                   >
                     <option value="">Select correct answer</option>
@@ -1257,8 +1260,8 @@ const QuestionsPage = () => {
                     rows={3}
                     id="description"
                     name="description"
-                    value={formData.description}
-                    onChange={handleChange}
+                    value={updatedFormData.description}
+                    onChange={handleUpdateChange}
                   />
                   {validationErrors.description && (
                     <span className="error">
@@ -1269,8 +1272,8 @@ const QuestionsPage = () => {
                   <select
                     id="difficultyLevel"
                     name="difficultyLevel"
-                    value={formData.difficultyLevel}
-                    onChange={handleChange}
+                    value={updatedFormData.difficultyLevel}
+                    onChange={handleUpdateChange}
                     required
                   >
                     <option value="">Select difficulty level</option>
@@ -1284,13 +1287,16 @@ const QuestionsPage = () => {
                       {validationErrors.difficultyLevel}
                     </span>
                   )}
+
                   <button
                     type="submit"
-                    className="submitbutton"
-                    disabled={isAddingQuestion}
-                    onClick={handleSubmit}
+                    className="update-submit-button"
+                    disabled={isUpdatingQuestion}
+                    onClick={() => {
+                      handleUpdateSubmit();
+                    }}
                   >
-                    {isAddingQuestion ? "Adding ....." : "Add Question"}
+                    {isUpdatingQuestion ? "Updating...." : "Update Question"}
                   </button>
                 </>
               )}
