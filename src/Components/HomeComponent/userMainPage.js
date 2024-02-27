@@ -111,7 +111,7 @@ const MyProflie = () => {
         ></div>
         <div className="modal-logout">
           <h4>Are you sure to Log Out?</h4>
-          <div>
+          <div className="logoutsomething">
             <button
               onClick={() => {
                 setShowLogOutModalBox(false);

@@ -131,6 +131,11 @@
   margin-top: 15%;
   font-size: 1rem;
 }
+.logoutsomething {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .modal-logout {
   position: absolute;
@@ -161,7 +166,7 @@
   color: white;
   border-radius: 0.2rem;
   cursor: pointer;
-  margin-left: 50%;
+  margin-left: 40%;
 }
 
 .modal-delete {
