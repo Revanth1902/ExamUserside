@@ -213,12 +213,8 @@ const QuestionsPage = () => {
       subtopicId: updatedFormData.selectedSubtopic,
       quizId: updatedFormData.selectedQuiz,
     };
-    if (selectedMock !== "") {
-      dataToSend.mockId = updatedFormData.selectedMock;
-    }
-
     if (updatedFormData.mockId !== "") {
-      dataToSend.mockId = updatedFormData.selectedMock;
+      dataToSend.mockId = updatedFormData.mockId;
     }
 
     // Set loading state to true
@@ -452,8 +448,10 @@ const QuestionsPage = () => {
         topicId: selectedTopic,
         subtopicId: selectedSubtopic,
         quizId: selectedQuiz,
-        mockId: selectedMock,
       };
+      if (selectedMock !== "") {
+        dataToSend.mockId = selectedMock;
+      }
 
       const adminToken = getAdminTokenFromCookie();
       const adminId = getAdminIdFromCookie();
