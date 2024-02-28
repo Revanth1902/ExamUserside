@@ -234,23 +234,33 @@ const StudentLogin = () => {
 
   const handleLogin = async () => {
     try {
-      if (user.email === "") {
+      if (!user.email && !user.password) {
         toast("Enter Email / Mobile Number");
-      } else if (user.password === "") {
+      } else if (!user.password) {
         toast("Enter Password");
       } else {
         setLoad(true);
+
+        // Check if the entered value is in email format
+        const isEmailFormat = /\S+@\S+\.\S+/.test(user.email);
+
+        // Set the key for the API request based on the input format
+        const key = isEmailFormat ? "email" : "mobileNumber";
+
+        // Create the payload with the appropriate key-value pair
+        const payload = {
+          [key]: user.email,
+          password: user.password,
+        };
+
         const response = await axios.post(
           "https://exam-back-end-2.vercel.app/user/Login",
-          user
+          payload
         );
 
         if (response.data) {
           setCheck(true);
-          toast("Successfull LoggedIn");
-          // toast("You cannot access without logging in. \n please login first.");
-          // toast("Success");
-          // sessionStorage.setItem("user", user.email);
+          toast("Successfully Logged In");
           Cookies.set("jwt_userID", response.data.data._id, { expires: 7 });
           Cookies.set("userToken", response.data.token, { expires: 7 });
           Cookies.set("jwt_firstName", response.data.data.firstName, {
@@ -264,9 +274,7 @@ const StudentLogin = () => {
       }
     } catch (error) {
       setLoad(false);
-      toast(error.response.data.message);
-      // toast("Login failed:", error);
-      // Handle error appropriately, e.g., show an error message to the user
+      toast(error.response?.data?.message || "Login failed");
     }
   };
 
