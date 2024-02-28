@@ -20,6 +20,7 @@ const QuestionsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [count, setCount] = useState(null);
+  const [updatecount, setUpdateCount] = useState(null);
 
   const [showUpdateContainer, setShowUpdateContainer] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
@@ -67,7 +68,7 @@ const QuestionsPage = () => {
 
   const [isAddingQuestion, setIsAddingQuestion] = useState(false);
   const [isUpdatingQuestion, setIsUpdatingQuestion] = useState(false);
-  const [mockQuestionsCounts, setMockQuestionsCounts] = useState({});
+
   const [theCountOfMock, setTheCountOfMock] = useState(0);
 
   const [selectedMockTotalQuestions, setSelectedMockTotalQuestions] =
@@ -109,13 +110,39 @@ const QuestionsPage = () => {
       // Handle error, show a message, etc.
     }
   };
+  const fetchCountUpdate = async () => {
+    const adminToken = getAdminTokenFromCookie();
+    try {
+      const response = await fetch(
+        `https://exam-back-end-2.vercel.app/admin/getQuestionsByMockId/${updatedFormData.selectedMock}`,
+        {
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+
+      // Assuming your API response has a property named 'count'
+      setUpdateCount(data.count);
+    } catch (error) {
+      console.error("Error fetching count:", error);
+      // Handle error, show a message, etc.
+    }
+  };
 
   useEffect(() => {
-    // Check if a mock is selected before making the API request
     if (selectedMock) {
       fetchCount();
     }
   }, [selectedMock]);
+  useEffect(() => {
+    if (updatedFormData.selectedMock) {
+      fetchCountUpdate();
+    }
+  }, [updatedFormData.selectedMock]);
+
   console.log("selectedmockidea", selectedMock.count);
   const handleUpdate = (question) => {
     setShowUpdateContainer(true);
@@ -1133,39 +1160,22 @@ const QuestionsPage = () => {
                 ))}
               </select>
 
-              <div>
-                {count !== null && (
-                  <p>Present Questions in Mock: {count} || Not Mentioned</p>
-                )}
-                <p>
-                  Selected Mock:{" "}
-                  {selectedMock
-                    ? mocks.find((mock) => mock._id === selectedMock)
-                        ?.totalQuestions || "Not mentioned"
-                    : "Not mentioned"}
-                </p>
-              </div>
-
-              {count !== null &&
-              selectedMock &&
-              count >=
-                mocks.find((mock) => mock._id === selectedMock)
-                  ?.totalQuestions ? (
-                <span style={{ color: "red" }}>The Selected Mock Is full </span>
+              {updatecount !== null &&
+              updatedFormData.selectedMock &&
+              updatecount >=
+                (mocks.find((mock) => mock._id === updatedFormData.selectedMock)
+                  ?.totalQuestions || 0) ? (
+                <div>
+                  <span style={{ color: "red" }}>
+                    The Selected Mock Is Full
+                  </span>
+                </div>
               ) : (
                 <>
                   <div>
-                    {count !== null &&
-                    selectedMock &&
-                    count >=
-                      mocks.find((mock) => mock._id === selectedMock)
-                        ?.totalQuestions ? (
-                      <span style={{ color: "red" }}>Mock is full</span>
-                    ) : (
-                      <span style={{ color: "green" }}>
-                        You can add a question
-                      </span>
-                    )}
+                    <span style={{ color: "green" }}>
+                      You can add a question
+                    </span>
                   </div>
 
                   <label htmlFor="question">Question:</label>
