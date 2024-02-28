@@ -78,9 +78,6 @@ const QuestionsPage = () => {
     fetchQuestionsData(currentPage);
   }, [updateFormData]);
 
-  console.log("Current Page:", currentPage);
-  console.log("Total Pages:", totalPages);
-
   useEffect(() => {
     fetchDropdownData();
   }, [updateFormData]);
@@ -110,6 +107,7 @@ const QuestionsPage = () => {
       // Handle error, show a message, etc.
     }
   };
+
   const fetchCountUpdate = async () => {
     const adminToken = getAdminTokenFromCookie();
     try {
@@ -137,17 +135,16 @@ const QuestionsPage = () => {
       fetchCount();
     }
   }, [selectedMock]);
+
   useEffect(() => {
     if (updatedFormData.selectedMock) {
       fetchCountUpdate();
     }
   }, [updatedFormData.selectedMock]);
 
-  console.log("selectedmockidea", selectedMock.count);
   const handleUpdate = (question) => {
     setShowUpdateContainer(true);
     setSelectedQuestion(question);
-    console.log("the question data", question._id);
 
     setUpdatedFormData({
       questionid: question._id,
@@ -204,9 +201,9 @@ const QuestionsPage = () => {
     setShowUpdateContainer(false);
     setSelectedQuestion(null);
   };
-  console.log("thetestifformdata", selectedCategory);
+
   const handleUpdateSubmit = () => {
-    const dataToSend = {
+    const UpdatedataToSend = {
       ...updatedFormData,
       categoryId: updatedFormData.selectedCategory,
       topicId: updatedFormData.selectedTopic,
@@ -214,7 +211,7 @@ const QuestionsPage = () => {
       quizId: updatedFormData.selectedQuiz,
     };
     if (updatedFormData.mockId !== "") {
-      dataToSend.mockId = updatedFormData.mockId;
+      UpdatedataToSend.mockId = updatedFormData.selectedMock;
     }
 
     // Set loading state to true
@@ -230,7 +227,7 @@ const QuestionsPage = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${adminToken}`,
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(UpdatedataToSend),
       }
     )
       .then((response) => response.json())
@@ -256,7 +253,7 @@ const QuestionsPage = () => {
     setQuestionsData((prevData) =>
       prevData.map((question) =>
         question._id === updatedFormData.questionid
-          ? { ...question, ...dataToSend }
+          ? { ...question, ...UpdatedataToSend }
           : question
       )
     );
