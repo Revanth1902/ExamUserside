@@ -187,11 +187,11 @@ const QuestionsPage = () => {
       quizId: updatedFormData.selectedQuiz,
     };
     if (selectedMock !== "") {
-      dataToSend.mockId = selectedMock;
+      dataToSend.mockId = updatedFormData.selectedMock;
     }
 
     if (updatedFormData.mockId !== "") {
-      dataToSend.mockId = updatedFormData.mockId;
+      dataToSend.mockId = updatedFormData.selectedMock;
     }
 
     // Set loading state to true
@@ -1132,9 +1132,6 @@ const QuestionsPage = () => {
                   </option>
                 ))}
               </select>
-              {validationErrors.mockFilled && (
-                <span className="error">{validationErrors.mockFilled}</span>
-              )}
 
               <div>
                 {count !== null && (
