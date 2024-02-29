@@ -350,7 +350,7 @@ const MockPage = () => {
                   required
                 >
                   <option value="">Select Number of Questions</option>
-                  {[...Array(10).keys()].map((number) => (
+                  {[...Array(15).keys()].map((number) => (
                     <option key={number + 1} value={(number + 1) * 10}>
                       {(number + 1) * 10}
                     </option>
