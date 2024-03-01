@@ -103,18 +103,34 @@ const MCQ = () => {
     const cookieName = "userToken"; // Update with the correct cookie name
     return Cookies.get(cookieName) || null;
   };
+  const getuserIdFromCookie = () => {
+    const cookieName = "jwt_userID";
+    const cookies = document.cookie.split(";");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${cookieName}=`)) {
+        // Extract the adminId value from the cookie
+        const adminId = cookie.substring(cookieName.length + 1);
+        return adminId;
+      }
+    }
+
+    // Return a default value or handle the case where the cookie is not found
+    return null;
+  };
   const getMockQuestions = async () => {
     setLoad2(false);
     const userToken = getUserTokenFromCookie();
     try {
-      const url = `https://exam-back-end-2.vercel.app/admin/getQuestionsByMockId/${params.id}?page=${page}&limit=10`;
-  
+      const url = `https://exam-back-end-2.vercel.app/user/getQuestionsByMockId/${params.id}?page=${page}&limit=10`;
+
       const res = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
       });
-  
+
       if (res.status === 200) {
         if (res.data.count === 0) {
           toast("No Questions Available");
@@ -131,7 +147,7 @@ const MCQ = () => {
               answered: "",
             };
           });
-  
+
           if (mcqquestions.length === 0) {
             setCount(res.data.count);
             setQuestions(updatedArr);
@@ -142,7 +158,7 @@ const MCQ = () => {
           } else {
             let newUpdatedArr = [];
             let matched = false;
-  
+
             for (let question of updatedArr) {
               for (let each of allQuestion) {
                 if (question._id === each._id) {
@@ -157,7 +173,7 @@ const MCQ = () => {
                 matched = false;
               }
             }
-  
+
             if (newUpdatedArr.length === 0) {
               toast("No Questions Available");
               setTimeout(() => {
@@ -189,7 +205,6 @@ const MCQ = () => {
       console.error(error);
     }
   };
-  
 
   const Results = () => {
     const [data, setData] = useState([
@@ -224,13 +239,16 @@ const MCQ = () => {
     }, []);
 
     const addingResultsToLeaderBoard = async (marks) => {
+      const userId = getuserIdFromCookie();
+      const adminToken = getUserTokenFromCookie();
       try {
-        const url = `https://exam-back-end.vercel.app/admin/createLeaderBoard`;
+        const url = `https://exam-back-end.vercel.app/user/createLeaderBoard/${userId}`;
 
         const reqConfigure = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${adminToken}`,
           },
           body: JSON.stringify({
             mockId: params.id,

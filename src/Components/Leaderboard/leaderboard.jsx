@@ -67,7 +67,7 @@ const LeaderBoard = () => {
   const getLeaderboardDetailsByMockId = async () => {
     try {
       const userToken = getUserTokenFromCookie();
-      const url = `https://exam-back-end-2.vercel.app/admin/getLeaderBoardByMockId/${params.mockid}`;
+      const url = `https://exam-back-end-2.vercel.app/user/getLeaderBoardByMockId/${params.mockid}`;
 
       const res = await axios.get(url, {
         headers: {
@@ -76,7 +76,9 @@ const LeaderBoard = () => {
       });
 
       if (res.status === 200) {
-        const sortedArr = res.data.data.sort((a, b) => b.totalMark - a.totalMark);
+        const sortedArr = res.data.data.sort(
+          (a, b) => b.totalMark - a.totalMark
+        );
         let position = 0;
         const positionAdded = sortedArr.map((each) => {
           position = position + 1;
@@ -114,7 +116,10 @@ const LeaderBoard = () => {
                     <tr
                       key={data.position}
                       style={{
-                        backgroundColor: backgroundColors[Math.floor(Math.random() * backgroundColors.length)],
+                        backgroundColor:
+                          backgroundColors[
+                            Math.floor(Math.random() * backgroundColors.length)
+                          ],
                       }}
                       className={
                         index < 3
@@ -166,11 +171,15 @@ const LeaderBoard = () => {
             <tbody>
               {leaderboardResults.map(
                 (data, index) =>
-                  data.userId && data.userId._id === Cookies.get("jwt_userID") && (
+                  data.userId &&
+                  data.userId._id === Cookies.get("jwt_userID") && (
                     <tr
                       key={data.position}
                       style={{
-                        backgroundColor: backgroundColors[Math.floor(Math.random() * backgroundColors.length)],
+                        backgroundColor:
+                          backgroundColors[
+                            Math.floor(Math.random() * backgroundColors.length)
+                          ],
                       }}
                       className={
                         index < 3
