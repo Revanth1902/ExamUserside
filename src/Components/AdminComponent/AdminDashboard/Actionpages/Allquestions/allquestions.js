@@ -121,7 +121,7 @@ const QuestionsPage = () => {
     const adminToken = getAdminTokenFromCookie();
     try {
       const response = await fetch(
-        `https://exam-back-end-2.vercel.app/admin/getQuestionsByMockId/${updatedFormData.selectedMock}`,
+        `https://exam-back-end-2.vercel.app/user/getQuestionsByMockId/${updatedFormData.selectedMock}`,
         {
           headers: {
             Authorization: `Bearer ${adminToken}`,
