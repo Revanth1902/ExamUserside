@@ -8,6 +8,8 @@ import "./allquestions.css";
 import Pagination from "./pagination";
 
 const QuestionsPage = () => {
+  const [yearSelectionAttempted, setYearSelectionAttempted] = useState(false);
+
   const [updatedFormData, setUpdatedFormData] = useState({});
   const handlePageChange = (pageNumber) => {
     const validPageNumber = isNaN(pageNumber) ? 1 : pageNumber;
@@ -219,6 +221,13 @@ const QuestionsPage = () => {
     };
     if (updatedFormData.mockId !== "") {
       UpdatedataToSend.mockId = updatedFormData.selectedMock;
+    }
+    if (
+      UpdatedataToSend.type === "previousYear" &&
+      !UpdatedataToSend.selectedYear
+    ) {
+      toast.error("Please select a year for the Previous Year option.");
+      return; // Stop the submission process
     }
 
     // Set loading state to true
@@ -450,10 +459,10 @@ const QuestionsPage = () => {
 
       const dataToSend = {
         ...formData,
-        categoryId: formData.selectedCategory,
-        topicId: formData.selectedTopic,
-        subtopicId: formData.selectedSubtopic,
-        quizId: formData.selectedQuiz,
+        categoryId: selectedCategory,
+        topicId: selectedTopic,
+        subtopicId: selectedSubtopic,
+        quizId: selectedQuiz,
       };
       if (selectedMock !== "") {
         dataToSend.mockId = selectedMock;
@@ -624,11 +633,13 @@ const QuestionsPage = () => {
                       {/* get all years from 50 yaers */}
                       {Array.from({ length: 21 }, (_, index) => {
                         const year = new Date().getFullYear() - index;
-                        return (
-                          <option key={year} value={year}>
-                            {year}
-                          </option>
-                        );
+                        if (index !== 0) {
+                          return (
+                            <option key={year} value={year}>
+                              {year}
+                            </option>
+                          );
+                        }
                       })}
                     </select>
                     {validationErrors.selectedYear && (
@@ -1030,7 +1041,15 @@ const QuestionsPage = () => {
               className="update-details-form"
               onSubmit={(e) => {
                 e.preventDefault();
-                handleUpdateSubmit(updatedFormData);
+                if (
+                  updatedFormData.type === "previousYear" &&
+                  !updatedFormData.selectedYear
+                ) {
+                  setYearSelectionAttempted(true);
+                } else {
+                  setYearSelectionAttempted(false);
+                  handleUpdateSubmit(updatedFormData);
+                }
               }}
             >
               <label htmlFor="type">Select Type:</label>
@@ -1051,6 +1070,9 @@ const QuestionsPage = () => {
               )}
               {updatedFormData.type === "previousYear" && (
                 <>
+                  <span style={{ color: "red" }}>
+                    Select the Year as The type is Previous Year
+                  </span>
                   <label htmlFor="selectedYear">Select Year:</label>
                   <select
                     id="selectedYear"
@@ -1061,13 +1083,15 @@ const QuestionsPage = () => {
                   >
                     <option value="">Select a year</option>
                     {/* get all years from 50 years */}
-                    {Array.from({ length: 21 }, (_, index) => {
+                    {Array.from({ length: 20 }, (_, index) => {
                       const year = new Date().getFullYear() - index;
-                      return (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      );
+                      if (index !== 0) {
+                        return (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        );
+                      }
                     })}
                   </select>
                   {validationErrors.selectedYear && (
@@ -1075,10 +1099,15 @@ const QuestionsPage = () => {
                       {validationErrors.selectedYear}
                     </span>
                   )}
+                  {yearSelectionAttempted && !updatedFormData.selectedYear && (
+                    <span className="error">
+                      Please select a year for the Previous Year option.
+                    </span>
+                  )}
                 </>
               )}
 
-              <lable htmlFor="categoryId">Category:</lable>
+              <label htmlFor="categoryId">Category:</label>
               <select
                 id="categoryId"
                 name="categoryId"
