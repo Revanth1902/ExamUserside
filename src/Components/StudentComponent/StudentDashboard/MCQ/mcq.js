@@ -108,70 +108,77 @@ const MCQ = () => {
     const userToken = getUserTokenFromCookie();
     try {
       const url = `https://exam-back-end-2.vercel.app/admin/getQuestionsByMockId/${params.id}?page=${page}&limit=10`;
-
+  
       const res = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
       });
-
+  
       if (res.status === 200) {
-        let numbering = res.data.currentPage * 10 - 10;
-        let updatedArr = res.data.data.map((each) => {
-          numbering = numbering + 1;
-          return {
-            ...each,
-            qno: numbering,
-            answered: "",
-          };
-        });
-
-        if (mcqquestions.length === 0) {
-          setCount(res.data.count);
-          setQuestions(updatedArr);
-          setCurrent(res.data.currentPage);
-          setTotalQuestion(res.data.totalPages);
-          setLoad(false);
-          setLoad2(true);
+        if (res.data.count === 0) {
+          toast("No Questions Available");
+          setTimeout(() => {
+            history.replace("/");
+          }, 1000);
         } else {
-          let newUpdatedArr = [];
-          let matched = false;
-
-          for (let question of updatedArr) {
-            for (let each of allQuestion) {
-              if (question._id === each._id) {
-                newUpdatedArr.push(each);
-                matched = true;
-                break;
-              }
-            }
-            if (matched === false) {
-              newUpdatedArr.push(question);
-            } else {
-              matched = false;
-            }
-          }
-
-          if (newUpdatedArr.length === 0) {
-            toast("No Questions Available");
-            setTimeout(() => {
-              window.location.href = "/";
-            }, 1000);
-          } else {
-            setQuestions(newUpdatedArr);
+          let numbering = res.data.currentPage * 10 - 10;
+          let updatedArr = res.data.data.map((each) => {
+            numbering = numbering + 1;
+            return {
+              ...each,
+              qno: numbering,
+              answered: "",
+            };
+          });
+  
+          if (mcqquestions.length === 0) {
+            setCount(res.data.count);
+            setQuestions(updatedArr);
             setCurrent(res.data.currentPage);
             setTotalQuestion(res.data.totalPages);
             setLoad(false);
             setLoad2(true);
+          } else {
+            let newUpdatedArr = [];
+            let matched = false;
+  
+            for (let question of updatedArr) {
+              for (let each of allQuestion) {
+                if (question._id === each._id) {
+                  newUpdatedArr.push(each);
+                  matched = true;
+                  break;
+                }
+              }
+              if (matched === false) {
+                newUpdatedArr.push(question);
+              } else {
+                matched = false;
+              }
+            }
+  
+            if (newUpdatedArr.length === 0) {
+              toast("No Questions Available");
+              setTimeout(() => {
+                window.location.href = "/";
+              }, 1000);
+            } else {
+              setQuestions(newUpdatedArr);
+              setCurrent(res.data.currentPage);
+              setTotalQuestion(res.data.totalPages);
+              setLoad(false);
+              setLoad2(true);
+            }
           }
         }
+        const element = document.getElementById("scrollToStart");
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+          inline: "nearest",
+        });
       }
-      const element = document.getElementById("scrollToStart");
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-        inline: "nearest",
-      });
     } catch (error) {
       toast("No Questions Available");
       setTimeout(() => {
@@ -182,6 +189,7 @@ const MCQ = () => {
       console.error(error);
     }
   };
+  
 
   const Results = () => {
     const [data, setData] = useState([

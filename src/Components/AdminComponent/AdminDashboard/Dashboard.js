@@ -23,6 +23,7 @@ const Dashboard = () => {
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
   };
+  const [reloadQuestions, setReloadQuestions] = useState(false);
 
   const renderSelectedPage = () => {
     switch (selectedCategory) {

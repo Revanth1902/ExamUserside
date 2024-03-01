@@ -42,7 +42,7 @@ const QuestionsPage = () => {
   const [questionsData, setQuestionsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showContainer, setShowContainer] = useState(false);
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     question: "",
     difficultyLevel: "",
     categoryId: "",
@@ -56,7 +56,14 @@ const QuestionsPage = () => {
     answer: "",
     description: "",
     type: "",
-  });
+    categoryId: "",
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
+
+  const resetForm = () => {
+    setFormData(initialFormData);
+  };
   const [categories, setCategories] = useState([]);
   const [topics, setTopics] = useState([]);
   const [subtopics, setSubtopics] = useState([]);
@@ -155,7 +162,8 @@ const QuestionsPage = () => {
       selectedTopic: question.topicId._id,
       selectedSubtopic: question.subtopicId._id,
       selectedQuiz: question.quizId._id,
-      selectedMock: question.mockId._id,
+      selectedMock: question.mockId && question.mockId._id,
+
       question: question.question,
       option1: question.option1,
       option2: question.option2,
@@ -199,7 +207,6 @@ const QuestionsPage = () => {
   };
   const handleCancelUpdate = () => {
     setShowUpdateContainer(false);
-    setSelectedQuestion(null);
   };
 
   const handleUpdateSubmit = () => {
@@ -309,6 +316,7 @@ const QuestionsPage = () => {
         setQuestionDetails(detailsMap);
 
         setLoading(false);
+        resetForm();
       })
       .catch((error) => {
         console.error("Error fetching questions data:", error);
@@ -342,6 +350,7 @@ const QuestionsPage = () => {
 
   const handleAddComponent = () => {
     setShowContainer(true);
+    resetForm();
   };
 
   const handleContainerClose = () => {
@@ -441,10 +450,10 @@ const QuestionsPage = () => {
 
       const dataToSend = {
         ...formData,
-        categoryId: selectedCategory,
-        topicId: selectedTopic,
-        subtopicId: selectedSubtopic,
-        quizId: selectedQuiz,
+        categoryId: formData.selectedCategory,
+        topicId: formData.selectedTopic,
+        subtopicId: formData.selectedSubtopic,
+        quizId: formData.selectedQuiz,
       };
       if (selectedMock !== "") {
         dataToSend.mockId = selectedMock;
@@ -490,17 +499,16 @@ const QuestionsPage = () => {
         console.log("Question added successfully:", responseData);
         toast.success("Question added successfully");
 
-        // Re-enable the button after successful submission
+        resetForm();
+
         submitButton.removeAttribute("disabled");
 
         // Clear validation errors
         setValidationErrors({});
 
-        setTimeout(() => {
-          setIsAddingQuestion(false);
-          handleContainerClose();
-          fetchQuestionsData(currentPage);
-        }, 300);
+        setIsAddingQuestion(false);
+        handleContainerClose();
+        fetchQuestionsData(currentPage);
       }
     } catch (error) {
       console.error("Error adding question:", error);
@@ -537,7 +545,7 @@ const QuestionsPage = () => {
         toast.error("Error deleting question. Please try again.");
       });
   };
-  console.log(updatedFormData);
+
   return (
     <div className="questions-page-container">
       <ToastContainer
@@ -635,7 +643,7 @@ const QuestionsPage = () => {
                 <select
                   id="categoryId"
                   name="categoryId"
-                  value={selectedCategory}
+                  value={formData.selectedCategory}
                   onChange={handleCategoryChange}
                   required
                 >
@@ -650,7 +658,7 @@ const QuestionsPage = () => {
                 <select
                   id="topicId"
                   name="topicId"
-                  value={selectedTopic}
+                  value={formData.selectedTopic}
                   onChange={handleTopicChange}
                   required={selectedCategory !== ""}
                 >
@@ -669,7 +677,7 @@ const QuestionsPage = () => {
                 <select
                   id="subtopicId"
                   name="subtopicId"
-                  value={selectedSubtopic}
+                  value={formData.selectedSubtopic}
                   onChange={handleSubtopicChange}
                   required={selectedTopic !== ""}
                 >
@@ -688,7 +696,7 @@ const QuestionsPage = () => {
                 <select
                   id="quizId"
                   name="quizId"
-                  value={selectedQuiz}
+                  value={formData.selectedQuiz}
                   onChange={handleQuizChange}
                   required={selectedSubtopic !== ""}
                 >
@@ -703,7 +711,7 @@ const QuestionsPage = () => {
                 <select
                   id="mockId"
                   name="mockId"
-                  value={selectedMock}
+                  value={formData.selectedMock}
                   onChange={(e) => setSelectedMock(e.target.value)}
                 >
                   <option value="">Select a mock (optional)</option>
