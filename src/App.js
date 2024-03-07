@@ -11,7 +11,7 @@ import Document from "./Components/Document";
 import Contact from "./Components/Contact";
 
 import StudentLogin from "./Components/StudentComponent/StudentLogin/StudentLogin";
-import AdminLogin from "./Components/AdminComponent/AdminLogin/AdminLogin";
+
 
 import StudentDashboard from "./Components/StudentComponent/StudentDashboard/StudentDashboard";
 
@@ -22,7 +22,7 @@ import Footer from "./Components/Footer";
 import LeaderBoard from "./Components/Leaderboard/leaderboard";
 import MCQ from "./Components/StudentComponent/StudentDashboard/MCQ/mcq";
 
-import Dashboard from "./Components/AdminComponent/AdminDashboard/Dashboard";
+
 import MyProfile from "./Components/HomeComponent/userMainPage";
 import MCQCustom from "./Components/StudentComponent/StudentDashboard/MCQCustomQuiz/mcqCustom.js";
 import MCQCurrentAffairs from "./Components/StudentComponent/StudentDashboard/MCQCurreentAffairs/mcqcurrentaffairs.js";
@@ -56,8 +56,7 @@ function App() {
           <Route exact path="/contact" component={Contact}></Route>
           <Route exact path="/StudentLogin" component={StudentLogin}></Route>
           <Route exact path="/StudentSignup" component={StudentSignup}></Route>
-          <Route exact path="/AdminLogin" component={AdminLogin}></Route>
-          <Route exact path="/AdminDashboard" component={Dashboard}></Route>
+         
           <Route
             exact
             path="/StudentDashboard"
