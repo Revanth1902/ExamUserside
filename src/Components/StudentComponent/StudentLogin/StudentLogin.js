@@ -216,7 +216,8 @@ const StudentLogin = () => {
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("userToken");
-    if (isLoggedIn !== undefined) {
+
+    if (isLoggedIn !== null) {
       window.location.href = "/";
     }
   }, []);
