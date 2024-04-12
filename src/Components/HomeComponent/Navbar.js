@@ -96,7 +96,11 @@ function Navbar() {
               <div className="mx-3">
                 {localStorage.getItem("userToken") === null ? (
                   <Link to="/StudentLogin">
-                    <button type="button" className="btn1 mx-2 rounded-pill">
+                    <button
+                      type="button"
+                      className="btn1 mx-2 rounded-pill"
+                      id="passdatafornxt"
+                    >
                       Log In
                     </button>
                   </Link>
