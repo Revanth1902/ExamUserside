@@ -1,6 +1,5 @@
 import "./App.css";
 import { useEffect } from "react";
-import Cookies from "js-cookie"
 // import Navbar from "./Components/HomeComponent/Navbar";
 import Home from "./Components/Home";
 import CurrentAffair from "./Components/HomeSections/Currentaffair";
@@ -33,14 +32,14 @@ import MCQPrev from "./Components/StudentComponent/StudentDashboard/MCQPrev/mcqp
 
 function App() {
   useEffect(() => {
-    // Data to be shared
-    const yourData = "Hello"
+    // Function to send cookie data to the parent window
+    const sendCookieToParent = () => {
+      const cookieValue = document.cookie; // Get all cookies
+      window.parent.postMessage({ type: 'cookie', value: cookieValue }, '*');
+    };
 
-    // Store data in local storage
-    Cookies.set('yourDataKey', JSON.stringify(yourData));
-
-    // Send data to parent window
-    window.parent.postMessage(yourData, '*'); // '*' allows communication with any origin
+    // Send cookie data to the parent window when the component mounts
+    sendCookieToParent();
   }, []);
   return (
     <>
