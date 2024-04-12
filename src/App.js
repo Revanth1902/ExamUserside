@@ -32,14 +32,14 @@ import MCQPrev from "./Components/StudentComponent/StudentDashboard/MCQPrev/mcqp
 
 function App() {
   useEffect(() => {
-    // Function to send cookie data to the parent window
-    const sendCookieToParent = () => {
-      const cookieValue = document.cookie; // Get all cookies
-      window.parent.postMessage({ type: 'cookie', value: cookieValue }, '*');
-    };
+    // Data to be shared
+    const yourData = "Hello"
 
-    // Send cookie data to the parent window when the component mounts
-    sendCookieToParent();
+    // Store data in local storage
+    localStorage.setItem('yourDataKey', JSON.stringify(yourData));
+
+    // Send data to parent window
+    window.parent.postMessage(yourData, '*'); // '*' allows communication with any origin
   }, []);
   return (
     <>
