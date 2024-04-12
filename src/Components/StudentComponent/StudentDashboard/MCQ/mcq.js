@@ -366,113 +366,73 @@ const MCQ = () => {
           {allQuestion.map((each) => (
             <div style={{ position: "relative" }}>
               <h3 style={{ marginBottom: "2%" }}>
-                Q{each.qno}.&nbsp;{each.question} &nbsp;{" "}
-                <span
-                  style={{
-                    backgroundColor: "#00FF0050",
-                    paddingTop: "0%",
-                    paddingBottom: ".3%",
-                    paddingLeft: "1%",
-                    paddingRight: "1%",
-                    borderRadius: ".2rem",
-                    fontSize: ".8rem",
-                  }}
-                >
-                  Ans : {each[each.answer]}
-                </span>
+                Q{each.qno}.&nbsp;{each.question} &nbsp;
+                
               </h3>
               <span
-                style={
-                  each.option1 === each.answered && each.answered !== undefined
-                    ? each[each.answer] === each.answered
-                      ? {
-                          backgroundColor: "#00FF0050",
-                          marginLeft: "2%",
-                          padding: "0% 2%",
-                        }
-                      : {
-                          backgroundColor: "#FF000050",
-                          marginLeft: "2%",
-                          padding: "0% 2%",
-                        }
-                    : {
-                        backgroundColor: "transparent",
-                        marginLeft: "2%",
-                        padding: "0% 2%",
-                      }
-                }
+                style={{
+                  backgroundColor:
+                    each.option1 === each.answered
+                      ? each.answered === each[each.answer]
+                        ? "#00FF0050"
+                        : "#FF000050"
+                      : each.option1 === each[each.answer]
+                      ? "#00FF0050"
+                      : "transparent",
+                  marginLeft: "2%",
+                  padding: "0% 2%",
+                }}
               >
                 I.&nbsp;{each.option1}
               </span>
               <br />
               <span
-                style={
-                  each.option2 === each.answered && each.answered !== undefined
-                    ? each[each.answer] === each.answered
-                      ? {
-                          backgroundColor: "#00FF0050",
-                          marginLeft: "2%",
-                          padding: "0% 2%",
-                        }
-                      : {
-                          backgroundColor: "#FF000050",
-                          marginLeft: "2%",
-                          padding: "0% 2%",
-                        }
-                    : {
-                        backgroundColor: "transparent",
-                        marginLeft: "2%",
-                        padding: "0% 2%",
-                      }
-                }
+                style={{
+                  backgroundColor:
+                    each.option2 === each.answered
+                      ? each.answered === each[each.answer]
+                        ? "#00FF0050"
+                        : "#FF000050"
+                      : each.option2 === each[each.answer]
+                      ? "#00FF0050"
+                      : "transparent",
+                  marginLeft: "2%",
+                  padding: "0% 2%",
+                }}
               >
                 II.&nbsp;{each.option2}
               </span>
               <br />
               <span
-                style={
-                  each.option3 === each.answered && each.answered !== undefined
-                    ? each[each.answer] === each.answered
-                      ? {
-                          backgroundColor: "#00FF0050",
-                          marginLeft: "2%",
-                          padding: "0% 2%",
-                        }
-                      : {
-                          backgroundColor: "#FF000050",
-                          marginLeft: "2%",
-                          padding: "0% 2%",
-                        }
-                    : {
-                        backgroundColor: "transparent",
-                        marginLeft: "2%",
-                        padding: "0% 2%",
-                      }
-                }
+                style={{
+                  backgroundColor:
+                    each.option3 === each.answered
+                      ? each.answered === each[each.answer]
+                        ? "#00FF0050"
+                        : "#FF000050"
+                      : each.option3 === each[each.answer]
+                      ? "#00FF0050"
+                      : "transparent",
+                  marginLeft: "2%",
+                  padding: "0% 2%",
+                }}
               >
                 III.&nbsp;{each.option3}
               </span>
               <br />
               <span
-                style={
-                  each.option4 === each.answered && each.answered !== undefined
-                    ? each[each.answer] === each.answered
-                      ? {
-                          backgroundColor: "#00FF0050",
-                          marginLeft: "2%",
-                          padding: "0% 2%",
-                        }
-                      : {
-                          backgroundColor: "#FF000050",
-                          marginLeft: "2%",
-                          padding: "0% 2%",
-                        }
-                    : {
-                        backgroundColor: "transparent",
-                        marginLeft: "2%",
-                        padding: "0% 2%",
-                      }
-                }
+                style={{
+                  backgroundColor:
+                    each.option4 === each.answered
+                      ? each.answered === each[each.answer]
+                        ? "#00FF0050"
+                        : "#FF000050"
+                      : each.option4 === each[each.answer]
+                      ? "#00FF0050"
+                      : "transparent",
+                  marginLeft: "2%",
+                  padding: "0% 2%",
+                }}
               >
                 IV.&nbsp;{each.option4}
               </span>

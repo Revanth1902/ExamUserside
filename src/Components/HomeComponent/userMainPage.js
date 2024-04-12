@@ -1,18 +1,11 @@
 import { useState, useEffect } from "react";
-
 import Profile from "./profile.js";
 import Changedpassword from "./changepassword.js";
 import Help from "./help.js";
 import Settings from "./settings.js";
 import { TailSpin } from "react-loader-spinner";
-
-import {
-  useHistory,
-  useParams,
-} from "react-router-dom/cjs/react-router-dom.min.js";
-
+import { useHistory, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
-
 import axios from "axios";
 
 const colors = [
@@ -28,16 +21,15 @@ const colors = [
   "darkgray",
 ];
 
-const userProfileTabs = [
-  {
-    myprofile: "myprofile",
-    settings: "settings",
-    changepassword: "changepassword",
-    help: "help",
-  },
-];
+const userProfileTabs = {
+  myprofile: "myprofile",
+  settings: "settings",
+  changepassword: "changepassword",
+  help: "help",
+  logout: "logout",
+};
 
-const MyProflie = () => {
+const MyProfile = () => {
   const params = useParams();
   const history = useHistory();
 
@@ -45,32 +37,30 @@ const MyProflie = () => {
   const [showDeleteModalBox, setShowDeleteModalBox] = useState(false);
 
   const [selectedSection, setSelectedSection] = useState(
-    params.name === "myprofile"
-      ? userProfileTabs[0].myprofile
-      : params.name === "changepassword"
-      ? userProfileTabs[0].changepassword
-      : params.name === "help"
-      ? userProfileTabs[0].help
-      : userProfileTabs[0].settings
+    params.name || userProfileTabs.myprofile
   );
   const [load, setLoad] = useState(false);
 
-  const [user, setUser] = useState(() => {
-    return [];
-  });
+  const [user, setUser] = useState({});
 
   useEffect(() => {
     const isLoggedIn = Cookies.get("userToken");
     if (isLoggedIn === undefined) {
-      window.location.href = "/StudentLogin";
+      history.push("/StudentLogin");
     } else {
       getUser();
     }
+
+    // Check if the current route is the logout route
+    if (params.name === userProfileTabs.logout) {
+      handleLogout();
+    }
   }, []);
+
   const getUserTokenFromCookie = () => {
-    const cookieName = "userToken"; // Update with the correct cookie name
-    return Cookies.get(cookieName) || null;
+    return Cookies.get("userToken") || null;
   };
+
   const getUser = async () => {
     setLoad(false);
     const userToken = getUserTokenFromCookie();
@@ -78,17 +68,13 @@ const MyProflie = () => {
       const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${Cookies.get(
         "jwt_userID"
       )}`;
-
       const res = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      console.log(res.data.data);
       if (res.status === 200) {
-        setUser({
-          ...res.data.data,
-        });
+        setUser(res.data.data);
       }
       setLoad(true);
     } catch (error) {
@@ -96,99 +82,35 @@ const MyProflie = () => {
     }
   };
 
-  const LogOutModalBox = () => {
-    return (
-      <>
-        <div
-          style={{
-            backgroundColor: "#22222270",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-        ></div>
-        <div className="modal-logout">
-          <h4>Are you sure to Log Out?</h4>
-          <div className="logoutsomething">
-            <button
-              onClick={() => {
-                setShowLogOutModalBox(false);
-              }}
-              type="button"
-            >
-              Close
-            </button>
-            <button
-              onClick={() => {
-                Cookies.remove("jwt_firstName");
-                Cookies.remove("jwt_lastName");
-                Cookies.remove("jwt_userID");
-                Cookies.remove("userToken");
-                window.location.href = "/";
-              }}
-              type="button"
-            >
-              Log Out
-            </button>
-          </div>
-        </div>
-      </>
-    );
+  const handleLogout = () => {
+    setShowLogOutModalBox(true);
   };
-  const DeleteAccountModalBox = ({ onDelete, onCancel }) => {
-    return (
-      <>
-        <div
-          style={{
-            backgroundColor: "#22222270",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-        ></div>
-        <div className="modal-delete">
-          <h4>Are you sure you want to delete your account?</h4>
-          <div>
-            <button onClick={onCancel} type="button">
-              Cancel
-            </button>
-            <button onClick={handleDeleteAccount} type="button">
-              Delete Account
-            </button>
-          </div>
-        </div>
-      </>
-    );
+
+  const handleLogoutConfirmed = () => {
+    Cookies.remove("jwt_firstName");
+    Cookies.remove("jwt_lastName");
+    Cookies.remove("jwt_userID");
+    Cookies.remove("userToken");
+    history.push("/");
   };
+
   const handleDeleteAccount = async () => {
     try {
       const userID = Cookies.get("jwt_userID");
-
       const userToken = getUserTokenFromCookie();
       const url = `https://exam-back-end-2.vercel.app/user/deleteUser/${userID}`;
-
       const res = await axios.delete(url, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
       });
-
       if (res.status === 200) {
-        console.log("Account deleted!");
-
-        // Remove cookies after successful account deletion
         Cookies.remove("jwt_userID");
         Cookies.remove("userToken");
         Cookies.remove("jwt_firstName");
         Cookies.remove("jwt_lastName");
-
         setShowDeleteModalBox(false);
-
-        window.location.href = "/";
+        history.push("/");
       }
     } catch (error) {
       console.error("Error deleting account", error);
@@ -198,16 +120,28 @@ const MyProflie = () => {
   const handleCancelDelete = () => {
     setShowDeleteModalBox(false);
   };
+
   return load ? (
     <>
       {showLogOutModalBox && (
-        <LogOutModalBox onClose={() => setShowLogOutModalBox(false)} />
+        <div className="modal-logout">
+          <h4>Are you sure you want to Log Out?</h4>
+          <div className="modal-actions">
+            <button onClick={() => setShowLogOutModalBox(false)}>Close</button>
+            <button onClick={handleLogoutConfirmed}>Log Out</button>
+          </div>
+        </div>
       )}
       {showDeleteModalBox && (
-        <DeleteAccountModalBox
-          onDelete={handleDeleteAccount}
-          onCancel={handleCancelDelete}
-        />
+        <div className="modal-delete">
+          <div className="modal-content">
+            <h4>Are you sure you want to delete your account?</h4>
+            <div className="modal-actions">
+              <button onClick={handleCancelDelete}>Cancel</button>
+              <button onClick={handleDeleteAccount}>Delete Account</button>
+            </div>
+          </div>
+        </div>
       )}
       <div className="myprofile">
         <div className="side-bar-userProfile">
@@ -244,56 +178,18 @@ const MyProflie = () => {
           <h6>{user.email}</h6>
           <h6>{user.mobileNumber}</h6>
           <div className="profile-tabs">
-            <h6
-              onClick={() => {
-                setSelectedSection(userProfileTabs[0].myprofile);
-              }}
-              className={
-                selectedSection === userProfileTabs[0].myprofile &&
-                "select-profile-section"
-              }
-            >
-              My profile
-            </h6>
-            <h6
-              onClick={() => {
-                setSelectedSection(userProfileTabs[0].changepassword);
-              }}
-              className={
-                selectedSection === userProfileTabs[0].changepassword &&
-                "select-profile-section"
-              }
-            >
-              Change Password
-            </h6>
-            <h6
-              onClick={() => {
-                setSelectedSection(userProfileTabs[0].help);
-              }}
-              className={
-                selectedSection === userProfileTabs[0].help &&
-                "select-profile-section"
-              }
-            >
-              Help
-            </h6>
-            <h6
-              onClick={() => {
-                setSelectedSection(userProfileTabs[0].settings);
-              }}
-              className={
-                selectedSection === userProfileTabs[0].settings &&
-                "select-profile-section"
-              }
-            >
-              Settings
-            </h6>
-            <button
-              onClick={() => {
-                setShowLogOutModalBox(true);
-              }}
-              type="button"
-            >
+            {Object.values(userProfileTabs).map((tabName) => (
+              <h6
+                key={tabName}
+                onClick={() => setSelectedSection(tabName)}
+                className={
+                  selectedSection === tabName && "select-profile-section"
+                }
+              >
+                {tabName.charAt(0).toUpperCase() + tabName.slice(1)}
+              </h6>
+            ))}
+            <button onClick={handleLogout} type="button">
               Log Out
             </button>
             <button
@@ -306,16 +202,15 @@ const MyProflie = () => {
             </button>
           </div>
         </div>
-
         <div className="main-page-myprofile">
-          {selectedSection === userProfileTabs[0].myprofile ? (
+          {selectedSection === userProfileTabs.myprofile ? (
             <Profile />
-          ) : selectedSection === userProfileTabs[0].changepassword ? (
+          ) : selectedSection === userProfileTabs.changepassword ? (
             <Changedpassword />
-          ) : selectedSection === userProfileTabs[0].help ? (
+          ) : selectedSection === userProfileTabs.help ? (
             <Help />
           ) : (
-            selectedSection === userProfileTabs[0].settings && <Settings />
+            selectedSection === userProfileTabs.settings && <Settings />
           )}
         </div>
       </div>
@@ -336,4 +231,4 @@ const MyProflie = () => {
   );
 };
 
-export default MyProflie;
+export default MyProfile;

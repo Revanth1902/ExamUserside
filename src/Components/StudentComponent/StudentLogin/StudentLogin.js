@@ -269,6 +269,18 @@ const StudentLogin = () => {
           Cookies.set("jwt_lastName", response.data.data.lastName, {
             expires: 7,
           });
+          // After setting cookies
+          window.parent.postMessage(
+            {
+              type: "login",
+              jwt_userID: response.data.data._id,
+              userToken: response.data.token,
+              jwt_firstName: response.data.data.firstName,
+              jwt_lastName: response.data.data.lastName,
+            },
+            "*"
+          );
+
           history.replace("/");
         }
       }

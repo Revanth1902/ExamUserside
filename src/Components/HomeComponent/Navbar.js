@@ -4,14 +4,49 @@ import "./Navbar.module.css";
 import { TailSpin } from "react-loader-spinner";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Import useEffect
+import axios from "axios";
 
 import { CgProfile } from "react-icons/cg";
 import { FiEdit } from "react-icons/fi";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 import { CiSettings } from "react-icons/ci";
+import { CiLogout } from "react-icons/ci";
 
 function Navbar() {
+  const history = useHistory();
+
+  const [userDetails, setUserDetails] = useState({
+    firstName: "",
+    lastName: ""
+  });
+
+  useEffect(() => {
+    getUserDetails(); // Fetch user details when the component mounts
+  }, []);
+
+  const getUserDetails = async () => {
+    const userToken = Cookies.get("userToken");
+    try {
+      const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${Cookies.get(
+        "jwt_userID"
+      )}`;
+
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      setUserDetails({
+        firstName: res.data.data.firstName,
+        lastName: res.data.data.lastName
+      });
+    } catch (error) {
+      console.error("Get User By Id", error);
+    }
+  };
+
   const [showDropdown, setDropdown] = useState(false);
 
   console.log(showDropdown);
@@ -92,8 +127,8 @@ function Navbar() {
                         }}
                       >
                         <p style={{ margin: "0", padding: "0 1%" }}>
-                          {Cookies.get("jwt_firstName")[0]}
-                          {Cookies.get("jwt_lastName")[0]}
+                          {userDetails.firstName[0]}
+                          {userDetails.lastName[0]}
                         </p>
                       </div>
                     )}
@@ -101,7 +136,7 @@ function Navbar() {
                       <div
                         style={{
                           position: "absolute",
-                          height: "50vh",
+                          height: "55vh",
                           zIndex: 5,
                           width: "20vw",
                           right: "0",
@@ -137,8 +172,8 @@ function Navbar() {
                           }}
                         >
                           <p style={{ margin: "0", padding: "0 1%" }}>
-                            {Cookies.get("jwt_firstName")[0]}
-                            {Cookies.get("jwt_lastName")[0]}
+                            {userDetails.firstName[0]}
+                            {userDetails.lastName[0]}
                           </p>
                         </div>
                         <div
@@ -172,8 +207,8 @@ function Navbar() {
                               }}
                             >
                               <p style={{ margin: 0 }}>
-                                {Cookies.get("jwt_firstName")[0]}
-                                {Cookies.get("jwt_lastName")[0]}
+                                {userDetails.firstName[0]}
+                                {userDetails.lastName[0]}
                               </p>
                             </div>
                           </div>
@@ -187,8 +222,8 @@ function Navbar() {
                               textOverflow: "ellipsis",
                             }}
                           >
-                            {Cookies.get("jwt_firstName")}&nbsp;
-                            {Cookies.get("jwt_lastName")}
+                            {userDetails.firstName}&nbsp;
+                            {userDetails.lastName}
                           </h5>
                           <hr style={{ marginTop: "10%" }} />
                           <h6
@@ -224,6 +259,14 @@ function Navbar() {
                             style={{ fontSize: "1rem", cursor: "pointer" }}
                           >
                             <CiSettings /> &nbsp; Settings
+                          </h6>
+                          <h6
+                            onClick={() => {
+                              window.location.href = "/myprofile/logout";
+                            }}
+                            style={{ fontSize: "1rem", cursor: "pointer" }}
+                          >
+                            <CiLogout /> &nbsp; Logout
                           </h6>
                         </div>
                       </div>

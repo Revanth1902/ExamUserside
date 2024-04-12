@@ -1,4 +1,5 @@
 import "./App.css";
+import { useEffect } from "react";
 // import Navbar from "./Components/HomeComponent/Navbar";
 import Home from "./Components/Home";
 import CurrentAffair from "./Components/HomeSections/Currentaffair";
@@ -17,7 +18,7 @@ import StudentDashboard from "./Components/StudentComponent/StudentDashboard/Stu
 
 import { Route, BrowserRouter, Switch } from "react-router-dom";
 import StudentSignup from "./Components/StudentComponent/StudentSignup/StudentSignup";
-import Footer from "./Components/Footer";
+
 
 import LeaderBoard from "./Components/Leaderboard/leaderboard";
 import MCQ from "./Components/StudentComponent/StudentDashboard/MCQ/mcq";
@@ -28,7 +29,18 @@ import MCQCustom from "./Components/StudentComponent/StudentDashboard/MCQCustomQ
 import MCQCurrentAffairs from "./Components/StudentComponent/StudentDashboard/MCQCurreentAffairs/mcqcurrentaffairs.js";
 import MCQPrev from "./Components/StudentComponent/StudentDashboard/MCQPrev/mcqprev.jsx";
 
+
 function App() {
+  useEffect(() => {
+    // Data to be shared
+    const yourData = "Hello"
+
+    // Store data in local storage
+    localStorage.setItem('yourDataKey', JSON.stringify(yourData));
+
+    // Send data to parent window
+    window.parent.postMessage(yourData, '*'); // '*' allows communication with any origin
+  }, []);
   return (
     <>
       <BrowserRouter>

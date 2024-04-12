@@ -6,7 +6,7 @@ import CurrentAffairsMonthly from "./HomeSections/CurrentaffairsMonthly.jsx";
 import Fullsizemocktest from "./HomeSections/Fullsizemocktest";
 import Previousyearpapers from "./HomeSections/Previousyearpapers";
 import Quizbycustsubject from "./HomeSections/Quizbycustsubject";
-import Footer from "../Components/Footer.jsx";
+
 
 import { useEffect, useState } from "react";
 
@@ -118,7 +118,7 @@ const Home = () => {
           selectedSection === "mocktest" && <Fullsizemocktest />
         )}
       </div>
-      <Footer />
+
     </div>
   );
 };
