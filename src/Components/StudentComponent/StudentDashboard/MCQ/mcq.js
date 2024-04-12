@@ -104,20 +104,7 @@ const MCQ = () => {
     return localStorage.getItem(cookieName) || null;
   };
   const getuserIdFromCookie = () => {
-    const cookieName = "jwt_userID";
-    const cookies = document.cookie.split(";");
-
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.startsWith(`${cookieName}=`)) {
-        // Extract the adminId value from the cookie
-        const adminId = cookie.substring(cookieName.length + 1);
-        return adminId;
-      }
-    }
-
-    // Return a default value or handle the case where the cookie is not found
-    return null;
+    return localStorage.getItem("jwt_userID") || null;
   };
   const getMockQuestions = async () => {
     setLoad2(false);

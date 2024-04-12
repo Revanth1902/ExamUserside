@@ -58,10 +58,12 @@ const Changepassword = () => {
         if (res.status === 201) {
           toast("Updated Password");
           setTimeout(() => {
-            Cookies.remove("jwt_userID");
-            Cookies.remove("userToken");
-            Cookies.remove("jwt_firstName");
-            Cookies.remove("jwt_lastName");
+            localStorage.removeItem("jwt_userID");
+            localStorage.removeItem("userToken");
+            localStorage.removeItem("jwt_firstName");
+            localStorage.removeItem("jwt_lastName");
+            
+            
 
             history.replace("/StudentLogin");
           }, 1000);

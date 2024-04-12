@@ -89,10 +89,11 @@ const MyProfile = () => {
   };
 
   const handleLogoutConfirmed = () => {
-    Cookies.remove("jwt_firstName");
-    Cookies.remove("jwt_lastName");
-    Cookies.remove("jwt_userID");
-    Cookies.remove("userToken");
+    localStorage.removeItem("jwt_firstName");
+    localStorage.removeItem("jwt_lastName");
+    localStorage.removeItem("jwt_userID");
+    localStorage.removeItem("userToken");
+    
     history.push("/");
   };
 
@@ -108,10 +109,11 @@ const MyProfile = () => {
         },
       });
       if (res.status === 200) {
-        Cookies.remove("jwt_userID");
-        Cookies.remove("userToken");
-        Cookies.remove("jwt_firstName");
-        Cookies.remove("jwt_lastName");
+        localStorage.removeItem("jwt_userID");
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("jwt_firstName");
+        localStorage.removeItem("jwt_lastName");
+        
         setShowDeleteModalBox(false);
         history.push("/");
       }
