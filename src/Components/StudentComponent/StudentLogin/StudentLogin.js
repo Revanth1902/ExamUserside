@@ -261,25 +261,12 @@ const StudentLogin = () => {
         if (response.data) {
           setCheck(true);
           toast("Successfully Logged In");
-          Cookies.set("jwt_userID", response.data.data._id, { expires: 7 });
-          Cookies.set("userToken", response.data.token, { expires: 7 });
-          Cookies.set("jwt_firstName", response.data.data.firstName, {
-            expires: 7,
-          });
-          Cookies.set("jwt_lastName", response.data.data.lastName, {
-            expires: 7,
-          });
-          // After setting cookies
-          window.parent.postMessage(
-            {
-              type: "login",
-              jwt_userID: response.data.data._id,
-              userToken: response.data.token,
-              jwt_firstName: response.data.data.firstName,
-              jwt_lastName: response.data.data.lastName,
-            },
-            "https://nextexam.vercel.app" // Replace with your Next.js application URL
-          );
+
+          // Store user data in localStorage
+          localStorage.setItem("jwt_userID", response.data.data._id);
+          localStorage.setItem("userToken", response.data.token);
+          localStorage.setItem("jwt_firstName", response.data.data.firstName);
+          localStorage.setItem("jwt_lastName", response.data.data.lastName);
 
           history.replace("/");
         }
@@ -289,6 +276,19 @@ const StudentLogin = () => {
       toast(error.response?.data?.message || "Login failed");
     }
   };
+
+  useEffect(() => {
+    // Data to be shared
+    const yourData = {
+      userID: localStorage.getItem("jwt_userID"),
+      userToken: localStorage.getItem("userToken"),
+      firstName: localStorage.getItem("jwt_firstName"),
+      lastName: localStorage.getItem("jwt_lastName"),
+    };
+
+    // Send data to parent window
+    window.parent.postMessage(yourData, '*'); // '*' allows communication with any origin
+  }, []);
 
   return (
     <>
