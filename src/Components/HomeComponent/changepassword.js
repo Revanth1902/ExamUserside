@@ -20,9 +20,10 @@ const Changepassword = () => {
   const [load, setLoad] = useState(false);
 
   const getUserTokenFromCookie = () => {
-    const cookieName = "userToken"; // Update with the correct cookie name
-    return Cookies.get(cookieName) || null;
+    const localStorageKey = "userToken"; // Update with the correct localStorage key
+    return localStorage.getItem(localStorageKey) || null;
   };
+  
 
   const updateUserDetails = async () => {
     const userToken = getUserTokenFromCookie();
@@ -38,9 +39,10 @@ const Changepassword = () => {
     } else {
       try {
         setLoad(true);
-        const url = `https://exam-back-end-2.vercel.app/user/updateUserPassword/${Cookies.get(
+        const url = `https://exam-back-end-2.vercel.app/user/updateUserPassword/${localStorage.getItem(
           "jwt_userID"
         )}`;
+        
 
         const updatedData = {
           oldPassword: password.oldPassword,

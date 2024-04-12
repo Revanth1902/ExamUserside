@@ -61,7 +61,7 @@ const Quizbycustsubject = () => {
   };
   const getUserTokenFromCookie = () => {
     const cookieName = "userToken"; // Update with the correct cookie name
-    return Cookies.get(cookieName) || null;
+    return localStorage.getItem(cookieName) || null;
   };
   const getAllQuizName = async () => {
     try {
@@ -286,7 +286,7 @@ const Quizbycustsubject = () => {
           {
             <button
               onClick={() => {
-                if (Cookies.get("userToken") === undefined) {
+                if (localStorage.getItem("userToken") === null) {
                   window.location.href = "/StudentLogin";
                 } else if (selectedCategroy === "") {
                   toast("Please Select Category");

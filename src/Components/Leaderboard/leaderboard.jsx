@@ -61,7 +61,7 @@ const LeaderBoard = () => {
 
   const getUserTokenFromCookie = () => {
     const cookieName = "userToken";
-    return Cookies.get(cookieName) || null;
+    return localStorage.getItem(cookieName) || null;
   };
 
   const getLeaderboardDetailsByMockId = async () => {
@@ -172,7 +172,7 @@ const LeaderBoard = () => {
               {leaderboardResults.map(
                 (data, index) =>
                   data.userId &&
-                  data.userId._id === Cookies.get("jwt_userID") && (
+                  data.userId._id === localStorage.getItem("jwt_userID") && (
                     <tr
                       key={data.position}
                       style={{

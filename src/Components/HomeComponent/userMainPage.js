@@ -44,7 +44,8 @@ const MyProfile = () => {
   const [user, setUser] = useState({});
 
   useEffect(() => {
-    const isLoggedIn = Cookies.get("userToken");
+    const isLoggedIn = localStorage.getItem("userToken");
+
     if (isLoggedIn === undefined) {
       history.push("/StudentLogin");
     } else {
@@ -58,16 +59,17 @@ const MyProfile = () => {
   }, []);
 
   const getUserTokenFromCookie = () => {
-    return Cookies.get("userToken") || null;
+    return localStorage.getItem("userToken") || null;
   };
-
+  
   const getUser = async () => {
     setLoad(false);
     const userToken = getUserTokenFromCookie();
     try {
-      const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${Cookies.get(
+      const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${localStorage.getItem(
         "jwt_userID"
       )}`;
+      
       const res = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${userToken}`,
@@ -96,7 +98,8 @@ const MyProfile = () => {
 
   const handleDeleteAccount = async () => {
     try {
-      const userID = Cookies.get("jwt_userID");
+      const userID = localStorage.getItem("jwt_userID");
+
       const userToken = getUserTokenFromCookie();
       const url = `https://exam-back-end-2.vercel.app/user/deleteUser/${userID}`;
       const res = await axios.delete(url, {

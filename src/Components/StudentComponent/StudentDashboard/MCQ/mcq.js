@@ -101,7 +101,7 @@ const MCQ = () => {
   }, [page]);
   const getUserTokenFromCookie = () => {
     const cookieName = "userToken"; // Update with the correct cookie name
-    return Cookies.get(cookieName) || null;
+    return localStorage.getItem(cookieName) || null;
   };
   const getuserIdFromCookie = () => {
     const cookieName = "jwt_userID";
@@ -252,7 +252,7 @@ const MCQ = () => {
           },
           body: JSON.stringify({
             mockId: params.id,
-            userId: Cookies.get("jwt_userID"),
+            userId: localStorage.getItem("jwt_userID"),
             totalMark: marks,
           }),
         };
@@ -367,7 +367,6 @@ const MCQ = () => {
             <div style={{ position: "relative" }}>
               <h3 style={{ marginBottom: "2%" }}>
                 Q{each.qno}.&nbsp;{each.question} &nbsp;
-                
               </h3>
               <span
                 style={{

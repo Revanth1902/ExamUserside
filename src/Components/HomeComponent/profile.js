@@ -64,15 +64,17 @@ const Profile = () => {
     getUserDetails();
   }, []);
   const getUserTokenFromCookie = () => {
-    const cookieName = "userToken"; // Update with the correct cookie name
-    return Cookies.get(cookieName) || null;
+    const localStorageKey = "userToken"; // Update with the correct localStorage key
+    return localStorage.getItem(localStorageKey) || null;
   };
+  
   const getUserDetails = async () => {
     const userToken = getUserTokenFromCookie();
     try {
-      const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${Cookies.get(
+      const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${localStorage.getItem(
         "jwt_userID"
       )}`;
+      
 
       const res = await axios.get(url, {
         headers: {
@@ -140,9 +142,10 @@ const Profile = () => {
         setLoad(true);
         const userToken = getUserTokenFromCookie();
         try {
-          const url = `https://exam-back-end-2.vercel.app/user/updateDetails/${Cookies.get(
+          const url = `https://exam-back-end-2.vercel.app/user/updateDetails/${localStorage.getItem(
             "jwt_userID"
           )}`;
+          
 
           const updatedData = {
             firstName: userDetails.firstName,

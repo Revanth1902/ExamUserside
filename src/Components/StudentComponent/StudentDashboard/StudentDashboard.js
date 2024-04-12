@@ -84,7 +84,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function StudentDashboard() {
   useEffect(() => {
-    if (Cookies.get("userToken") === undefined) {
+    if (localStorage.getItem("userToken") === undefined) {
       toast("Detect Illegal Way of Entering");
       history.replace("/StudentLogin");
     }

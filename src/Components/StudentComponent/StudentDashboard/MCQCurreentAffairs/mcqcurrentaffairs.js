@@ -105,7 +105,7 @@ const MCQCurrentAffairs = () => {
     //       },
     //       body: JSON.stringify({
     //         mockId: params.id,
-    //         userId: Cookies.get("jwt_userID"),
+    //         userId: localStorage.getItem("jwt_userID"),
     //         totalMark: marks,
     //       }),
     //     };

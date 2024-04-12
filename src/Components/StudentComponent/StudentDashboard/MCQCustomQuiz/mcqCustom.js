@@ -60,7 +60,7 @@ const MCQCustom = () => {
   }, [location.search, page]);
   const getUserTokenFromCookie = () => {
     const cookieName = "userToken";
-    return Cookies.get(cookieName) || null;
+    return localStorage.getItem(cookieName) || null;
   };
 
   const getCustomQuestions = async (myObject) => {
@@ -185,7 +185,7 @@ const MCQCustom = () => {
     //       },
     //       body: JSON.stringify({
     //         mockId: params.id,
-    //         userId: Cookies.get("jwt_userID"),
+    //         userId: localStorage.getItem("jwt_userID"),
     //         totalMark: marks,
     //       }),
     //     };

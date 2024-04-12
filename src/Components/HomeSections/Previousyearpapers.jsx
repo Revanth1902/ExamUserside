@@ -83,7 +83,7 @@ const Previousyearpapers = () => {
           {
             <button
               onClick={() => {
-                if (Cookies.get("userToken") === undefined) {
+                if (localStorage.getItem("userToken") === null) {
                   window.location.href = "/StudentLogin";
                 } else if (selectedYear === "") {
                   toast("Please Select Year");

@@ -18,7 +18,7 @@ function Navbar() {
 
   const [userDetails, setUserDetails] = useState({
     firstName: "",
-    lastName: ""
+    lastName: "",
   });
 
   useEffect(() => {
@@ -26,9 +26,9 @@ function Navbar() {
   }, []);
 
   const getUserDetails = async () => {
-    const userToken = Cookies.get("userToken");
+    const userToken = localStorage.getItem("userToken");
     try {
-      const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${Cookies.get(
+      const url = `https://exam-back-end-2.vercel.app/user/getUserByUserId/${localStorage.getItem(
         "jwt_userID"
       )}`;
 
@@ -40,7 +40,7 @@ function Navbar() {
 
       setUserDetails({
         firstName: res.data.data.firstName,
-        lastName: res.data.data.lastName
+        lastName: res.data.data.lastName,
       });
     } catch (error) {
       console.error("Get User By Id", error);
@@ -94,7 +94,7 @@ function Navbar() {
               </li>
 
               <div className="mx-3">
-                {Cookies.get("userToken") === undefined ? (
+                {localStorage.getItem("userToken") === null ? (
                   <Link to="/StudentLogin">
                     <button type="button" className="btn1 mx-2 rounded-pill">
                       Log In

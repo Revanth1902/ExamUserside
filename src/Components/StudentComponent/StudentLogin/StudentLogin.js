@@ -215,7 +215,7 @@ const StudentLogin = () => {
   });
 
   useEffect(() => {
-    const isLoggedIn = Cookies.get("userToken");
+    const isLoggedIn = localStorage.getItem("userToken");
     if (isLoggedIn !== undefined) {
       window.location.href = "/";
     }
@@ -287,7 +287,7 @@ const StudentLogin = () => {
     };
 
     // Send data to parent window
-    window.parent.postMessage(yourData, '*'); // '*' allows communication with any origin
+    window.parent.postMessage(yourData, "*"); // '*' allows communication with any origin
   }, []);
 
   return (

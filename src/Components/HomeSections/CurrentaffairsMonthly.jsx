@@ -351,13 +351,14 @@ const Currentaffair = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      if (Cookies.get("userToken") === undefined) {
+                      if (localStorage.getItem("userToken") === null) {
                         window.location.href = "/StudentLogin";
-                      } else if (Cookies.get("userToken") !== undefined) {
+                      } else {
                         setMockId(each._id);
                         setShowModel(true);
                       }
                     }}
+                    
                   >
                     Take Test
                   </button>
