@@ -278,7 +278,7 @@ const StudentLogin = () => {
               jwt_firstName: response.data.data.firstName,
               jwt_lastName: response.data.data.lastName,
             },
-            "*"
+            "https://nextexam.vercel.app" // Replace with your Next.js application URL
           );
 
           history.replace("/");
