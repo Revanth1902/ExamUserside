@@ -1,5 +1,6 @@
 import "./App.css";
 import { useEffect } from "react";
+import Cookies from "js-cookie"
 // import Navbar from "./Components/HomeComponent/Navbar";
 import Home from "./Components/Home";
 import CurrentAffair from "./Components/HomeSections/Currentaffair";
@@ -32,24 +33,14 @@ import MCQPrev from "./Components/StudentComponent/StudentDashboard/MCQPrev/mcqp
 
 function App() {
   useEffect(() => {
-    // Define a function to handle messages received from the parent window
-    const handleMessage = (event) => {
-      // Check if the message is from the parent window and has the expected format
-      if (event.origin === 'https://nextexam.vercel.app/' && event.data.type === 'cookie') {
-        // Access the cookie from the parent window
-        const cookieValue = event.data.value;
-        // Do something with the cookie value
-        console.log('Cookie received:', cookieValue);
-      }
-    };
+    // Data to be shared
+    const yourData = "Hello"
 
-    // Add event listener for messages
-    window.addEventListener('message', handleMessage);
+    // Store data in local storage
+    Cookies.set('yourDataKey', JSON.stringify(yourData));
 
-    // Cleanup function to remove event listener
-    return () => {
-      window.removeEventListener('message', handleMessage);
-    };
+    // Send data to parent window
+    window.parent.postMessage(yourData, '*'); // '*' allows communication with any origin
   }, []);
   return (
     <>
