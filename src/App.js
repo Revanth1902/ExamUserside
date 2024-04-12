@@ -32,14 +32,24 @@ import MCQPrev from "./Components/StudentComponent/StudentDashboard/MCQPrev/mcqp
 
 function App() {
   useEffect(() => {
-    // Data to be shared
-    const yourData = "Hello"
+    // Define a function to handle messages received from the parent window
+    const handleMessage = (event) => {
+      // Check if the message is from the parent window and has the expected format
+      if (event.origin === 'https://nextexam.vercel.app/' && event.data.type === 'cookie') {
+        // Access the cookie from the parent window
+        const cookieValue = event.data.value;
+        // Do something with the cookie value
+        console.log('Cookie received:', cookieValue);
+      }
+    };
 
-    // Store data in local storage
-    localStorage.setItem('yourDataKey', JSON.stringify(yourData));
+    // Add event listener for messages
+    window.addEventListener('message', handleMessage);
 
-    // Send data to parent window
-    window.parent.postMessage(yourData, '*'); // '*' allows communication with any origin
+    // Cleanup function to remove event listener
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
   }, []);
   return (
     <>
