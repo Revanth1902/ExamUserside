@@ -264,10 +264,10 @@ const StudentLogin = () => {
           toast("Successfully Logged In");
 
           // Store user data in localStorage
-          localStorage.setItem("jwt_userID", response.data.data._id);
-          localStorage.setItem("userToken", response.data.token);
-          localStorage.setItem("jwt_firstName", response.data.data.firstName);
-          localStorage.setItem("jwt_lastName", response.data.data.lastName);
+          // localStorage.setItem("jwt_userID", response.data.data._id);
+          // localStorage.setItem("userToken", response.data.token);
+          // localStorage.setItem("jwt_firstName", response.data.data.firstName);
+          // localStorage.setItem("jwt_lastName", response.data.data.lastName);
 
           history.replace("/");
         }

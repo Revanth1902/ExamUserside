@@ -93,7 +93,7 @@ function StudentDashboard() {
   let history = useHistory();
 
   function logout() {
-    Cookies.remove();
+    localStorage.clear();
     history.replace("/StudentLogin");
   }
 
